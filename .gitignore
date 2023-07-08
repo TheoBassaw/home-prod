@@ -16,4 +16,4 @@ terraform.rc
 
 .terraform.lock.hcl
 
-*.pem
+.vscode

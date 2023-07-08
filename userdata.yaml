@@ -1,0 +1,21 @@
+#cloud-config
+hostname: ${hostname}
+fqdn: ${fqdn}
+manage_etc_hosts: true
+
+growpart:
+  mode: auto
+  devices: ['/']
+  ignore_growroot_disabled: false
+
+packages_update: true
+packages_upgrade: true
+
+runcmd:
+  - ufw allow 9993
+  - ufw reload
+  - curl -s 'https://raw.githubusercontent.com/zerotier/ZeroTierOne/master/doc/contact%40zerotier.com.gpg' | gpg --import && if z=$(curl -s 'https://install.zerotier.com/' | gpg); then echo "$z" | bash; fi
+  - echo ${zerotier_public_key} > /var/lib/zerotier-one/identity.public
+  - echo ${zerotier_private_key} > /var/lib/zerotier-one/identity.secret
+  - zerotier-cli join ${zerotier_network_id}
+  - systemctl restart zerotier-one.service
