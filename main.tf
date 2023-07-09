@@ -9,6 +9,14 @@ terraform {
       version = "5.3.0"
     }
   }
+  backend "http" {
+    address        = "https://gitlab.com/api/v4/projects/47476421/terraform/state/prod"
+    lock_address   = "https://gitlab.com/api/v4/projects/47476421/terraform/state/prod/lock"
+    unlock_address = "https://gitlab.com/api/v4/projects/47476421/terraform/state/prod/lock"
+    lock_method    = "POST"
+    unlock_method  = "DELETE"
+    retry_wait_min = 5
+  }
 }
 
 provider "zerotier" {
