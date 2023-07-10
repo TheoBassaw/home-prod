@@ -1,4 +1,4 @@
-resource "zerotier_network" "router-overlay-network" {
+resource "zerotier_network" "router_overlay_network" {
   name        = "Router Overlay Network"
 
   assign_ipv4 {
@@ -28,7 +28,7 @@ resource "zerotier_member" "route_reflectors" {
 
   name                    = each.key
   member_id               = zerotier_identity.route_reflectors[each.key].id
-  network_id              = zerotier_network.router-overlay-network.id
+  network_id              = zerotier_network.router_overlay_network.id
   ip_assignments          = [each.value.ip]
 }
 
@@ -41,6 +41,6 @@ resource "zerotier_member" "dns_servers" {
 
   name                    = each.key
   member_id               = zerotier_identity.dns_servers[each.key].id
-  network_id              = zerotier_network.router-overlay-network.id
+  network_id              = zerotier_network.router_overlay_network.id
   ip_assignments          = [each.value.ip]
 }

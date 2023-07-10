@@ -17,7 +17,7 @@ data "cloudinit_config" "route_reflectors" {
       "fqdn"         = "${each.value.hostname}.${var.domain}"
       "zerotier_public_key"  = zerotier_identity.route_reflectors[each.key].public_key
       "zerotier_private_key" = zerotier_identity.route_reflectors[each.key].private_key
-      "zerotier_network_id"  = zerotier_network.router-overlay-network.id
+      "zerotier_network_id"  = zerotier_network.router_overlay_network.id
     })
   }
 }
@@ -36,7 +36,7 @@ data "cloudinit_config" "dns_servers" {
       "fqdn"         = "${each.value.hostname}.${var.domain}"
       "zerotier_public_key"  = zerotier_identity.dns_servers[each.key].public_key
       "zerotier_private_key" = zerotier_identity.dns_servers[each.key].private_key
-      "zerotier_network_id"  = zerotier_network.router-overlay-network.id
+      "zerotier_network_id"  = zerotier_network.router_overlay_network.id
     })
   }
 }
