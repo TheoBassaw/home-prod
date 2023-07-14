@@ -22,20 +22,20 @@ stages:
 validate-job:
   stage: validate
   script:    
-    - doppler run --name-transformer tf-var -- ./terraform validate
+    - doppler run -- ./terraform validate
 
 plan-job:
   stage: plan
   script:
-    - doppler run --name-transformer tf-var -- ./terraform plan
+    - doppler run -- ./terraform plan
 
 apply-job:
   stage: apply
   script:
-    - doppler run --name-transformer tf-var -- ./terraform apply -auto-approve
+    - doppler run -- ./terraform apply -auto-approve
 
 destroy-job:
   stage: destroy
   script:
-    - doppler run --name-transformer tf-var -- ./terraform destroy -auto-approve
+    - doppler run -- ./terraform destroy -auto-approve
   when: manual
