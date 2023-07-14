@@ -1,7 +1,7 @@
 locals {
   route_reflectors = {
-    "router_reflector_1" = { ip = "10.30.16.1", availability_domain = "wkHw:US-ASHBURN-AD-1", hostname = "router-reflector-1" }
-    "router_reflector_2" = { ip = "10.30.16.2", availability_domain = "wkHw:US-ASHBURN-AD-2", hostname = "router-reflector-2" }
+    "route_reflector_1" = { ip = "10.30.16.1", availability_domain = "wkHw:US-ASHBURN-AD-1", hostname = "route-reflector-1" }
+    "route_reflector_2" = { ip = "10.30.16.2", availability_domain = "wkHw:US-ASHBURN-AD-2", hostname = "route-reflector-2" }
   }
 
   dns_servers = {
@@ -10,12 +10,12 @@ locals {
   }
 }
 
-variable "zerotier_central_token" {
+variable "ZEROTIER_CENTRAL_TOKEN" {
   type      = string
   sensitive = true
 }
 
-variable "oci_api_key" {
+variable "OCI_API_KEY" {
   type      = string
   sensitive = true
 }

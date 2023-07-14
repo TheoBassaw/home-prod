@@ -12,7 +12,7 @@ data "cloudinit_config" "route_reflectors" {
   part {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
-    content = templatefile("${path.module}/userdata.yaml", {
+    content = templatefile("${path.module}/templates/userdata.tftpl", {
       "hostname"     = each.value.hostname
       "fqdn"         = "${each.value.hostname}.${var.domain}"
       "zerotier_public_key"  = zerotier_identity.route_reflectors[each.key].public_key
@@ -31,7 +31,7 @@ data "cloudinit_config" "dns_servers" {
   part {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
-    content = templatefile("${path.module}/userdata.yaml", {
+    content = templatefile("${path.module}/templates/userdata.tftpl", {
       "hostname"     = each.value.hostname
       "fqdn"         = "${each.value.hostname}.${var.domain}"
       "zerotier_public_key"  = zerotier_identity.dns_servers[each.key].public_key
@@ -93,4 +93,12 @@ resource "oci_core_instance" "dns_servers" {
     source_type = var.source_type
     source_id   = data.oci_core_images.ubuntu_hardened.images[0].id
   }
+}
+
+resource "local_file" "inventory" {
+  content  = templatefile("${path.module}/templates/inventory.tftpl", {
+    route_reflectors = [for route_reflector in oci_core_instance.route_reflectors : route_reflector.public_ip],
+    dns_servers      = [for dns_server in oci_core_instance.dns_servers : dns_server.public_ip]
+  })
+  filename = "${path.module}/ansible/inventory"
 }

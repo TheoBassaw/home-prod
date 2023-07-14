@@ -11,7 +11,7 @@ default:
     - unzip terraform_1.5.2_linux_amd64.zip
     - chmod +x terraform
     - echo "$DOPPLER_TOKEN" | doppler configure set token --scope $CI_PROJECT_DIR
-    - doppler run --name-transformer tf-var --command='./terraform init -backend-config="password=$TF_VAR_gitlab_pass" -backend-config="username=$TF_VAR_gitlab_user" -reconfigure'
+    - doppler run -- ./terraform init -reconfigure
 
 stages:
   - validate

@@ -1,0 +1,9 @@
+[route_reflectors]
+%{ for ip in route_reflectors ~}
+${ip}
+%{ endfor ~}
+
+[dns_servers]
+%{ for ip in dns_servers ~}
+${ip}
+%{ endfor ~}

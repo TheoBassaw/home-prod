@@ -17,3 +17,5 @@ terraform.rc
 .terraform.lock.hcl
 
 .vscode
+
+**/ansible/inventory
