@@ -1,0 +1,38 @@
+- name: write the frr config file
+  ansible.builtin.template: 
+    src: frr.j2
+    dest: /etc/frr/frr.conf
+  notify: Restart frr
+
+- name: Allow port 53 for DNS
+  community.general.ufw:
+    rule: allow
+    port: '53'
+
+- name: Installing Bind9
+  ansible.builtin.apt:
+    name:
+      - bind9
+    state: present
+    update_cache: true
+
+- name: write the named.conf.options file
+  ansible.builtin.copy: 
+    src: named.conf.options
+    dest: /etc/bind/named.conf.options
+
+- name: write the named.conf.local file
+  ansible.builtin.template: 
+    src: named.conf.local.j2
+    dest: /etc/bind/named.conf.local
+
+- name: write the db.paradisenetworkz.com file
+  ansible.builtin.template: 
+    src: db.paradisenetworkz.com.j2
+    dest: /var/lib/bind/db.paradisenetworkz.com
+
+- name: write the db.30.10.in-addr.arpa file
+  ansible.builtin.template: 
+    src: db.30.10.in-addr.arpa.j2
+    dest: /var/lib/bind/db.30.10.in-addr.arpa
+  notify: Restart bind9

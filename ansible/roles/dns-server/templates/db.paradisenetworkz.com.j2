@@ -1,0 +1,14 @@
+$ORIGIN .
+$TTL 3600      ; 1 hour
+internal.paradisenetworkz.com                   IN  SOA     {{ ansible_hostname }}.internal.paradisenetworkz.com. theo.paradisenetworkz.com. (
+                                                                1          ; serial
+                                                                604800     ; refresh (1 week)
+                                                                86400      ; retry (1 day)
+                                                                2419200    ; expire (4 weeks)
+                                                                604800     ; minimum (1 week)
+                                                            )
+
+                                                IN  NS      dns-server-1.internal.paradisenetworkz.com.
+                                                IN  NS      dns-server-2.internal.paradisenetworkz.com.
+dns-server-1.internal.paradisenetworkz.com.     IN  A       10.30.16.3
+dns-server-2.internal.paradisenetworkz.com.     IN  A       10.30.16.4

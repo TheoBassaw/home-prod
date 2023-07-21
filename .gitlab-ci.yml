@@ -11,8 +11,7 @@ default:
     - unzip terraform_1.5.2_linux_amd64.zip
     - chmod +x terraform
     - echo "$DOPPLER_TOKEN" | doppler configure set token --scope $CI_PROJECT_DIR
-    - doppler run -- ./terraform init -reconfigure
-
+    - doppler run -- ./terraform init
 stages:
   - validate
   - plan
@@ -32,7 +31,11 @@ plan-job:
 apply-job:
   stage: apply
   script:
+    - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    - python3 get-pip.py
+    - python3 -m pip install ansible"
     - doppler run -- ./terraform apply -auto-approve
+    - doppler run -- ansible-playbook -i ./ansible/inventory -u deploy ./ansible/local.yml
 
 destroy-job:
   stage: destroy

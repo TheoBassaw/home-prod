@@ -8,11 +8,8 @@ terraform {
       source  = "oracle/oci"
       version = "5.3.0"
     }
-    ansible = {
-      source  = "ansible/ansible"
-      version = "1.1.0"
-    }
   }
+  backend "http" {}
 }
 
 provider "zerotier" {

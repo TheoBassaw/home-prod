@@ -97,8 +97,8 @@ resource "oci_core_instance" "dns_servers" {
 
 resource "local_file" "inventory" {
   content  = templatefile("${path.module}/templates/inventory.tftpl", {
-    route_reflectors = [for route_reflector in oci_core_instance.route_reflectors : route_reflector.public_ip],
-    dns_servers      = [for dns_server in oci_core_instance.dns_servers : dns_server.public_ip]
+    route_reflectors = [for k, v in local.route_reflectors : {public_ip = oci_core_instance.route_reflectors[k].public_ip, zerotier_ip = v.ip}],
+    dns_servers      = [for k, v in local.dns_servers : {public_ip = oci_core_instance.dns_servers[k].public_ip, zerotier_ip = v.ip}]
   })
   filename = "${path.module}/ansible/inventory"
 }

@@ -1,0 +1,20 @@
+frr defaults datacenter
+log syslog informational
+service integrated-vtysh-config
+!
+router bgp 212364 view RR
+ bgp router-id {{ router_ip }}
+ bgp log-neighbor-changes
+ bgp graceful-restart
+ neighbor mesh peer-group
+ neighbor mesh remote-as 212364
+ bgp listen range 10.30.16.0/24 peer-group mesh
+ !
+ address-family ipv4 unicast
+  neighbor mesh activate
+  neighbor mesh route-reflector-client
+  neighbor mesh soft-reconfiguration inbound
+ exit-address-family
+ !
+line vty
+!
