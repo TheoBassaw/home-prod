@@ -31,6 +31,12 @@ plan-job:
 apply-job:
   stage: apply
   script:
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - chmod 400 "$RUNNER_PRIVATE_KEY"
+    - ssh-add "$RUNNER_PRIVATE_KEY"
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
     - apt install -y python3
     - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
     - python3 get-pip.py
