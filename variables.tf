@@ -42,5 +42,5 @@ variable "subnet_id" {
 
 variable "domain" {
   type      = string
-  default   = "paradisenetworkz.com"
+  default   = "internl.paradisenetworkz.com"
 }

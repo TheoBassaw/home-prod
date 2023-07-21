@@ -1,13 +1,13 @@
-key "ddns-key.paradisenetworkz.com" {
+key "ddns-key.internal.paradisenetworkz.com" {
   algorithm hmac-sha512;
 	secret "{{ TSIG_KEY | default(lookup('ansible.builtin.env', 'TSIG_KEY')) }}";
 };
 
-zone "paradisenetworkz.com" {
+zone "internal.paradisenetworkz.com" {
   type master;
-  file "/var/lib/bind/db.paradisenetworkz.com";
+  file "/var/lib/bind/db.internal.paradisenetworkz.com";
   update-policy {
-	  grant ddns-key.paradisenetworkz.com zonesub ANY;
+	  grant ddns-key.internal.paradisenetworkz.com zonesub ANY;
   };
 };
 
@@ -15,6 +15,6 @@ zone "30.10.in-addr.arpa" {
   type master;
   file "/var/lib/bind/db.30.10.in-addr.arpa";
   update-policy {
-	  grant ddns-key.paradisenetworkz.com zonesub ANY;
+	  grant ddns-key.internal.paradisenetworkz.com zonesub ANY;
   };
 };
