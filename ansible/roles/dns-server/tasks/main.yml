@@ -26,9 +26,9 @@
     src: named.conf.local.j2
     dest: /etc/bind/named.conf.local
 
-- name: write the db.paradisenetworkz.com file
+- name: write the db.internal.paradisenetworkz.com file
   ansible.builtin.template: 
-    src: db.paradisenetworkz.com.j2
+    src: db.internal.paradisenetworkz.com.j2
     dest: /var/lib/bind/db.paradisenetworkz.com
 
 - name: write the db.30.10.in-addr.arpa file
