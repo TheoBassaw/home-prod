@@ -10,8 +10,8 @@
   roles:
     - role: route-reflector
 
-- become: true
-  hosts: dns_servers
-  name: DNS Servers
-  roles:
-    - role: dns-server
+#- become: true
+#  hosts: dns_servers
+#  name: DNS Servers
+#  roles:
+#    - role: dns-server
