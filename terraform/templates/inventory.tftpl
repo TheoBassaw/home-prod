@@ -3,7 +3,7 @@
 ${route_reflector.public_ip} ansible_ssh_common_args='-o StrictHostKeyChecking=no' router_ip=${route_reflector.zerotier_ip}
 %{ endfor ~}
 
-[dns_servers]
-%{ for dns_server in dns_servers ~}
-${dns_server.public_ip} ansible_ssh_common_args='-o StrictHostKeyChecking=no' router_ip=${dns_server.zerotier_ip}
+[control_servers]
+%{ for control_server in control_servers ~}
+${control_server.public_ip} ansible_ssh_common_args='-o StrictHostKeyChecking=no' router_ip=${control_server.zerotier_ip}
 %{ endfor ~}

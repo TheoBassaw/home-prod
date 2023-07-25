@@ -12,9 +12,10 @@ data "cloudinit_config" "route_reflectors" {
   part {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
+
     content = templatefile("${path.module}/templates/userdata.tftpl", {
-      "hostname"     = each.value.hostname
-      "fqdn"         = "${each.value.hostname}.${var.domain}"
+      "hostname"             = each.value.hostname
+      "fqdn"                 = "${each.value.hostname}.${var.domain}"
       "zerotier_public_key"  = zerotier_identity.route_reflectors[each.key].public_key
       "zerotier_private_key" = zerotier_identity.route_reflectors[each.key].private_key
       "zerotier_network_id"  = zerotier_network.router_overlay_network.id
@@ -22,8 +23,8 @@ data "cloudinit_config" "route_reflectors" {
   }
 }
 
-data "cloudinit_config" "dns_servers" {
-  for_each = local.dns_servers
+data "cloudinit_config" "control_servers" {
+  for_each = local.control_servers
 
   gzip          = true
   base64_encode = true
@@ -32,10 +33,10 @@ data "cloudinit_config" "dns_servers" {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
     content = templatefile("${path.module}/templates/userdata.tftpl", {
-      "hostname"     = each.value.hostname
-      "fqdn"         = "${each.value.hostname}.${var.domain}"
-      "zerotier_public_key"  = zerotier_identity.dns_servers[each.key].public_key
-      "zerotier_private_key" = zerotier_identity.dns_servers[each.key].private_key
+      "hostname"             = each.value.hostname
+      "fqdn"                 = "${each.value.hostname}.${var.domain}"
+      "zerotier_public_key"  = zerotier_identity.control_servers[each.key].public_key
+      "zerotier_private_key" = zerotier_identity.control_servers[each.key].private_key
       "zerotier_network_id"  = zerotier_network.router_overlay_network.id
     })
   }
@@ -68,8 +69,8 @@ resource "oci_core_instance" "route_reflectors" {
   }
 }
 
-resource "oci_core_instance" "dns_servers" {
-  for_each = local.dns_servers
+resource "oci_core_instance" "control_servers" {
+  for_each = local.control_servers
 
   availability_domain = each.value.availability_domain
   compartment_id      = var.tenancy_ocid
@@ -77,7 +78,7 @@ resource "oci_core_instance" "dns_servers" {
   shape               = var.image_shape
 
   metadata = {
-    user_data = data.cloudinit_config.dns_servers[each.key].rendered
+    user_data = data.cloudinit_config.control_servers[each.key].rendered
   }
 
   create_vnic_details {
@@ -96,9 +97,10 @@ resource "oci_core_instance" "dns_servers" {
 }
 
 resource "local_file" "inventory" {
-  content  = templatefile("${path.module}/templates/inventory.tftpl", {
+  content = templatefile("${path.module}/templates/inventory.tftpl", {
     route_reflectors = [for k, v in local.route_reflectors : {public_ip = oci_core_instance.route_reflectors[k].public_ip, zerotier_ip = v.ip}],
-    dns_servers      = [for k, v in local.dns_servers : {public_ip = oci_core_instance.dns_servers[k].public_ip, zerotier_ip = v.ip}]
+    control_servers  = [for k, v in local.control_servers : {public_ip = oci_core_instance.control_servers[k].public_ip, zerotier_ip = v.ip}]
   })
-  filename = "${path.module}/ansible/inventory"
+  
+  filename = "${path.root}/../ansible/inventory"
 }

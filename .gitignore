@@ -1,4 +1,4 @@
-**/.terraform/*
+**/.terraform/
 
 *.tfstate
 *.tfstate.*
@@ -19,3 +19,5 @@ terraform.rc
 .vscode
 
 **/ansible/inventory
+**/ansible/roles/UBUNTU22-CIS
+**.pem

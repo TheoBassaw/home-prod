@@ -1,17 +1,22 @@
 - become: true
   hosts: all
-  name: Pre-Tasks
+  name: Ubuntu-22.04-Hardened
   roles:
-    - role: pre-tasks
+    - role: UBUNTU22-CIS
+      ubtu22cis_rule_5_3_4: false
+      ubtu22cis_rule_5_4_2: false
 
-- become: true
-  hosts: route_reflectors
-  name: Route Reflectors
-  roles:
-    - role: route-reflector
-
-- become: true
-  hosts: dns_servers
-  name: DNS Servers
-  roles:
-    - role: dns-server
+      ubtu22cis_ldap_clients_required: true
+      ubtu22cis_apparmor_enforce_only: true
+      ubtu22cis_ufw_allow_out_ports: all
+      ubtu22cis_sshd:
+        log_level: "INFO"
+        max_auth_tries: 4
+        ciphers: "chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr"
+        macs: "hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256"
+        kex_algorithms: "curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256"
+        client_alive_interval: 300
+        client_alive_count_max: 3
+        login_grace_time: 60
+        max_sessions: 8
+        allow_users: "ubuntu deploy"

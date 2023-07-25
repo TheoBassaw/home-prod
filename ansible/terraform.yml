@@ -1,0 +1,17 @@
+- become: true
+  hosts: all
+  name: Pre-Tasks
+  roles:
+    - role: pre-tasks
+
+- become: true
+  hosts: route_reflectors
+  name: Route Reflectors
+  roles:
+    - role: route-reflector
+
+- become: true
+  hosts: dns_servers
+  name: DNS Servers
+  roles:
+    - role: dns-server
