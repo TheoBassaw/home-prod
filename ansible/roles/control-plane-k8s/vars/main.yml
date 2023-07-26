@@ -1,0 +1,26 @@
+k3s_version: v1.25.11+k3s1
+k3s_config_file: /etc/rancher/k3s/config.yaml
+k3s_token_file: /etc/rancher/node/password
+k3s_service_file: /etc/systemd/system/k3s.service
+k3s_server_config:
+  disable:
+    - servicelb
+    - traefik
+  disable-cloud-controller: true
+  secrets-encryption: true
+  protect-kernel-defaults: true
+  kube-apiserver-arg:
+    - 'admission-control-config-file=/var/lib/rancher/k3s/server/psa.yaml'
+    - 'audit-log-path=/var/lib/rancher/k3s/server/logs/audit.log'
+    - 'audit-policy-file=/var/lib/rancher/k3s/server/audit.yaml'
+    - 'audit-log-maxage=30'
+    - 'audit-log-maxbackup=10'
+    - 'audit-log-maxsize=100'
+    - 'request-timeout=300s'
+    - 'service-account-lookup=true'
+  kube-controller-manager-arg:
+    - 'terminated-pod-gc-threshold=10'
+    - 'use-service-account-credentials=true'
+  kubelet-arg:
+    - 'streaming-connection-idle-timeout=5m'
+    - 'make-iptables-util-chains=true'

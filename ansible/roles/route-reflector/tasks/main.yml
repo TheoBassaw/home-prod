@@ -1,3 +1,20 @@
+- name: Installing frr
+  ansible.builtin.apt:
+    name:
+      - frr
+    state: present
+    update_cache: true
+
+- name: Allow port 179 for BGP
+  community.general.ufw:
+    rule: allow
+    port: '179'
+
+- name: Write the frr daemon file
+  ansible.builtin.copy: 
+    src: daemons 
+    dest: /etc/frr/daemons
+
 - name: write the frr config file
   ansible.builtin.template: 
     src: frr.j2

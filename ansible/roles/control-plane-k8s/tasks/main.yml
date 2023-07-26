@@ -1,0 +1,87 @@
+- name: Set sysctl values
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  loop: 
+    - name: vm.panic_on_oom
+      value: 0
+    - name: vm.overcommit_memory
+      value: 1
+    - name: kernel.panic
+      value: 10
+    - name: kernel.panic_on_oops
+      value: 1
+    - name: kernel.keys.root_maxbytes
+      value: 25000000
+
+- name: Download k3s binary
+  ansible.builtin.get_url:
+    url: https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s-arm64
+    checksum: sha256:https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/sha256sum-arm64.txt
+    dest: /usr/local/bin/k3s
+    mode: 0755
+
+- name: Ensure config directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - /etc/rancher/k3s
+    - /etc/rancher/node
+
+- name: Ensure Audit Directory
+  ansible.builtin.file:
+    path: /var/lib/rancher/k3s/server/logs
+    state: directory
+    mode: 0700
+
+- name: Check if k3s token file exists
+  ansible.builtin.stat:
+    path: "{{ k3s_token_file }}"
+  register: k3s_token_file_stat
+
+- name: Generate k3s token file
+  when: not k3s_token_file_stat.stat.exists
+  ansible.builtin.copy:
+    content: "{{ lookup('community.general.random_string', length=32) }}"
+    dest: "{{ k3s_token_file }}"
+    mode: 0600
+
+- name: Copy k3s config templates
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  loop:
+    - src: config.yaml.j2
+      dest: "{{ k3s_config_file }}"
+    - src: k3s.service.j2
+      dest: "{{ k3s_service_file }}"
+
+- name: Copy k3s config files
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  loop:
+    - src: psa.yml
+      dest: /var/lib/rancher/k3s/server/psa.yaml
+    - src: audit.yml
+      dest: /var/lib/rancher/k3s/server/audit.yaml
+
+- name: Enable k3s service
+  ansible.builtin.systemd:
+    name: k3s
+    enabled: true
+    state: started
+  register: k3s_service
+  until: k3s_service is succeeded
+  retries: 5
+
+- name: Get Kubernetes config file
+  run_once: true
+  ansible.builtin.slurp:
+    src: /etc/rancher/k3s/k3s.yaml
+  register: kubeconfig_base64

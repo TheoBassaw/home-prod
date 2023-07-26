@@ -1,8 +1,8 @@
 - become: true
   hosts: all
-  name: Pre-Tasks
+  name: Install Zerotier
   roles:
-    - role: pre-tasks
+    - role: zerotier
 
 - become: true
   hosts: route_reflectors
@@ -10,8 +10,8 @@
   roles:
     - role: route-reflector
 
-#- become: true
-#  hosts: dns_servers
-#  name: DNS Servers
-#  roles:
-#    - role: dns-server
+- become: true
+  hosts: control_servers
+  name: Control Plane on K8s
+  roles:
+    - role: control-plane-k8s
