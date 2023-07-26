@@ -98,8 +98,22 @@ resource "oci_core_instance" "control_servers" {
 
 resource "local_file" "inventory" {
   content = templatefile("${path.module}/templates/inventory.tftpl", {
-    route_reflectors = [for k, v in local.route_reflectors : {public_ip = oci_core_instance.route_reflectors[k].public_ip, zerotier_ip = v.ip}],
-    control_servers  = [for k, v in local.control_servers : {public_ip = oci_core_instance.control_servers[k].public_ip, zerotier_ip = v.ip}]
+
+    route_reflectors = [for k, v in local.route_reflectors : {
+      public_ip            = oci_core_instance.route_reflectors[k].public_ip, 
+      zerotier_ip          = v.ip, 
+      zerotier_public_key  = zerotier_identity.route_reflectors[k].public_key,
+      zerotier_private_key = zerotier_identity.route_reflectors[k].private_key,
+      zerotier_network_id  = zerotier_network.router_overlay_network.id
+    }],
+
+    control_servers = [for k, v in local.control_servers : {
+      public_ip            = oci_core_instance.control_servers[k].public_ip, 
+      zerotier_ip          = v.ip,
+      zerotier_public_key  = zerotier_identity.control_servers[k].public_key,
+      zerotier_private_key = zerotier_identity.control_servers[k].private_key,
+      zerotier_network_id  = zerotier_network.router_overlay_network.id
+    }]
   })
   
   filename = "${path.root}/../ansible/inventory"
