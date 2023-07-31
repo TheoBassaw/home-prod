@@ -19,21 +19,22 @@ source "oracle-oci" "ashburn" {
   tenancy_ocid        = var.tenancy
   user_ocid           = var.user_ocid
   fingerprint         = var.fingerprint
-  key_file            = var.key_file
+  key_file            = "${path.root}/../oci_api_key.pem"
   ssh_username        = var.ssh_username
 
   shape_config {
     ocpus         = var.ocpus
     memory_in_gbs = var.memory_in_gbs
+  }
 }
 
 build {
   sources = ["source.oracle-oci.ashburn"]
 
   provisioner "ansible" {
-    playbook_file = "./ansible/packer-image.yml"
-    galaxy_file   = "./ansible/requirements.yml"
-    roles_path    = "./ansible/roles"
+    playbook_file = "${path.root}/ansible/packer-image.yml"
+    galaxy_file   = "${path.root}/ansible/requirements.yml"
+    roles_path    = "${path.root}/ansible/roles"
     use_proxy     = false
   }
 }

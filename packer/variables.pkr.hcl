@@ -43,11 +43,6 @@ variable "fingerprint" {
   default = "df:25:a5:50:84:e4:36:d3:53:56:4a:7e:a0:fa:73:dd"
 }
 
-variable "key_file" {
-  type    = string
-  default = "../oci_api_key.pem"
-}
-
 variable "ssh_username" {
   type    = string
   default = "ubuntu"
