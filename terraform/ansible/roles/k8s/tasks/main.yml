@@ -1,0 +1,169 @@
+- name: Installing packages neede for kubectl
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - frr
+    state: present
+    update_cache: true
+
+- name: write the frr config file
+  ansible.builtin.template: 
+    src: frr.j2
+    dest: /etc/frr/frr.conf
+  notify: Restart frr
+
+- name: Write the frr daemon file
+  ansible.builtin.copy: 
+    src: daemons 
+    dest: /etc/frr/daemons
+
+- name: Install kubernetes python package
+  ansible.builtin.pip:
+    name: kubernetes
+
+- name: Add kube apt key
+  ansible.builtin.apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    keyring: /etc/apt/keyrings/kubernetes-archive-keyring.gpg
+
+- name: Add Helm apt key
+  ansible.builtin.apt_key:
+    url: https://baltocdn.com/helm/signing.asc
+    keyring: /usr/share/keyrings/helm.gpg
+
+- name: Add kube repository
+  apt_repository:
+    repo: deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
+
+- name: Add Helm repository
+  apt_repository:
+    repo: "deb [arch=arm64 signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main"
+
+- name: Installing kubectl and helm
+  ansible.builtin.apt:
+    name:
+      - kubectl
+      - helm
+    state: present
+    update_cache: true
+
+- name: Set sysctl values
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  loop: 
+    - name: vm.panic_on_oom
+      value: 0
+    - name: vm.overcommit_memory
+      value: 1
+    - name: kernel.panic
+      value: 10
+    - name: kernel.panic_on_oops
+      value: 1
+    - name: kernel.keys.root_maxbytes
+      value: 25000000
+
+- name: Allow k3s master communication
+  community.general.ufw:
+    rule: allow
+    to: "{{ k8s_ip }}"
+    port: "{{ item.port }}"
+    proto: tcp
+  loop: 
+    - port: '2379:2380'
+    - port: '6443'
+    - port: '10250'
+    - port: '179'
+
+- name: Download k3s binary
+  ansible.builtin.get_url:
+    url: https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s-arm64
+    checksum: sha256:https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/sha256sum-arm64.txt
+    dest: /usr/local/bin/k3s
+    mode: 0755
+
+- name: Ensure config directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - /etc/rancher/k3s
+    - /etc/rancher/node
+
+- name: Ensure Audit Directory
+  ansible.builtin.file:
+    path: /var/lib/rancher/k3s/server/logs
+    state: directory
+    mode: 0700
+
+- name: Check if k3s token file exists
+  ansible.builtin.stat:
+    path: "{{ k3s_token_file }}"
+  register: k3s_token_file_stat
+
+- name: Generate k3s token file
+  when: not k3s_token_file_stat.stat.exists
+  ansible.builtin.copy:
+    content: "{{ lookup('community.general.random_string', length=32) }}"
+    dest: "{{ k3s_token_file }}"
+    mode: 0600
+
+- name: Copy k3s config templates
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  loop:
+    - src: config.yaml.j2
+      dest: "{{ k3s_config_file }}"
+    - src: k3s.service.j2
+      dest: "{{ k3s_service_file }}"
+
+- name: Copy k3s config files
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  loop:
+    - src: psa.yml
+      dest: /var/lib/rancher/k3s/server/psa.yaml
+    - src: audit.yml
+      dest: /var/lib/rancher/k3s/server/audit.yaml
+
+- name: Enable k3s service
+  ansible.builtin.systemd:
+    name: k3s
+    enabled: true
+    state: started
+  register: k3s_service
+  until: k3s_service is succeeded
+  retries: 5
+
+- name: Add Cilium chart repo
+  kubernetes.core.helm_repository:
+    name: cilium
+    repo_url: https://helm.cilium.io/
+
+- name: Deploy Cilium via Helm
+  kubernetes.core.helm:
+    state: present
+    force: true
+    wait: true
+    name: cilium
+    chart_ref: cilium/cilium
+    namespace: kube-system
+    chart_version: 1.14.0
+    values:
+      k8sServiceHost: "{{ k8s_ip }}"
+      k8sServicePort: 6443
+      kubeProxyReplacement: true
+      operator:
+        replicas: 1
+      routingMode: native
+      ipv4NativeRoutingCIDR: "{{ clusterCIDR }}"
+      ipam:
+        operator: 
+          clusterPoolIPv4PodCIDRList: ["{{ clusterCIDR }}"]

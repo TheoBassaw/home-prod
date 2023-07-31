@@ -5,11 +5,6 @@ resource "zerotier_network" "router_overlay_network" {
     zerotier = true
   }
 
-  assignment_pool {
-    start = "10.30.16.1"
-    end   = "10.30.16.254"
-  }
-
   route {
     target = "10.30.16.0/24"
   }

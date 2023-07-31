@@ -1,4 +1,6 @@
 cluster-init: true
 bind-address: {{ k8s_ip }}
+advertise-address: {{ k8s_ip }}
+tls-san: {{ k8s_ip }}
 token-file: {{ k3s_token_file }}
 {{ k3s_server_config | to_nice_yaml }}

@@ -112,7 +112,9 @@ resource "local_file" "inventory" {
       zerotier_ip          = v.ip,
       zerotier_public_key  = zerotier_identity.control_servers[k].public_key,
       zerotier_private_key = zerotier_identity.control_servers[k].private_key,
-      zerotier_network_id  = zerotier_network.router_overlay_network.id
+      zerotier_network_id  = zerotier_network.router_overlay_network.id,
+      clusterCIDR          = v.clusterCIDR,
+      serviceCIDR          = v.serviceCIDR
     }]
   })
   

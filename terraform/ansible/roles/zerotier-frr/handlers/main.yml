@@ -3,3 +3,8 @@
     name: zerotier-one
     enabled: true
     state: restarted
+
+- name: Restart frr
+  ansible.builtin.service: 
+    name: frr 
+    state: restarted

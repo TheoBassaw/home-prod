@@ -2,11 +2,11 @@ terraform {
   required_providers {
     zerotier = {
       source  = "zerotier/zerotier"
-      version = "1.4.0"
+      version = "~> 1.4.0"
     }
     oci = {
       source  = "oracle/oci"
-      version = "5.3.0"
+      version = "~> 5.3.0"
     }
   }
   backend "http" {}

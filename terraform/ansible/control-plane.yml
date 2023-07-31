@@ -1,0 +1,13 @@
+- become: true
+  hosts: all
+  name: Install Zerotier and frr
+  roles:
+    - role: zerotier-frr
+
+#- become: true
+#  hosts: control_servers
+#  name: Control Plane on K8s
+#  environment:
+#    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+#  roles:
+#    - role: control-plane-k8s
