@@ -86,7 +86,7 @@ resource "oci_core_instance" "control_servers" {
   }
 
   shape_config {
-    memory_in_gbs = 4
+    memory_in_gbs = 8
     ocpus         = 1
   }
 

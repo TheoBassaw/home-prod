@@ -5,8 +5,7 @@ locals {
   }
 
   control_servers = {
-    "control_server_1" = { ip = "10.30.16.3", availability_domain = "wkHw:US-ASHBURN-AD-1", hostname = "control-server-1", clusterCIDR = "10.30.18.0/23", serviceCIDR = "10.30.20.0/23" }
-    "control_server_2" = { ip = "10.30.16.4", availability_domain = "wkHw:US-ASHBURN-AD-3", hostname = "control-server-2", clusterCIDR = "10.30.22.0/23", serviceCIDR = "10.30.24.0/23" }
+    "control_server" = { ip = "10.30.16.3", availability_domain = "wkHw:US-ASHBURN-AD-3", hostname = "control-server", clusterCIDR = "10.30.18.0/24", serviceCIDR = "10.30.19.0/24" }
   }
 }
 
