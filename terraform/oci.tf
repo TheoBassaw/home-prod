@@ -16,9 +16,6 @@ data "cloudinit_config" "route_reflectors" {
     content = templatefile("${path.module}/templates/userdata.tftpl", {
       "hostname"             = each.value.hostname
       "fqdn"                 = "${each.value.hostname}.${var.domain}"
-      "zerotier_public_key"  = zerotier_identity.route_reflectors[each.key].public_key
-      "zerotier_private_key" = zerotier_identity.route_reflectors[each.key].private_key
-      "zerotier_network_id"  = zerotier_network.router_overlay_network.id
     })
   }
 }
@@ -35,9 +32,6 @@ data "cloudinit_config" "control_servers" {
     content = templatefile("${path.module}/templates/userdata.tftpl", {
       "hostname"             = each.value.hostname
       "fqdn"                 = "${each.value.hostname}.${var.domain}"
-      "zerotier_public_key"  = zerotier_identity.control_servers[each.key].public_key
-      "zerotier_private_key" = zerotier_identity.control_servers[each.key].private_key
-      "zerotier_network_id"  = zerotier_network.router_overlay_network.id
     })
   }
 }

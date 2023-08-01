@@ -37,13 +37,17 @@
         dest: /var/lib/zerotier-one/identity.secret
       notify: Restart zerotier
 
-    - name: Flush zerotier handlers
-      meta: flush_handlers
+    - name: Check if the zerotier network conf file exists
+      ansible.builtin.stat:
+        path: "/var/lib/zerotier-one/networks.d/{{ zerotier_network_id }}.conf"
+      register: zerotier_network_file
 
-    - name: Join Zerotier Network
-      ansible.builtin.command: "zerotier-cli join {{ zerotier_network_id }}"
-      register: command
-      changed_when: command.rc != 0
+    - name: Generate zerotier network file
+      when: not zerotier_network_file.stat.exists
+      ansible.builtin.copy:
+        content: ""
+        dest: "/var/lib/zerotier-one/networks.d/{{ zerotier_network_id }}.conf"
+      notify: Restart zerotier
 
 - name: Install and configure frr
   block: 

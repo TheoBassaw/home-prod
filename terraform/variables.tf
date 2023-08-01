@@ -7,6 +7,10 @@ locals {
   control_servers = {
     "control_server" = { ip = "10.30.16.3", availability_domain = "wkHw:US-ASHBURN-AD-3", hostname = "control-server", clusterCIDR = "10.30.18.0/24", serviceCIDR = "10.30.19.0/24" }
   }
+
+  opnsense_remotes = {
+    "opnsense_remote" = { ip = "10.30.16.3" }
+  }
 }
 
 variable "ZEROTIER_CENTRAL_TOKEN" {

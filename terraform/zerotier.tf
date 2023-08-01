@@ -39,3 +39,16 @@ resource "zerotier_member" "control_servers" {
   network_id     = zerotier_network.router_overlay_network.id
   ip_assignments = [each.value.ip]
 }
+
+resource "zerotier_identity" "opnsense_remotes" {
+  for_each = local.opnsense_remotes
+}
+
+resource "zerotier_member" "opnsense_remotes" {
+  for_each = local.opnsense_remotes
+
+  name           = each.key
+  member_id      = zerotier_identity.opnsense_remotes[each.key].id
+  network_id     = zerotier_network.router_overlay_network.id
+  ip_assignments = [each.value.ip]
+}
