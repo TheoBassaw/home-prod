@@ -2,6 +2,9 @@ frr defaults datacenter
 log syslog informational
 service integrated-vtysh-config
 !
+ip route {{ clusterCIDR }} cilium_host
+ip route {{ serviceCIDR }} cilium_host
+!
 router bgp 212364
  bgp router-id {{ k8s_ip }}
  bgp log-neighbor-changes
@@ -16,7 +19,7 @@ router bgp 212364
   neighbor 10.30.16.2 activate
   neighbor 10.30.16.2 soft-reconfiguration inbound
   neighbor 10.30.16.2 route-map EXPORT out
-  redistribute connected
+  redistribute static
  exit-address-family
  !
 route-map EXPORT permit 1

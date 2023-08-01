@@ -7,12 +7,15 @@ k3s_server_config:
   disable:
     - servicelb
     - traefik
+    - metrics-server
   flannel-backend: none
   disable-network-policy: true
   disable-cloud-controller: true
   secrets-encryption: true
   protect-kernel-defaults: true
   disable-kube-proxy: true
+  service-cidr: "{{ serviceCIDR }}"
+  cluster-domain: internl.paradisenetworkz.com
   kube-apiserver-arg:
     - 'admission-control-config-file=/var/lib/rancher/k3s/server/psa.yaml'
     - 'audit-log-path=/var/lib/rancher/k3s/server/logs/audit.log'

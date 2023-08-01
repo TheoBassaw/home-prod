@@ -37,6 +37,9 @@
         dest: /var/lib/zerotier-one/identity.secret
       notify: Restart zerotier
 
+    - name: Flush zerotier handlers
+      meta: flush_handlers
+
     - name: Join Zerotier Network
       ansible.builtin.command: "zerotier-cli join {{ zerotier_network_id }}"
       register: command
@@ -44,7 +47,7 @@
 
 - name: Install and configure frr
   block: 
-    - name: Installing zerotier
+    - name: Installing frr
       ansible.builtin.apt:
         name:
           - frr
@@ -61,8 +64,16 @@
         src: daemons 
         dest: /etc/frr/daemons
 
-    - name: write the frr config file
+    - name: write the router reflector frr config file
       ansible.builtin.template: 
-        src: frr.j2
+        src: frr-router-reflector.j2
         dest: /etc/frr/frr.conf
+      when: inventory_hostname in groups['route_reflectors']
+      notify: Restart frr
+
+    - name: write the control servers frr config file
+      ansible.builtin.template: 
+        src: frr-k8s.j2
+        dest: /etc/frr/frr.conf
+      when: inventory_hostname in groups['control_servers']
       notify: Restart frr

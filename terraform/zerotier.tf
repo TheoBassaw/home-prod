@@ -1,12 +1,12 @@
 resource "zerotier_network" "router_overlay_network" {
-  name = "Router Overlay Network"
+  name = var.overlay_name
 
   assign_ipv4 {
     zerotier = true
   }
 
   route {
-    target = "10.30.16.0/24"
+    target = var.overlay_cidr
   }
 
   enable_broadcast = true

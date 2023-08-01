@@ -1,6 +1,6 @@
 data "oci_core_images" "ubuntu_hardened" {
     compartment_id = var.tenancy_ocid
-    display_name   = "Ubuntu-22.04-Hardened Image"
+    display_name   = var.image_name
 }
 
 data "cloudinit_config" "route_reflectors" {
@@ -118,5 +118,5 @@ resource "local_file" "inventory" {
     }]
   })
   
-  filename = "${path.root}/../ansible/inventory"
+  filename = "${path.root}/ansible/inventory"
 }

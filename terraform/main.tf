@@ -18,8 +18,8 @@ provider "zerotier" {
 
 provider "oci" {
   tenancy_ocid = var.tenancy_ocid
-  user_ocid    = "ocid1.user.oc1..aaaaaaaaja7xgz4fn4epc7ggz6ck7aqb6vjipfswtkeqa427w72zks64xfea"
-  fingerprint  = "df:25:a5:50:84:e4:36:d3:53:56:4a:7e:a0:fa:73:dd"
-  region       = "us-ashburn-1"
+  user_ocid    = var.user_ocid
+  fingerprint  = var.fingerprint
+  region       = var.region
   private_key  = var.OCI_API_KEY
 }

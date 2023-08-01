@@ -1,27 +1,3 @@
-- name: Installing packages neede for kubectl
-  ansible.builtin.apt:
-    name:
-      - ca-certificates
-      - curl
-      - frr
-    state: present
-    update_cache: true
-
-- name: write the frr config file
-  ansible.builtin.template: 
-    src: frr.j2
-    dest: /etc/frr/frr.conf
-  notify: Restart frr
-
-- name: Write the frr daemon file
-  ansible.builtin.copy: 
-    src: daemons 
-    dest: /etc/frr/daemons
-
-- name: Install kubernetes python package
-  ansible.builtin.pip:
-    name: kubernetes
-
 - name: Add kube apt key
   ansible.builtin.apt_key:
     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
@@ -40,13 +16,19 @@
   apt_repository:
     repo: "deb [arch=arm64 signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main"
 
-- name: Installing kubectl and helm
+- name: Installing needed packages
   ansible.builtin.apt:
     name:
+      - ca-certificates
+      - curl
       - kubectl
       - helm
     state: present
     update_cache: true
+
+- name: Install kubernetes python package
+  ansible.builtin.pip:
+    name: kubernetes
 
 - name: Set sysctl values
   ansible.posix.sysctl:
@@ -111,7 +93,7 @@
     dest: "{{ k3s_token_file }}"
     mode: 0600
 
-- name: Copy k3s config templates
+- name: Copy k3s config
   ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -122,7 +104,7 @@
     - src: k3s.service.j2
       dest: "{{ k3s_service_file }}"
 
-- name: Copy k3s config files
+- name: Copy k3s manifest files
   ansible.builtin.copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -150,7 +132,6 @@
 - name: Deploy Cilium via Helm
   kubernetes.core.helm:
     state: present
-    force: true
     wait: true
     name: cilium
     chart_ref: cilium/cilium
@@ -164,6 +145,8 @@
         replicas: 1
       routingMode: native
       ipv4NativeRoutingCIDR: "{{ clusterCIDR }}"
+      bpf: 
+        lbExternalClusterIP: true
       ipam:
         operator: 
           clusterPoolIPv4PodCIDRList: ["{{ clusterCIDR }}"]
