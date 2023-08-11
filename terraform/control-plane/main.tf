@@ -22,3 +22,9 @@ provider "oci" {
   region       = var.region
   private_key  = var.oci_api_key
 }
+
+module "k8s" {
+  source      = "./k8s"
+  config_path = local_file.kubeconfig.filename
+  deploy_key  = var.deploy_key
+}

@@ -41,6 +41,7 @@ resource "oci_core_route_table" "public_routes" {
   compartment_id = var.tenancy_ocid
   vcn_id         = oci_core_vcn.control.id
   display_name   = "Control Route Table"
+
   route_rules {
     network_entity_id = oci_core_internet_gateway.control_internet_gateway.id
     description       = "Default route"
@@ -53,12 +54,14 @@ resource "oci_core_route_table" "private_routes" {
   compartment_id = var.tenancy_ocid
   vcn_id         = oci_core_vcn.control.id
   display_name   = "Control Route Table"
+
   route_rules {
     network_entity_id = oci_core_nat_gateway.control_nat_gateway.id
     description       = "Default route"
     destination       = "0.0.0.0/0"
     destination_type  = "CIDR_BLOCK"
   }
+  
   route_rules {
     network_entity_id = oci_core_service_gateway.control_service_gateway.id
     description       = "Service Gateway Route"

@@ -21,3 +21,5 @@ terraform.rc
 **/ansible/inventory
 **/ansible/roles/UBUNTU22-CIS
 **.pem
+
+**/secrets/**

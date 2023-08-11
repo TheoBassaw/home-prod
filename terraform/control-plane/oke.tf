@@ -1,3 +1,8 @@
+data "oci_containerengine_cluster_kube_config" "control_cluster_kube_config" {
+  cluster_id    = oci_containerengine_cluster.control_cluster.id
+  token_version = "2.0.0"
+}
+
 resource "oci_containerengine_cluster" "control_cluster" {
   compartment_id     = var.tenancy_ocid
   kubernetes_version = "v1.26.2"
@@ -51,4 +56,9 @@ resource "oci_containerengine_node_pool" "test_node_pool" {
     source_type = "image"
     image_id    = "ocid1.image.oc1.iad.aaaaaaaadplni6z4njatenqrmdqnnve2zqelex75tvn4sxgoveaynz4kqjxq"
   }
+}
+
+resource "local_file" "kubeconfig" {
+  content  = data.oci_containerengine_cluster_kube_config.control_cluster_kube_config.content
+  filename = "${path.root}/../../secrets/config.yml"
 }
