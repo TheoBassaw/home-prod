@@ -22,4 +22,4 @@ terraform.rc
 **/ansible/roles/UBUNTU22-CIS
 **.pem
 
-**/secrets/**
+config.yml
