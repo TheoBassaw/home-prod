@@ -103,6 +103,16 @@ resource "oci_core_security_list" "public_sl" {
   }
 
   ingress_security_rules {
+    protocol    = "all"
+    source      = "10.30.17.0/24"
+  }
+
+  ingress_security_rules {
+    protocol    = "all"
+    source      = "10.30.16.0/24"
+  }
+
+  ingress_security_rules {
     description = "icmp"
     protocol    = 1
     source      = "0.0.0.0/0"
@@ -115,16 +125,6 @@ resource "oci_core_security_list" "public_sl" {
     tcp_options {
       min = 6443
       max = 6443
-    }
-  }
-
-   ingress_security_rules {
-    description = "Worker to k8s-api"
-    protocol    = 6
-    source      = "10.30.17.0/24"
-    tcp_options {
-      min = 12250
-      max = 12250
     }
   }
 
@@ -162,14 +162,12 @@ resource "oci_core_security_list" "private_sl" {
   }
 
   ingress_security_rules {
-    description = "Pod to Pod"
     protocol    = "all"
     source      = "10.30.17.0/24"
   }
 
   ingress_security_rules {
-    description = "k8s-api communication"
-    protocol    = 6
+    protocol    = "all"
     source      = "10.30.16.0/24"
   }
 

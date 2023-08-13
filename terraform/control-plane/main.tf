@@ -26,5 +26,5 @@ provider "oci" {
 module "k8s" {
   source      = "./k8s"
   config_path = local_file.kubeconfig.filename
-  deploy_key  = var.deploy_key
+  ssh_deploy_key  = var.ssh_deploy_key
 }

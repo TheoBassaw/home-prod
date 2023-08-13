@@ -1,6 +1,5 @@
 data "oci_containerengine_cluster_kube_config" "control_cluster_kube_config" {
   cluster_id    = oci_containerengine_cluster.control_cluster.id
-  token_version = "2.0.0"
 }
 
 resource "oci_containerengine_cluster" "control_cluster" {
@@ -19,7 +18,7 @@ resource "oci_containerengine_cluster" "control_cluster" {
   }
 }
 
-resource "oci_containerengine_node_pool" "test_node_pool" {
+resource "oci_containerengine_node_pool" "arm_node_pool" {
   compartment_id = var.tenancy_ocid
   cluster_id     = oci_containerengine_cluster.control_cluster.id
   name           = "Arm Pool"
@@ -61,4 +60,5 @@ resource "oci_containerengine_node_pool" "test_node_pool" {
 resource "local_file" "kubeconfig" {
   content  = data.oci_containerengine_cluster_kube_config.control_cluster_kube_config.content
   filename = "${path.root}/../../secrets/config.yml"
+  depends_on = [oci_containerengine_node_pool.arm_node_pool]
 }

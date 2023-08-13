@@ -15,12 +15,11 @@ provider "flux" {
     url = "ssh://git@gitlab.com/paradise-networkz/k8s.git"
     ssh = {
       username    = "git"
-      private_key = var.deploy_key
+      private_key = var.ssh_deploy_key
     }
   }
 }
 
- resource "flux_bootstrap_git" "bootstrap_gitlab" {
-   path           = "clusters/control-cluster"
-   cluster_domain = "paradisenetworkz.com"
+resource "flux_bootstrap_git" "bootstrap_gitlab" {
+  path = "clusters/control-cluster"
 }
