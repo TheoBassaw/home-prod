@@ -4,7 +4,7 @@ resource "oci_kms_vault" "prod_vault" {
   vault_type     = "DEFAULT"
 }
 
-resource "oci_kms_key" "test_key" {
+resource "oci_kms_key" "vault_key" {
   compartment_id      = var.tenancy_ocid
   display_name        = "Vault Unseal Key"
   management_endpoint = oci_kms_vault.prod_vault.management_endpoint
