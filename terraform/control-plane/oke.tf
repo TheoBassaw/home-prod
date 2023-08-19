@@ -48,7 +48,7 @@ resource "oci_containerengine_node_pool" "arm_node_pool" {
 
   node_shape_config {
     memory_in_gbs = 6
-    ocpus         = 1
+    ocpus         = 2
   }
 
   node_source_details {
