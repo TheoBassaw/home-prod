@@ -29,4 +29,6 @@ module "k8s" {
   seal_key_id         = oci_kms_key.vault_key.id
   crypto_endpoint     = oci_kms_vault.prod_vault.crypto_endpoint
   management_endpoint = oci_kms_vault.prod_vault.management_endpoint
+  compartment_id      = var.tenancy_ocid
+  cf_token            = var.cf_token
 }

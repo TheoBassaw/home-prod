@@ -1,3 +1,7 @@
+variable "compartment_id" {
+  type = string
+}
+
 variable "config_path" {
   type = string
 }
@@ -18,13 +22,18 @@ variable "bootstrapPassword" {
 }
 
 variable "seal_key_id" {
-  type    = string
+  type = string
 }
 
 variable "crypto_endpoint" {
-  type    = string
+  type = string
 }
 
 variable "management_endpoint" {
-  type    = string
+  type = string
+}
+
+variable "cf_token" {
+  type      = string
+  sensitive = true
 }

@@ -15,7 +15,7 @@ resource "helm_release" "external_dns_oci" {
     name  = "extraArgs"
     value = [
       "--oci-auth-instance-principal",
-      "--oci-compartment-ocid=ocid1.tenancy.oc1..aaaaaaaatnhzpultgkxreesu7vacfjiva2p4xnls45sfouvpjlvddd365rga",
+      "--oci-compartment-ocid=${var.compartment_id}",
       "--exclude-target-net=10.30.16.0/24",
       "--txt-owner-id=external-dns-oci"
     ]
@@ -49,7 +49,7 @@ resource "helm_release" "external_dns_cf" {
 
   set {
     name  = "env[0].value"
-    value = "siqFcBXBL8C9VYRTlKKzhLifUsynlKGjEdnZlCrc"
+    value = var.cf_token
   }
 
   depends_on = [helm_release.external_dns_oci]
