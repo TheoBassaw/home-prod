@@ -23,11 +23,11 @@ resource "oci_containerengine_node_pool" "arm_node_pool" {
   cluster_id     = oci_containerengine_cluster.control_cluster.id
   name           = "Arm Pool"
   node_shape     = "VM.Standard.A1.Flex"
-  size           = 4
 
   node_config_details {
     is_pv_encryption_in_transit_enabled = true
-
+    size                                = 4
+    
     placement_configs {
       availability_domain = "wkHw:US-ASHBURN-AD-1"
       subnet_id           = oci_core_subnet.control_private.id
