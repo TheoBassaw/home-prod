@@ -50,6 +50,7 @@ resource "helm_release" "linkerd_crds" {
   repository = "https://helm.linkerd.io/stable"
   chart      = "linkerd-crds"
   wait       = true
+  depends_on = [kubectl_manifest.linkerd_ca]
 }
 
 resource "helm_release" "linkerd_control_plane" {
