@@ -13,13 +13,9 @@ override.tf.json
 
 .terraformrc
 terraform.rc
-
 .terraform.lock.hcl
 
 .vscode
 
-**/ansible/inventory
-**/ansible/roles/UBUNTU22-CIS
-**.pem
-
-config.yml
+**/secrets/**
+!**/.gitkeep

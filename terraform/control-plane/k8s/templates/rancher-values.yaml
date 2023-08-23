@@ -1,0 +1,13 @@
+replicas: 1
+hostname: ${hostname}
+ingress:
+  ingressClassName: nginx
+  extraAnnotations:
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+  tls:
+    source: letsEncrypt
+letsEncrypt:
+  ingress:
+    class: nginx
+  email: theo@paradisenetworkz.com
+bootstrapPassword: ${bootstrapPassword}

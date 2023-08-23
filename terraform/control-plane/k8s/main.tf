@@ -1,25 +1,33 @@
 terraform {
   required_providers {
-    flux = {
-      source = "fluxcd/flux"
-      version = "1.0.1"
+    helm = {
+      source  = "hashicorp/helm"
+      version = "2.10.1"
+    }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "1.14.0"
+    }
+    rancher2 = {
+      source  = "rancher/rancher2"
+      version = "3.1.1"
     }
   }
 }
 
-provider "flux" {
-  kubernetes = {
+provider "helm" {
+  kubernetes {
     config_path = var.config_path
   }
-  git = {
-    url = "ssh://git@gitlab.com/paradise-networkz/k8s.git"
-    ssh = {
-      username    = "git"
-      private_key = var.ssh_deploy_key
-    }
-  }
 }
 
-resource "flux_bootstrap_git" "bootstrap_gitlab" {
-  path = "clusters/control-cluster"
+provider "kubectl" {
+  config_path = var.config_path
+}
+
+provider "rancher2" {
+  alias     = "bootstrap"
+  api_url   = "https://${var.rancher_url}"
+  insecure  = true
+  bootstrap = true
 }

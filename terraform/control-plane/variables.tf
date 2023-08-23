@@ -22,8 +22,3 @@ variable "fingerprint" {
   type    = string
   default = "df:25:a5:50:84:e4:36:d3:53:56:4a:7e:a0:fa:73:dd"
 }
-
-variable "ssh_deploy_key" {
-  type      = string
-  sensitive = true
-}

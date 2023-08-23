@@ -1,5 +1,5 @@
 data "oci_containerengine_cluster_kube_config" "control_cluster_kube_config" {
-  cluster_id    = oci_containerengine_cluster.control_cluster.id
+  cluster_id = oci_containerengine_cluster.control_cluster.id
 }
 
 resource "oci_containerengine_cluster" "control_cluster" {
@@ -22,6 +22,8 @@ resource "oci_containerengine_node_pool" "arm_node_pool" {
   compartment_id = var.tenancy_ocid
   cluster_id     = oci_containerengine_cluster.control_cluster.id
   name           = "Arm Pool"
+  node_shape     = "VM.Standard.A1.Flex"
+  size           = 4
 
   node_config_details {
     is_pv_encryption_in_transit_enabled = true
@@ -40,11 +42,7 @@ resource "oci_containerengine_node_pool" "arm_node_pool" {
       availability_domain = "wkHw:US-ASHBURN-AD-3"
       subnet_id           = oci_core_subnet.control_private.id
     }
-
-    size = 4
   }
-
-  node_shape = "VM.Standard.A1.Flex"
 
   node_shape_config {
     memory_in_gbs = 6
@@ -58,7 +56,7 @@ resource "oci_containerengine_node_pool" "arm_node_pool" {
 }
 
 resource "local_file" "kubeconfig" {
-  content  = data.oci_containerengine_cluster_kube_config.control_cluster_kube_config.content
-  filename = "${path.root}/../../secrets/config.yml"
+  content    = data.oci_containerengine_cluster_kube_config.control_cluster_kube_config.content
+  filename   = "${path.module}/secrets/config.yaml"
   depends_on = [oci_containerengine_node_pool.arm_node_pool]
 }
