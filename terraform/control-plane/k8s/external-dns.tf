@@ -1,9 +1,10 @@
 resource "helm_release" "external_dns_cf" {
-  name       = "external-dns-cf"
-  namespace  = "external-dns"
-  repository = "https://kubernetes-sigs.github.io/external-dns"
-  chart      = "external-dns"
-  wait       = true
+  name             = "external-dns-cf"
+  namespace        = "external-dns"
+  repository       = "https://kubernetes-sigs.github.io/external-dns"
+  chart            = "external-dns"
+  create_namespace = true
+  wait             = true
 
   set {
     name  = "provider"
