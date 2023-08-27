@@ -177,9 +177,3 @@ resource "oci_core_security_list" "private_sl" {
     source      = "0.0.0.0/0"
   }
 }
-
-resource "oci_dns_zone" "paradisenetworkz" {
-  compartment_id = var.tenancy_ocid
-  name           = "paradisenetworkz.com"
-  zone_type      = "PRIMARY"
-}
