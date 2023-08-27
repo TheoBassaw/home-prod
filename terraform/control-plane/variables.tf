@@ -1,3 +1,8 @@
+variable "cf_token" {
+  type      = string
+  sensitive = true
+}
+
 variable "oci_api_key" {
   type      = string
   sensitive = true
@@ -21,9 +26,4 @@ variable "user_ocid" {
 variable "fingerprint" {
   type    = string
   default = "df:25:a5:50:84:e4:36:d3:53:56:4a:7e:a0:fa:73:dd"
-}
-
-variable "cf_token" {
-  type      = string
-  sensitive = true
 }

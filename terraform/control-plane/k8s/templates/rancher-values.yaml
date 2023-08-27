@@ -3,7 +3,6 @@ hostname: ${hostname}
 ingress:
   ingressClassName: nginx
   extraAnnotations:
-    nginx.ingress.kubernetes.io/service-upstream: "true"
   tls:
     source: letsEncrypt
 letsEncrypt:
