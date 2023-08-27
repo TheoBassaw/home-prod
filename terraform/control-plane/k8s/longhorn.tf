@@ -41,8 +41,7 @@ resource "helm_release" "longhorn" {
 }
 
 resource "kubectl_manifest" "longhorn_s3_secret" {
-  for_each  = data.kubectl_file_documents.longhorn_s3_secret.manifests
-  yaml_body = each.value
+  yaml_body = data.kubectl_file_documents.longhorn_s3_secret.manifests[0]
   depends_on = [helm_release.longhorn]
 }
 

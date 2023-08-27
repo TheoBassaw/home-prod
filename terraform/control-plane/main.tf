@@ -24,13 +24,13 @@ provider "oci" {
 }
 
 module "k8s" {
-  source              = "./k8s"
-  config_path         = local_file.kubeconfig.filename
-  compartment_id      = var.tenancy_ocid
-  cf_token            = var.cf_token
-  region              = var.region
-  bucket              = oci_objectstorage_bucket.longhorn_backup.name
-  s3_access_key       = base64encode(oci_identity_customer_secret_key.longhorn_secret_key.id)
-  s3_secret_key       = base64encode(oci_identity_customer_secret_key.longhorn_secret_key.key)
-  s3_endpoint         = base64encode("https://${data.oci_objectstorage_namespace.namespace.namespace}.compat.objectstorage.${var.region}.oraclecloud.com")
+  source         = "./k8s"
+  config_path    = local_file.kubeconfig.filename
+  compartment_id = var.tenancy_ocid
+  cf_token       = var.cf_token
+  region         = var.region
+  bucket         = oci_objectstorage_bucket.longhorn_backup.name
+  s3_access_key  = base64encode(oci_identity_customer_secret_key.longhorn_secret_key.id)
+  s3_secret_key  = base64encode(oci_identity_customer_secret_key.longhorn_secret_key.key)
+  s3_endpoint    = base64encode("https://${data.oci_objectstorage_namespace.namespace.namespace}.compat.objectstorage.${var.region}.oraclecloud.com")
 }
