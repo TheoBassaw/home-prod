@@ -41,7 +41,7 @@ resource "helm_release" "longhorn" {
 }
 
 resource "kubectl_manifest" "longhorn_s3_secret" {
-  yaml_body = data.kubectl_file_documents.longhorn_s3_secret.manifests[0]
+  yaml_body = data.kubectl_file_documents.longhorn_s3_secret.documents[0]
   depends_on = [helm_release.longhorn]
 }
 

@@ -106,9 +106,14 @@ resource "helm_release" "rancher_elemental" {
   depends_on = [helm_release.rancher_elemental_crd]
 }
 
+resource "time_sleep" "wait_5_minutes" {
+  create_duration = "5m"
+  depends_on      = [helm_release.rancher]
+}
+
 resource "rancher2_bootstrap" "admin" {
   provider         = rancher2.bootstrap
   initial_password = var.bootstrapPassword
   telemetry        = false
-  depends_on       = [helm_release.rancher]
+  depends_on       = [time_sleep.wait_5_minutes]
 }
