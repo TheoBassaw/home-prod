@@ -10,7 +10,7 @@ resource "oci_core_vcn" "control" {
   compartment_id = var.tenancy_ocid
   display_name   = "Control Network"
   dns_label      = "paradise"
-  cidr_blocks    = ["10.30.16.0/23"]
+  cidr_blocks    = ["10.0.0.0/23"]
   is_ipv6enabled = true
 }
 
@@ -72,7 +72,7 @@ resource "oci_core_route_table" "private_routes" {
 
 resource "oci_core_subnet" "control_public" {
   compartment_id    = var.tenancy_ocid
-  cidr_block        = "10.30.16.0/24"
+  cidr_block        = "10.0.0.0/24"
   ipv6cidr_block    = cidrsubnet(oci_core_vcn.control.ipv6cidr_blocks[0], 8, 0)
   vcn_id            = oci_core_vcn.control.id
   display_name      = "Control Public"
@@ -82,7 +82,7 @@ resource "oci_core_subnet" "control_public" {
 
 resource "oci_core_subnet" "control_private" {
   compartment_id = var.tenancy_ocid
-  cidr_block        = "10.30.17.0/24"
+  cidr_block        = "10.0.1.0/24"
   ipv6cidr_block    = cidrsubnet(oci_core_vcn.control.ipv6cidr_blocks[0], 8, 1)
   vcn_id            = oci_core_vcn.control.id
   display_name      = "Control Private"
@@ -104,12 +104,12 @@ resource "oci_core_security_list" "public_sl" {
 
   ingress_security_rules {
     protocol    = "all"
-    source      = "10.30.17.0/24"
+    source      = "10.0.1.0/24"
   }
 
   ingress_security_rules {
     protocol    = "all"
-    source      = "10.30.16.0/24"
+    source      = "10.0.0.0/24"
   }
 
   ingress_security_rules {
@@ -163,12 +163,12 @@ resource "oci_core_security_list" "private_sl" {
 
   ingress_security_rules {
     protocol    = "all"
-    source      = "10.30.17.0/24"
+    source      = "10.0.1.0/24"
   }
 
   ingress_security_rules {
     protocol    = "all"
-    source      = "10.30.16.0/24"
+    source      = "10.0.0.0/24"
   }
 
   ingress_security_rules {

@@ -57,6 +57,6 @@ resource "oci_containerengine_node_pool" "arm_node_pool" {
 
 resource "local_file" "kubeconfig" {
   content    = data.oci_containerengine_cluster_kube_config.control_cluster_kube_config.content
-  filename   = "${path.module}/secrets/config.yaml"
+  filename   = "${path.root}/secrets/${var.app}-config.yaml"
   depends_on = [oci_containerengine_node_pool.arm_node_pool]
 }

@@ -1,10 +1,4 @@
 terraform {
-  required_providers {
-    oci = {
-      source  = "oracle/oci"
-      version = "5.7.0"
-    }
-  }
   backend "http" {
     address        = "https://gitlab.com/api/v4/projects/47476421/terraform/state/control-plane"
     lock_address   = "https://gitlab.com/api/v4/projects/47476421/terraform/state/control-plane/lock"
@@ -15,22 +9,29 @@ terraform {
   }
 }
 
-provider "oci" {
-  tenancy_ocid = var.tenancy_ocid
-  user_ocid    = var.user_ocid
-  fingerprint  = var.fingerprint
-  region       = var.region
-  private_key  = var.oci_api_key
+module "oci" {
+  source           = "./oci"
+  tenancy_ocid     = "ocid1.tenancy.oc1..aaaaaaaatnhzpultgkxreesu7vacfjiva2p4xnls45sfouvpjlvddd365rga"
+  region           = "us-ashburn-1"
+  user_ocid        = "ocid1.user.oc1..aaaaaaaaja7xgz4fn4epc7ggz6ck7aqb6vjipfswtkeqa427w72zks64xfea"
+  fingerprint      = "df:25:a5:50:84:e4:36:d3:53:56:4a:7e:a0:fa:73:dd"
+  app              = "rancher"
+  private_key_path = "${path.root}/secrets/oci_main.pem"
 }
 
-module "k8s" {
-  source         = "./k8s"
-  config_path    = local_file.kubeconfig.filename
-  compartment_id = var.tenancy_ocid
-  cf_token       = var.cf_token
-  region         = var.region
-  bucket         = oci_objectstorage_bucket.longhorn_backup.name
-  s3_access_key  = base64encode(oci_identity_customer_secret_key.longhorn_secret_key.id)
-  s3_secret_key  = base64encode(oci_identity_customer_secret_key.longhorn_secret_key.key)
-  s3_endpoint    = base64encode("https://${data.oci_objectstorage_namespace.namespace.namespace}.compat.objectstorage.${var.region}.oraclecloud.com")
+module "k8s_bootstrap" {
+  source        = "./k8s-bootstrap"
+  config_path   = module.oci.kube_config
+  cf_token      = var.cf_token
+  region        = module.oci.region
+  bucket        = module.oci.bucket
+  s3_access_key = module.oci.s3_access_key
+  s3_secret_key = module.oci.s3_secret_key
+  s3_endpoint   = module.oci.s3_endpoint
+}
+
+module "rancher" {
+  source      = "./rancher"
+  config_path = module.k8s_bootstrap.kube_config
+  rancher_url = "rancher-prod.paradisenetworkz.com"
 }

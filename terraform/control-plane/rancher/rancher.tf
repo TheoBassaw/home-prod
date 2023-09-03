@@ -2,6 +2,10 @@ data "kubectl_file_documents" "rancher_backup" {
   content = file("${path.module}/manifests/rancher-backup.yaml")
 }
 
+resource "random_password" "bootstrap" {
+  length = 16
+}
+
 resource "helm_release" "rancher" {
   name             = "rancher"
   namespace        = "cattle-system"
@@ -10,7 +14,7 @@ resource "helm_release" "rancher" {
   create_namespace = true
   wait             = true
   values           = [templatefile("${path.module}/templates/rancher-values.yaml", {
-    bootstrapPassword = var.bootstrapPassword,
+    bootstrapPassword = random_password.bootstrap.result,
     hostname          = var.rancher_url
   })]
 }
@@ -113,7 +117,7 @@ resource "time_sleep" "wait_5_minutes" {
 
 resource "rancher2_bootstrap" "admin" {
   provider         = rancher2.bootstrap
-  initial_password = var.bootstrapPassword
+  initial_password = random_password.bootstrap.result
   telemetry        = false
   depends_on       = [time_sleep.wait_5_minutes]
 }

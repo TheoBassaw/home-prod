@@ -41,12 +41,12 @@ resource "helm_release" "longhorn" {
 }
 
 resource "kubectl_manifest" "longhorn_s3_secret" {
-  yaml_body = data.kubectl_file_documents.longhorn_s3_secret.documents[0]
+  yaml_body  = data.kubectl_file_documents.longhorn_s3_secret.documents[0]
   depends_on = [helm_release.longhorn]
 }
 
 resource "kubectl_manifest" "longhorn_backup_job" {
-  for_each  = data.kubectl_file_documents.longhorn_backup_job.manifests
-  yaml_body = each.value
+  for_each   = data.kubectl_file_documents.longhorn_backup_job.manifests
+  yaml_body  = each.value
   depends_on = [kubectl_manifest.longhorn_s3_secret]
 }
