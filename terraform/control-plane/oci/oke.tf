@@ -1,3 +1,7 @@
+data "oci_identity_availability_domains" "ads" {
+  compartment_id = var.tenancy_ocid
+}
+
 data "oci_containerengine_cluster_kube_config" "control_cluster_kube_config" {
   cluster_id = oci_containerengine_cluster.control_cluster.id
 }
@@ -29,17 +33,17 @@ resource "oci_containerengine_node_pool" "arm_node_pool" {
     size                                = 4
     
     placement_configs {
-      availability_domain = "wkHw:US-ASHBURN-AD-1"
+      availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
       subnet_id           = oci_core_subnet.control_private.id
     }
 
     placement_configs {
-      availability_domain = "wkHw:US-ASHBURN-AD-2"
+      availability_domain = data.oci_identity_availability_domains.ads.availability_domains[1].name
       subnet_id           = oci_core_subnet.control_private.id
     }
 
     placement_configs {
-      availability_domain = "wkHw:US-ASHBURN-AD-3"
+      availability_domain = data.oci_identity_availability_domains.ads.availability_domains[2].name
       subnet_id           = oci_core_subnet.control_private.id
     }
   }
@@ -53,10 +57,4 @@ resource "oci_containerengine_node_pool" "arm_node_pool" {
     source_type = "image"
     image_id    = "ocid1.image.oc1.iad.aaaaaaaadplni6z4njatenqrmdqnnve2zqelex75tvn4sxgoveaynz4kqjxq"
   }
-}
-
-resource "local_file" "kubeconfig" {
-  content    = data.oci_containerengine_cluster_kube_config.control_cluster_kube_config.content
-  filename   = "${path.root}/secrets/${var.app}-config.yaml"
-  depends_on = [oci_containerengine_node_pool.arm_node_pool]
 }

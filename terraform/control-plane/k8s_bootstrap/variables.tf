@@ -1,4 +1,4 @@
-variable "config_path" {
+variable "kube_config" {
   type = string
 }
 
@@ -27,5 +27,9 @@ variable "region" {
 }
 
 variable "bucket" {
+  type = string
+}
+
+variable "profile" {
   type = string
 }

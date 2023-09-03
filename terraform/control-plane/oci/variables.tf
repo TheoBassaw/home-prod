@@ -17,7 +17,3 @@ variable "user_ocid" {
 variable "fingerprint" {
   type = string
 }
-
-variable "app" {
-  type = string
-}

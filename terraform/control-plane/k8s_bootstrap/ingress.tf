@@ -53,7 +53,7 @@ resource "helm_release" "external_dns_cf" {
   set_list {
     name  = "extraArgs"
     value = [
-      "--exclude-target-net=10.30.16.0/24",
+      "--exclude-target-net=10.0.0.0/23",
       "--txt-owner-id=external-dns-cf"
     ]
   }
