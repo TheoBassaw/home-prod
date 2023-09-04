@@ -31,7 +31,7 @@ resource "helm_release" "longhorn" {
 
   set {
     name  = "defaultSettings.backupTarget"
-    value = "s3://${var.bucket}@${var.region}/"
+    value = var.s3_url
   }
 
   set {

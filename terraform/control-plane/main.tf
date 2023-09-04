@@ -1,4 +1,14 @@
 terraform {
+  required_providers {
+    zerotier = {
+      source  = "zerotier/zerotier"
+      version = "1.4.2"
+    }
+    oci = {
+      source  = "oracle/oci"
+      version = "5.7.0"
+    }
+  }
   backend "http" {
     address        = "https://gitlab.com/api/v4/projects/47476421/terraform/state/control-plane"
     lock_address   = "https://gitlab.com/api/v4/projects/47476421/terraform/state/control-plane/lock"
@@ -9,63 +19,68 @@ terraform {
   }
 }
 
-module "oci" {
-  source           = "./oci"
-  tenancy_ocid     = "ocid1.tenancy.oc1..aaaaaaaatnhzpultgkxreesu7vacfjiva2p4xnls45sfouvpjlvddd365rga"
-  region           = "us-ashburn-1"
-  user_ocid        = "ocid1.user.oc1..aaaaaaaaja7xgz4fn4epc7ggz6ck7aqb6vjipfswtkeqa427w72zks64xfea"
-  fingerprint      = "df:25:a5:50:84:e4:36:d3:53:56:4a:7e:a0:fa:73:dd"
-  private_key_path = "${path.root}/secrets/oci-main.pem"
+provider "oci" {
+  alias               = "primary"
+  config_file_profile = "PRIMARY"
 }
 
-module "oci_sec" {
-  source           = "./oci"
-  tenancy_ocid     = "ocid1.tenancy.oc1..aaaaaaaajrjtbfnfcezp7qzuixww7xnars3fbpvvb3kw2hqti2la2rqlndbq"
-  region           = "us-ashburn-1"
-  user_ocid        = "ocid1.user.oc1..aaaaaaaaglkblptu3vp7aj5zhcuaitztw2dgc2xekyipcrswipf73fsebzyq"
-  fingerprint      = "e8:04:56:be:d8:24:6a:8f:e4:6a:b5:0e:4b:6c:aa:07"
-  private_key_path = "${path.root}/secrets/oci-sec.pem"
+provider "oci" {
+  alias               = "secondary"
+  config_file_profile = "SECONDARY"
 }
 
-module "k8s_bootstrap" {
-  source        = "./k8s_bootstrap"
-  kube_config   = module.oci.kube_config
-  profile       = "DEFAULT"
-  cf_token      = var.cf_token
-  region        = module.oci.region
-  bucket        = module.oci.bucket
-  s3_access_key = module.oci.s3_access_key
-  s3_secret_key = module.oci.s3_secret_key
-  s3_endpoint   = module.oci.s3_endpoint
+provider "zerotier" {
+  zerotier_central_token = var.zerotier_token
 }
 
-module "k8s_bootstrap_sec" {
-  source        = "./k8s_bootstrap"
-  kube_config   = module.oci_sec.kube_config
-  profile       = "OCI-SEC"
-  cf_token      = var.cf_token
-  region        = module.oci_sec.region
-  bucket        = module.oci_sec.bucket
-  s3_access_key = module.oci_sec.s3_access_key
-  s3_secret_key = module.oci_sec.s3_secret_key
-  s3_endpoint   = module.oci_sec.s3_endpoint
+module "oci_primary" {
+  source         = "./oci"
+  compartment_id = "ocid1.tenancy.oc1..aaaaaaaatnhzpultgkxreesu7vacfjiva2p4xnls45sfouvpjlvddd365rga"
+  region         = "us-ashburn-1"
+  user_ocid      = "ocid1.user.oc1..aaaaaaaaja7xgz4fn4epc7ggz6ck7aqb6vjipfswtkeqa427w72zks64xfea"
+  profile        = "PRIMARY"
+  providers = {
+    oci = oci.primary
+  }
 }
 
-module "rancher" {
-  source      = "./rancher_module"
-  kube_config = module.k8s_bootstrap.kube_config
-  profile     = "DEFAULT"
-  rancher_url = "rancher-prod.paradisenetworkz.com"
+module "oci_secondary" {
+  source         = "./oci"
+  compartment_id = "ocid1.tenancy.oc1..aaaaaaaajrjtbfnfcezp7qzuixww7xnars3fbpvvb3kw2hqti2la2rqlndbq"
+  region         = "us-ashburn-1"
+  user_ocid      = "ocid1.user.oc1..aaaaaaaaglkblptu3vp7aj5zhcuaitztw2dgc2xekyipcrswipf73fsebzyq"
+  profile        = "SECONDARY"
+  providers = {
+    oci = oci.secondary
+  }
 }
 
-module "vault" {
-  source           = "./vault_module"
-  kube_config      = module.k8s_bootstrap_sec.kube_config
-  profile          = "OCI-SEC"
-  vault_url        = "vault-prod.paradisenetworkz.com"
-  tenancy_ocid     = "ocid1.tenancy.oc1..aaaaaaaajrjtbfnfcezp7qzuixww7xnars3fbpvvb3kw2hqti2la2rqlndbq"
-  region           = "us-ashburn-1"
-  user_ocid        = "ocid1.user.oc1..aaaaaaaaglkblptu3vp7aj5zhcuaitztw2dgc2xekyipcrswipf73fsebzyq"
-  fingerprint      = "e8:04:56:be:d8:24:6a:8f:e4:6a:b5:0e:4b:6c:aa:07"
-  private_key_path = "${path.root}/secrets/oci-sec.pem"
+module "k8s_primary" {
+  source               = "./k8s"
+  kube_config          = module.oci_primary.kube_config
+  profile              = "PRIMARY"
+  cf_token             = var.cf_token
+  s3_access_key        = module.oci_primary.s3_access_key
+  s3_secret_key        = module.oci_primary.s3_secret_key
+  s3_endpoint          = module.oci_primary.s3_endpoint
+  s3_url               = "s3://${module.oci_primary.bucket}@us-ashburn-1/"
+  vault_key_id         = module.oci_primary.vault_key_id
+  crypto_endpoint      = module.oci_primary.crypto_endpoint
+  management_endpoint  = module.oci_primary.management_endpoint
+  //route_reflector_ip = "10.30.0.1"
+}
+
+module "k8s_secondary" {
+  source               = "./k8s"
+  kube_config          = module.oci_secondary.kube_config
+  profile              = "SECONDARY"
+  cf_token             = var.cf_token
+  s3_access_key        = module.oci_secondary.s3_access_key
+  s3_secret_key        = module.oci_secondary.s3_secret_key
+  s3_endpoint          = module.oci_secondary.s3_endpoint
+  s3_url               = "s3://${module.oci_secondary.bucket}@us-ashburn-1/"
+  vault_key_id         = module.oci_secondary.vault_key_id
+  crypto_endpoint      = module.oci_secondary.crypto_endpoint
+  management_endpoint  = module.oci_secondary.management_endpoint
+  //route_reflector_ip = "10.30.0.2"
 }

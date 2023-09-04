@@ -12,14 +12,6 @@ terraform {
       source  = "rancher/rancher2"
       version = "3.1.1"
     }
-    time = {
-      source  = "hashicorp/time"
-      version = "0.9.1"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "3.5.1"
-    }
   }
 }
 
@@ -48,11 +40,4 @@ provider "kubectl" {
     command     = local.kube_config.users[0].user.exec.command
     args        = concat(local.kube_config.users[0].user.exec.args, ["--profile", var.profile])
   }
-}
-
-provider "rancher2" {
-  alias     = "bootstrap"
-  api_url   = "https://${var.rancher_url}"
-  insecure  = true
-  bootstrap = true
 }

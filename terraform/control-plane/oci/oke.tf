@@ -1,5 +1,5 @@
 data "oci_identity_availability_domains" "ads" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.compartment_id
 }
 
 data "oci_containerengine_cluster_kube_config" "control_cluster_kube_config" {
@@ -7,7 +7,7 @@ data "oci_containerengine_cluster_kube_config" "control_cluster_kube_config" {
 }
 
 resource "oci_containerengine_cluster" "control_cluster" {
-  compartment_id     = var.tenancy_ocid
+  compartment_id     = var.compartment_id
   kubernetes_version = "v1.26.2"
   name               = "Control Cluster"
   vcn_id             = oci_core_vcn.control.id
@@ -23,7 +23,7 @@ resource "oci_containerengine_cluster" "control_cluster" {
 }
 
 resource "oci_containerengine_node_pool" "arm_node_pool" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.compartment_id
   cluster_id     = oci_containerengine_cluster.control_cluster.id
   name           = "Arm Pool"
   node_shape     = "VM.Standard.A1.Flex"

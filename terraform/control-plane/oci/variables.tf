@@ -1,8 +1,4 @@
-variable "private_key_path" {
-  type = string
-}
-
-variable "tenancy_ocid" {
+variable "compartment_id" {
   type = string
 }
 
@@ -14,6 +10,6 @@ variable "user_ocid" {
   type = string
 }
 
-variable "fingerprint" {
+variable "profile" {
   type = string
 }

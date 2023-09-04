@@ -7,7 +7,7 @@ data "oci_core_services" "all_oci_services" {
 }
 
 resource "oci_core_vcn" "control" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.compartment_id
   display_name   = "Control Network"
   dns_label      = "paradise"
   cidr_blocks    = ["10.0.0.0/23"]
@@ -15,20 +15,20 @@ resource "oci_core_vcn" "control" {
 }
 
 resource "oci_core_internet_gateway" "control_internet_gateway" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.control.id
   display_name   = "Internet Gateway"
   enabled        = true
 }
 
 resource "oci_core_nat_gateway" "control_nat_gateway" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.control.id
   display_name   = "Nat Gateway"
 }
 
 resource "oci_core_service_gateway" "control_service_gateway" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.control.id
   display_name   = "Service Gateway"
 
@@ -38,7 +38,7 @@ resource "oci_core_service_gateway" "control_service_gateway" {
 }
 
 resource "oci_core_route_table" "public_routes" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.control.id
   display_name   = "Control Route Table"
 
@@ -51,7 +51,7 @@ resource "oci_core_route_table" "public_routes" {
 }
 
 resource "oci_core_route_table" "private_routes" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.control.id
   display_name   = "Control Route Table"
 
@@ -71,7 +71,7 @@ resource "oci_core_route_table" "private_routes" {
 }
 
 resource "oci_core_subnet" "control_public" {
-  compartment_id    = var.tenancy_ocid
+  compartment_id    = var.compartment_id
   cidr_block        = "10.0.0.0/24"
   ipv6cidr_block    = cidrsubnet(oci_core_vcn.control.ipv6cidr_blocks[0], 8, 0)
   vcn_id            = oci_core_vcn.control.id
@@ -81,7 +81,7 @@ resource "oci_core_subnet" "control_public" {
 }
 
 resource "oci_core_subnet" "control_private" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.compartment_id
   cidr_block        = "10.0.1.0/24"
   ipv6cidr_block    = cidrsubnet(oci_core_vcn.control.ipv6cidr_blocks[0], 8, 1)
   vcn_id            = oci_core_vcn.control.id
@@ -91,7 +91,7 @@ resource "oci_core_subnet" "control_private" {
 }
 
 resource "oci_core_security_list" "public_sl" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.control.id
   display_name   = "Public Security List"
 
@@ -150,7 +150,7 @@ resource "oci_core_security_list" "public_sl" {
 }
 
 resource "oci_core_security_list" "private_sl" {
-  compartment_id = var.tenancy_ocid
+  compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.control.id
   display_name   = "Private Security List"
 

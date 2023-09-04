@@ -7,6 +7,10 @@ variable "cf_token" {
   sensitive = true
 }
 
+variable "s3_url" {
+  type = string
+}
+
 variable "s3_access_key" {
   type      = string
   sensitive = true
@@ -22,14 +26,24 @@ variable "s3_endpoint" {
   sensitive = true
 }
 
-variable "region" {
-  type = string
-}
-
-variable "bucket" {
-  type = string
-}
-
 variable "profile" {
   type = string
 }
+
+variable "vault_key_id" {
+  type = string
+}
+
+variable "crypto_endpoint" {
+  type = string
+}
+
+variable "management_endpoint" {
+  type = string
+}
+
+/*
+variable "route_reflector_ip" {
+  type = string
+}
+*/
