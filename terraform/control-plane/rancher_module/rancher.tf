@@ -55,25 +55,6 @@ resource "kubectl_manifest" "rancher_backup" {
   depends_on = [helm_release.rancher_backup]
 }
 
-resource "helm_release" "rancher_monitoring_crd" {
-  name             = "rancher-monitoring-crd"
-  namespace        = "cattle-monitoring-system"
-  repository       = "https://charts.rancher.io"
-  chart            = "rancher-monitoring-crd"
-  wait             = true
-  create_namespace = true
-  depends_on       = [helm_release.rancher]
-}
-
-resource "helm_release" "rancher_monitoring" {
-  name       = "rancher-monitoring"
-  namespace  = "cattle-monitoring-system"
-  repository = "https://charts.rancher.io"
-  chart      = "rancher-monitoring"
-  wait       = true
-  depends_on = [helm_release.rancher_monitoring_crd]
-}
-
 resource "helm_release" "rancher_extension_crd" {
   name             = "ui-plugin-operator-crd"
   namespace        = "cattle-ui-plugin-system"
