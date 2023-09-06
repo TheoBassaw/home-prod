@@ -1,9 +1,5 @@
 terraform {
   required_providers {
-    zerotier = {
-      source  = "zerotier/zerotier"
-      version = "1.4.2"
-    }
     oci = {
       source  = "oracle/oci"
       version = "5.7.0"
@@ -27,10 +23,6 @@ provider "oci" {
 provider "oci" {
   alias               = "secondary"
   config_file_profile = "SECONDARY"
-}
-
-provider "zerotier" {
-  zerotier_central_token = var.zerotier_token
 }
 
 module "oci_primary" {
@@ -67,12 +59,6 @@ module "k8s_primary" {
   vault_key_id        = module.oci_primary.vault_key_id
   crypto_endpoint     = module.oci_primary.crypto_endpoint
   management_endpoint = module.oci_primary.management_endpoint
-  route_reflector_ip  = local.primary.route_reflector.ip
-  zerotier_network    = zerotier_network.router_overlay_network.id
-  zerotier_identities = {
-    router_reflector = [zerotier_identity.primary["route_reflector"].private_key, zerotier_identity.primary["route_reflector"].public_key]
-    dns_server       = [zerotier_identity.primary["dns_server"].private_key, zerotier_identity.primary["dns_server"].public_key]
-  }
 }
 
 module "k8s_secondary" {
@@ -87,10 +73,4 @@ module "k8s_secondary" {
   vault_key_id        = module.oci_secondary.vault_key_id
   crypto_endpoint     = module.oci_secondary.crypto_endpoint
   management_endpoint = module.oci_secondary.management_endpoint
-  route_reflector_ip  = local.secondary.route_reflector.ip
-  zerotier_network    = zerotier_network.router_overlay_network.id
-  zerotier_identities = {
-    router_reflector = [zerotier_identity.secondary["route_reflector"].private_key, zerotier_identity.secondary["route_reflector"].public_key]
-    dns_server       = [zerotier_identity.secondary["dns_server"].private_key, zerotier_identity.secondary["dns_server"].public_key]
-  }
 }
