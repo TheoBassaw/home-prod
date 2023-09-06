@@ -42,8 +42,14 @@ variable "management_endpoint" {
   type = string
 }
 
-/*
 variable "route_reflector_ip" {
   type = string
 }
-*/
+
+variable "zerotier_network" {
+  type = string
+}
+
+variable "zerotier_identities" {
+  type = map(list(string))
+}

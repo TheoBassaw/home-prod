@@ -14,28 +14,28 @@ resource "zerotier_network" "router_overlay_network" {
   flow_rules       = "accept;"
 }
 
-resource "zerotier_identity" "route_reflectors" {
-  for_each = local.route_reflectors
+resource "zerotier_identity" "primary" {
+  for_each = local.primary
 }
 
-resource "zerotier_member" "route_reflectors" {
-  for_each = local.route_reflectors
+resource "zerotier_member" "primary" {
+  for_each = local.primary
 
   name           = each.key
-  member_id      = zerotier_identity.route_reflectors[each.key].id
+  member_id      = zerotier_identity.primary[each.key].id
   network_id     = zerotier_network.router_overlay_network.id
   ip_assignments = [each.value.ip]
 }
 
-resource "zerotier_identity" "dns_servers" {
-  for_each = local.dns_servers
+resource "zerotier_identity" "secondary" {
+  for_each = local.secondary
 }
 
-resource "zerotier_member" "dns_servers" {
-  for_each = local.dns_servers
+resource "zerotier_member" "secondary" {
+  for_each = local.secondary
 
   name           = each.key
-  member_id      = zerotier_identity.dns_servers[each.key].id
+  member_id      = zerotier_identity.secondary[each.key].id
   network_id     = zerotier_network.router_overlay_network.id
   ip_assignments = [each.value.ip]
 }

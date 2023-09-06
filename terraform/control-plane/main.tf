@@ -56,31 +56,41 @@ module "oci_secondary" {
 }
 
 module "k8s_primary" {
-  source               = "./k8s"
-  kube_config          = module.oci_primary.kube_config
-  profile              = "PRIMARY"
-  cf_token             = var.cf_token
-  s3_access_key        = module.oci_primary.s3_access_key
-  s3_secret_key        = module.oci_primary.s3_secret_key
-  s3_endpoint          = module.oci_primary.s3_endpoint
-  s3_url               = "s3://${module.oci_primary.bucket}@us-ashburn-1/"
-  vault_key_id         = module.oci_primary.vault_key_id
-  crypto_endpoint      = module.oci_primary.crypto_endpoint
-  management_endpoint  = module.oci_primary.management_endpoint
-  //route_reflector_ip = "10.30.0.1"
+  source              = "./k8s"
+  kube_config         = module.oci_primary.kube_config
+  profile             = "PRIMARY"
+  cf_token            = var.cf_token
+  s3_access_key       = module.oci_primary.s3_access_key
+  s3_secret_key       = module.oci_primary.s3_secret_key
+  s3_endpoint         = module.oci_primary.s3_endpoint
+  s3_url              = "s3://${module.oci_primary.bucket}@us-ashburn-1/"
+  vault_key_id        = module.oci_primary.vault_key_id
+  crypto_endpoint     = module.oci_primary.crypto_endpoint
+  management_endpoint = module.oci_primary.management_endpoint
+  route_reflector_ip  = local.primary.route_reflector.ip
+  zerotier_network    = zerotier_network.router_overlay_network.id
+  zerotier_identities = {
+    router_reflector = [zerotier_identity.primary["route_reflector"].private_key, zerotier_identity.primary["route_reflector"].public_key]
+    dns_server       = [zerotier_identity.primary["dns_server"].private_key, zerotier_identity.primary["dns_server"].public_key]
+  }
 }
 
 module "k8s_secondary" {
-  source               = "./k8s"
-  kube_config          = module.oci_secondary.kube_config
-  profile              = "SECONDARY"
-  cf_token             = var.cf_token
-  s3_access_key        = module.oci_secondary.s3_access_key
-  s3_secret_key        = module.oci_secondary.s3_secret_key
-  s3_endpoint          = module.oci_secondary.s3_endpoint
-  s3_url               = "s3://${module.oci_secondary.bucket}@us-ashburn-1/"
-  vault_key_id         = module.oci_secondary.vault_key_id
-  crypto_endpoint      = module.oci_secondary.crypto_endpoint
-  management_endpoint  = module.oci_secondary.management_endpoint
-  //route_reflector_ip = "10.30.0.2"
+  source              = "./k8s"
+  kube_config         = module.oci_secondary.kube_config
+  profile             = "SECONDARY"
+  cf_token            = var.cf_token
+  s3_access_key       = module.oci_secondary.s3_access_key
+  s3_secret_key       = module.oci_secondary.s3_secret_key
+  s3_endpoint         = module.oci_secondary.s3_endpoint
+  s3_url              = "s3://${module.oci_secondary.bucket}@us-ashburn-1/"
+  vault_key_id        = module.oci_secondary.vault_key_id
+  crypto_endpoint     = module.oci_secondary.crypto_endpoint
+  management_endpoint = module.oci_secondary.management_endpoint
+  route_reflector_ip  = local.secondary.route_reflector.ip
+  zerotier_network    = zerotier_network.router_overlay_network.id
+  zerotier_identities = {
+    router_reflector = [zerotier_identity.secondary["route_reflector"].private_key, zerotier_identity.secondary["route_reflector"].public_key]
+    dns_server       = [zerotier_identity.secondary["dns_server"].private_key, zerotier_identity.secondary["dns_server"].public_key]
+  }
 }
