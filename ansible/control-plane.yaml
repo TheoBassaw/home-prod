@@ -1,0 +1,5 @@
+- become: true
+  hosts: tag_type=route_reflector:tag_type=dns_server
+  name: Install Zerotier and frr
+  roles:
+    - role: zerotier-frr

@@ -13,3 +13,7 @@ variable "user_ocid" {
 variable "profile" {
   type = string
 }
+
+variable "zerotier_network" {
+  type = string
+}

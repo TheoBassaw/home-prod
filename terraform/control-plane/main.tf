@@ -4,6 +4,10 @@ terraform {
       source  = "oracle/oci"
       version = "5.7.0"
     }
+    zerotier = {
+      source  = "zerotier/zerotier"
+      version = "1.4.2"
+    }
   }
   backend "http" {
     address        = "https://gitlab.com/api/v4/projects/47476421/terraform/state/control-plane"
@@ -25,23 +29,33 @@ provider "oci" {
   config_file_profile = "SECONDARY"
 }
 
+provider "zerotier" {
+  zerotier_central_token = var.zerotier_token
+}
+
 module "oci_primary" {
-  source         = "./oci"
-  compartment_id = "ocid1.tenancy.oc1..aaaaaaaatnhzpultgkxreesu7vacfjiva2p4xnls45sfouvpjlvddd365rga"
-  region         = "us-ashburn-1"
-  user_ocid      = "ocid1.user.oc1..aaaaaaaaja7xgz4fn4epc7ggz6ck7aqb6vjipfswtkeqa427w72zks64xfea"
-  profile        = "PRIMARY"
+  source           = "./oci"
+  
+  compartment_id   = "ocid1.tenancy.oc1..aaaaaaaatnhzpultgkxreesu7vacfjiva2p4xnls45sfouvpjlvddd365rga"
+  region           = "us-ashburn-1"
+  user_ocid        = "ocid1.user.oc1..aaaaaaaaja7xgz4fn4epc7ggz6ck7aqb6vjipfswtkeqa427w72zks64xfea"
+  profile          = "PRIMARY"
+  zerotier_network = zerotier_network.router_overlay_network.id
+
   providers = {
     oci = oci.primary
   }
 }
 
 module "oci_secondary" {
-  source         = "./oci"
-  compartment_id = "ocid1.tenancy.oc1..aaaaaaaajrjtbfnfcezp7qzuixww7xnars3fbpvvb3kw2hqti2la2rqlndbq"
-  region         = "us-ashburn-1"
-  user_ocid      = "ocid1.user.oc1..aaaaaaaaglkblptu3vp7aj5zhcuaitztw2dgc2xekyipcrswipf73fsebzyq"
-  profile        = "SECONDARY"
+  source           = "./oci"
+
+  compartment_id   = "ocid1.tenancy.oc1..aaaaaaaajrjtbfnfcezp7qzuixww7xnars3fbpvvb3kw2hqti2la2rqlndbq"
+  region           = "us-ashburn-1"
+  user_ocid        = "ocid1.user.oc1..aaaaaaaaglkblptu3vp7aj5zhcuaitztw2dgc2xekyipcrswipf73fsebzyq"
+  profile          = "SECONDARY"
+  zerotier_network = zerotier_network.router_overlay_network.id
+
   providers = {
     oci = oci.secondary
   }
@@ -49,6 +63,7 @@ module "oci_secondary" {
 
 module "k8s_primary" {
   source              = "./k8s"
+
   kube_config         = module.oci_primary.kube_config
   profile             = "PRIMARY"
   cf_token            = var.cf_token
@@ -63,6 +78,7 @@ module "k8s_primary" {
 
 module "k8s_secondary" {
   source              = "./k8s"
+
   kube_config         = module.oci_secondary.kube_config
   profile             = "SECONDARY"
   cf_token            = var.cf_token

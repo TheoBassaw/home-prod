@@ -1,0 +1,9 @@
+collections:
+  - community.general
+  - kubernetes.core
+  - oracle.oci 
+
+roles:
+  - src: https://github.com/ansible-lockdown/UBUNTU22-CIS
+    version: devel
+    name: UBUNTU22-CIS

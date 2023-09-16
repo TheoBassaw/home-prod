@@ -1,0 +1,61 @@
+- name: Install and configure zerotier
+  block:
+    - name: Add ZeroTier PGP key
+      apt_key:
+        url: "{{ zerotier_gpg_url }}"
+        id: "{{ zerotier_gpg_fingerprint }}"
+
+    - name: Get Zerotier Ubuntu Repo
+      uri:
+        url: "{{ zerotier_download_base_url }}/debian/{{ zerotier_deb_release_repo }}"
+
+    - name: Add ZeroTier APT repository
+      apt_repository:
+        repo: deb {{ zerotier_download_base_url }}/debian/{{ zerotier_deb_release_repo }} {{ zerotier_deb_release_repo }} main
+        filename: zerotier
+
+    - name: Installing zerotier
+      ansible.builtin.apt:
+        name:
+          - zerotier-one
+        state: present
+        update_cache: true
+      notify: Restart zerotier
+
+    - name: Allow port 9993 for Zerotier
+      community.general.ufw:
+        rule: allow
+        port: '9993'
+
+- name: Install and configure frr
+  block: 
+    - name: Installing frr
+      ansible.builtin.apt:
+        name:
+          - frr
+        state: present
+        update_cache: true
+
+    - name: Allow port 179 for BGP
+      community.general.ufw:
+        rule: allow
+        port: '179'
+
+    - name: Write the frr daemon file
+      ansible.builtin.copy: 
+        src: daemons 
+        dest: /etc/frr/daemons
+
+    - name: write the router reflector frr config file
+      ansible.builtin.template: 
+        src: frr-router-reflector.conf.j2
+        dest: /etc/frr/frr.conf
+      when: inventory_hostname in groups['tag_type=route_reflector']
+      notify: Restart frr
+    
+    - name: write the router reflector frr config file
+      ansible.builtin.template: 
+        src: frr-dns.conf.j2
+        dest: /etc/frr/frr.conf
+      when: inventory_hostname in groups['tag_type=dns_server']
+      notify: Restart frr

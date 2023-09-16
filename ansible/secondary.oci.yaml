@@ -1,0 +1,5 @@
+plugin: oracle.oci.oci
+ 
+config_file: ~/.oci/config
+config_profile: SECONDARY
+enable_parallel_processing: yes

@@ -147,6 +147,26 @@ resource "oci_core_security_list" "public_sl" {
       max = 443
     }
   }
+
+  ingress_security_rules {
+    description = "zerotier"
+    protocol    = 6
+    source      = "0.0.0.0/0"
+    tcp_options {
+      min = 9993
+      max = 9993
+    }
+  }
+
+  ingress_security_rules {
+    description = "zerotier"
+    protocol    = 6
+    source      = "0.0.0.0/0"
+    tcp_options {
+      min = 22
+      max = 22
+    }
+  }
 }
 
 resource "oci_core_security_list" "private_sl" {
