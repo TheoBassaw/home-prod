@@ -1,8 +1,0 @@
-apiVersion: resources.cattle.io/v1
-kind: Backup
-metadata:
-  name: local-recurring
-spec:
-  resourceSetName: rancher-resource-set
-  retentionCount: 7
-  schedule: 0 0 * * *

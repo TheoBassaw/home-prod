@@ -1,9 +1,9 @@
-variable "cf_token" {
+variable "zerotier_token" {
   type      = string
   sensitive = true
 }
 
-variable "zerotier_token" {
+variable "tsig_key" {
   type      = string
   sensitive = true
 }

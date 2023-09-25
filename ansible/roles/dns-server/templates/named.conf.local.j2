@@ -1,0 +1,23 @@
+key "tsig-key" {
+  algorithm hmac-sha512;
+	secret "{{ TSIG_KEY | default(lookup('ansible.builtin.env', 'TSIG_KEY')) }}";
+};
+
+zone "paradisenetworkz.com" {
+  type master;
+  file "/var/lib/bind/db.paradisenetworkz.com";
+  update-policy {
+	  grant tsig-key zonesub ANY;
+  };
+};
+
+zone "30.10.in-addr.arpa" {
+  type master;
+  file "/var/lib/bind/db.30.10.in-addr.arpa";
+  allow-transfer {
+    key "tsig-key";
+  };
+  update-policy {
+	  grant tsig-key zonesub ANY;
+  };
+};

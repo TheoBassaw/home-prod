@@ -1,5 +1,5 @@
 - become: true
-  hosts: tag_type=route_reflector:tag_type=dns_server
+  hosts: all
   name: Ubuntu-22.04-Hardened
   roles:
     - role: UBUNTU22-CIS
