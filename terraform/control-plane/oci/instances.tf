@@ -117,7 +117,7 @@ resource "oci_core_instance" "nginx" {
   freeform_tags       = {"type": "nginx"}
 
   metadata = {
-    user_data = data.cloudinit_config.private_dns.rendered
+    user_data = data.cloudinit_config.nginx.rendered
   }
 
   create_vnic_details {
