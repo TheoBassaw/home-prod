@@ -1,0 +1,22 @@
+- name: Installing frr
+  ansible.builtin.apt:
+    name:
+      - frr
+    state: present
+    update_cache: true
+
+- name: Allow bgp
+  community.general.ufw:
+    rule: allow
+    port: '179'
+
+- name: Write the frr daemon file
+  ansible.builtin.copy: 
+    src: daemons 
+    dest: /etc/frr/daemons
+
+- name: write the router reflector frr config file
+  ansible.builtin.template: 
+    src: frr.conf.j2
+    dest: /etc/frr/frr.conf
+  notify: Restart frr

@@ -1,14 +1,34 @@
+- name: Installing Frr & Bind9
+  ansible.builtin.apt:
+    name:
+      - frr
+      - bind9
+    state: present
+    update_cache: true
+
+- name: Allow bgp & dns
+  community.general.ufw:
+    rule: allow
+    port: '{{ item }}'
+  loop: 
+    - '179'
+    - '53'
+
+- name: Write the frr daemon file
+  ansible.builtin.copy: 
+    src: daemons 
+    dest: /etc/frr/daemons
+
+- name: write the router reflector frr config file
+  ansible.builtin.template: 
+    src: frr.conf.j2
+    dest: /etc/frr/frr.conf
+  notify: Restart frr
+
 - name: Allow port 53 for DNS
   community.general.ufw:
     rule: allow
     port: '53'
-
-- name: Installing Bind9
-  ansible.builtin.apt:
-    name:
-      - bind9
-    state: present
-    update_cache: true
 
 - name: write the named.conf.options file
   ansible.builtin.copy: 

@@ -1,22 +1,31 @@
 - become: true
-  hosts: tag_type=route_reflector:tag_type=dns_server
-  name: CIS Remediation
-  tasks:
-    - name: CIS Remediation
-      ansible.builtin.import_tasks: cis-remediation.yaml
-
-- become: true
-  hosts: tag_type=route_reflector:tag_type=dns_server
-  name: Install Zerotier and frr
+  hosts: tag_type=route_reflector:tag_type=dns_server:tag_type=nginx
+  name: Installing Zerotier
   vars:
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
   roles:
-    - role: zerotier-frr
+    - role: zerotier
+
+- become: true
+  hosts: tag_type=route_reflector
+  name: Creating Route Reflector
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+  roles:
+    - role: route-reflector-frr
 
 - become: true
   hosts: tag_type=dns_server
-  name: Install Bind9 DNS Server
+  name: Creating DNS Server
   vars:
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
   roles:
-    - role: dns-server
+    - role: dns-server-frr
+
+- become: true
+  hosts: tag_type=nginx
+  name: Creating Nginx Server
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+  roles:
+    - role: nginxinc.nginx

@@ -1,6 +1,8 @@
 - become: true
   hosts: all
   name: Ubuntu-22.04-Hardened
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
   roles:
     - role: UBUNTU22-CIS
       ubtu22cis_rule_1_4_1: false
