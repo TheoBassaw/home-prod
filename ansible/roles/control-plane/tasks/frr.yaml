@@ -14,9 +14,18 @@
   ansible.builtin.copy: 
     src: daemons 
     dest: /etc/frr/daemons
+  notify: Restart frr
 
 - name: write the router reflector frr config file
   ansible.builtin.template: 
-    src: frr.conf.j2
+    src: route-reflector.conf.j2
     dest: /etc/frr/frr.conf
   notify: Restart frr
+  when: inventory_hostname in groups["route_reflector"]
+
+- name: write the host frr config file
+  ansible.builtin.template: 
+    src: host.conf.j2
+    dest: /etc/frr/frr.conf
+  notify: Restart frr
+  when: inventory_hostname not in groups["route_reflector"]

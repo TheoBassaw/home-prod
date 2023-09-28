@@ -1,0 +1,26 @@
+- name: Allow port 9993 for Zerotier
+  community.general.ufw:
+    rule: allow
+    port: '9993'
+
+- name: Add ZeroTier PGP key
+  apt_key:
+    url: "{{ zerotier_gpg_url }}"
+    id: "{{ zerotier_gpg_fingerprint }}"
+
+- name: Get Zerotier Ubuntu Repo
+  uri:
+    url: "{{ zerotier_download_base_url }}/debian/{{ zerotier_deb_release_repo }}"
+
+- name: Add ZeroTier APT repository
+  apt_repository:
+    repo: deb {{ zerotier_download_base_url }}/debian/{{ zerotier_deb_release_repo }} {{ zerotier_deb_release_repo }} main
+    filename: zerotier
+
+- name: Installing zerotier
+  ansible.builtin.apt:
+    name:
+      - zerotier-one
+    state: present
+    update_cache: true
+  notify: Restart zerotier

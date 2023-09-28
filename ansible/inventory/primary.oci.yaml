@@ -3,3 +3,8 @@ plugin: oracle.oci.oci
 config_file: ~/.oci/config
 config_profile: PRIMARY
 enable_parallel_processing: yes
+
+groups:
+  route_reflector: "'route_reflector' == freeform_tags.type"
+  dns_server: "'dns_server' == freeform_tags.type"
+  nginx: "'nginx' == freeform_tags.type"

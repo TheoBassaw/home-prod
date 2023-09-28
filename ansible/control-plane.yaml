@@ -1,31 +1,7 @@
 - become: true
-  hosts: tag_type=route_reflector:tag_type=dns_server:tag_type=nginx
-  name: Installing Zerotier
+  hosts: route_reflector:dns_server:nginx
+  name: Setup Control Plane
   vars:
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
   roles:
-    - role: zerotier
-
-- become: true
-  hosts: tag_type=route_reflector
-  name: Creating Route Reflector
-  vars:
-    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-  roles:
-    - role: route-reflector-frr
-
-- become: true
-  hosts: tag_type=dns_server
-  name: Creating DNS Server
-  vars:
-    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-  roles:
-    - role: dns-server-frr
-
-- become: true
-  hosts: tag_type=nginx
-  name: Creating Nginx Server
-  vars:
-    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-  roles:
-    - role: nginxinc.nginx
+    - role: control-plane

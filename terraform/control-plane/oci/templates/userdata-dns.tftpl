@@ -42,4 +42,6 @@ runcmd:
   - touch /var/lib/zerotier-one/networks.d/${ zt_network }.conf
   - echo "TSIG_KEY=${tsig_key}" >> /etc/profile
   - source /etc/profile
+  - iptables -F # Disable Oracle Cloud Firewall
+  - netfilter-persistent save # Disable Oracle Cloud Firewall
   - [ systemctl, daemon-reload ]

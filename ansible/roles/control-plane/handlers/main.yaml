@@ -1,0 +1,15 @@
+- name: Restart zerotier
+  service:
+    name: zerotier-one
+    enabled: true
+    state: restarted
+
+- name: Restart frr
+  ansible.builtin.service: 
+    name: frr
+    state: restarted
+
+- name: Restart bind9
+  ansible.builtin.service: 
+    name: bind9
+    state: restarted
