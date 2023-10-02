@@ -6,9 +6,9 @@
 
 - name: Setup DNS Server
   include_tasks: dns-server.yaml
-  when: inventory_hostname in groups["dns_server"]
+  when: inventory_hostname in groups["route_controller"]
 
 - name: Setup Nginx
   include_role: 
     name: nginxinc.nginx
-  when: inventory_hostname in groups["dns_server"]
+  when: inventory_hostname in groups["nginx"]

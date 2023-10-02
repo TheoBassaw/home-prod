@@ -1,6 +1,7 @@
 ubtu22cis_rule_1_4_1: false
 ubtu22cis_rule_1_4_3: false
 ubtu22cis_rule_5_3_4: false
+ubtu22cis_is_router: true
 ubtu22cis_apparmor_enforce_only: true
 ubtu22cis_ufw_allow_out_ports: all
 ubtu22cis_sshd:

@@ -1,0 +1,11 @@
+- name: CIS Remediation
+  include_role: 
+    name: UBUNTU22-CIS
+  when: inventory_hostname not in groups["route_controller"]
+
+- name: CIS Remediation - Route Controller
+  include_role: 
+    name: UBUNTU22-CIS
+  vars:
+    ubtu22cis_dns_server: true
+  when: inventory_hostname in groups["route_controller"]

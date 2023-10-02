@@ -34,12 +34,13 @@ provider "zerotier" {
 }
 
 module "oci_primary" {
-  source           = "./oci"
+  source                   = "./oci"
   
-  compartment_id   = "ocid1.tenancy.oc1..aaaaaaaatnhzpultgkxreesu7vacfjiva2p4xnls45sfouvpjlvddd365rga"
-  profile          = "PRIMARY"
-  zerotier_network = zerotier_network.router_overlay.id
-  tsig_key         = var.tsig_key
+  compartment_id           = "ocid1.tenancy.oc1..aaaaaaaatnhzpultgkxreesu7vacfjiva2p4xnls45sfouvpjlvddd365rga"
+  profile                  = "PRIMARY"
+  zerotier_network         = zerotier_network.router_overlay.id
+  tsig_key                 = var.tsig_key
+  zerotier_network_devices = zerotier_network.personal_devices.id
 
   providers = {
     oci = oci.primary
@@ -47,12 +48,13 @@ module "oci_primary" {
 }
 
 module "oci_secondary" {
-  source           = "./oci"
+  source                   = "./oci"
 
-  compartment_id   = "ocid1.tenancy.oc1..aaaaaaaajrjtbfnfcezp7qzuixww7xnars3fbpvvb3kw2hqti2la2rqlndbq"
-  profile          = "SECONDARY"
-  zerotier_network = zerotier_network.router_overlay.id
-  tsig_key         = var.tsig_key
+  compartment_id           = "ocid1.tenancy.oc1..aaaaaaaajrjtbfnfcezp7qzuixww7xnars3fbpvvb3kw2hqti2la2rqlndbq"
+  profile                  = "SECONDARY"
+  zerotier_network         = zerotier_network.router_overlay.id
+  tsig_key                 = var.tsig_key
+  zerotier_network_devices = zerotier_network.personal_devices.id
 
   providers = {
     oci = oci.secondary

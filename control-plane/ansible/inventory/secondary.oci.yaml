@@ -1,0 +1,11 @@
+plugin: oracle.oci.oci
+ 
+config_file: ~/.oci/config
+config_profile: SECONDARY
+enable_parallel_processing: yes
+
+groups:
+  route_controller: "'route_controller' == freeform_tags.type"
+  nginx: "'nginx' == freeform_tags.type"
+  personal_devices: "'personal_devices' == freeform_tags.type"
+  gitlab_runner: "'gitlab_runner' == freeform_tags.type"

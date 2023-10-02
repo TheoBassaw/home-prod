@@ -10,6 +10,10 @@ variable "zerotier_network" {
   type = string
 }
 
+variable "zerotier_network_devices" {
+  type = string
+}
+
 variable "domain" {
   type    = string
   default = "paradisenetworkz.com"

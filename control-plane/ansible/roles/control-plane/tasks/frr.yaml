@@ -21,11 +21,11 @@
     src: route-reflector.conf.j2
     dest: /etc/frr/frr.conf
   notify: Restart frr
-  when: inventory_hostname in groups["route_reflector"]
+  when: inventory_hostname in groups["route_controller"]
 
 - name: write the host frr config file
   ansible.builtin.template: 
     src: host.conf.j2
     dest: /etc/frr/frr.conf
   notify: Restart frr
-  when: inventory_hostname not in groups["route_reflector"]
+  when: inventory_hostname not in groups["route_controller"]

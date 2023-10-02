@@ -1,6 +1,6 @@
 - become: true
-  hosts: route_reflector:dns_server:nginx
-  name: Setup Control Plane
+  hosts: all
+  name: Configure Control Plane
   vars:
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
   roles:
