@@ -20,43 +20,9 @@ terraform {
 }
 
 provider "oci" {
-  alias               = "primary"
-  config_file_profile = "PRIMARY"
-}
-
-provider "oci" {
-  alias               = "secondary"
-  config_file_profile = "SECONDARY"
+  config_file_profile = "DEFAULT"
 }
 
 provider "zerotier" {
-  zerotier_central_token = var.zerotier_token
-}
-
-module "oci_primary" {
-  source                   = "./oci"
-  
-  compartment_id           = "ocid1.tenancy.oc1..aaaaaaaatnhzpultgkxreesu7vacfjiva2p4xnls45sfouvpjlvddd365rga"
-  profile                  = "PRIMARY"
-  zerotier_network         = zerotier_network.router_overlay.id
-  tsig_key                 = var.tsig_key
-  zerotier_network_devices = zerotier_network.personal_devices.id
-
-  providers = {
-    oci = oci.primary
-  }
-}
-
-module "oci_secondary" {
-  source                   = "./oci"
-
-  compartment_id           = "ocid1.tenancy.oc1..aaaaaaaajrjtbfnfcezp7qzuixww7xnars3fbpvvb3kw2hqti2la2rqlndbq"
-  profile                  = "SECONDARY"
-  zerotier_network         = zerotier_network.router_overlay.id
-  tsig_key                 = var.tsig_key
-  zerotier_network_devices = zerotier_network.personal_devices.id
-
-  providers = {
-    oci = oci.secondary
-  }
+  zerotier_central_token = var.ZEROTIER_CENTRAL_TOKEN
 }

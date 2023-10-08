@@ -1,14 +1,10 @@
 - name: Setup Zerotier
   include_tasks: zerotier.yaml
 
-- name: Setup Frr & Route Reflector
-  include_tasks: frr.yaml
-
-- name: Setup DNS Server
-  include_tasks: dns-server.yaml
+- name: Setup Route Controller
+  include_tasks: route-controller.yaml
   when: inventory_hostname in groups["route_controller"]
 
-- name: Setup Nginx
-  include_role: 
-    name: nginxinc.nginx
-  when: inventory_hostname in groups["nginx"]
+- name: Setup Ingress
+  include_tasks: ingress.yaml
+  when: inventory_hostname in groups["ingress"]
