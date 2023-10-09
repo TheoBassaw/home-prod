@@ -20,7 +20,7 @@ resource "zerotier_network" "router_overlay" {
   }
 
   route {
-    target = "10.30.1.0/24"
+    target = "10.30.2.0/24"
     via    = "10.30.0.4"
   }
 
@@ -125,5 +125,5 @@ resource "zerotier_member" "ingress_router_backup" {
   name           = "ingress-2"
   member_id      = zerotier_identity.ingress_2.id
   network_id     = zerotier_network.ingress_backup.id
-  ip_assignments = ["10.30.1.1"]
+  ip_assignments = ["10.30.2.1"]
 }

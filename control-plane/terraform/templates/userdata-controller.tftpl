@@ -40,6 +40,7 @@ runcmd:
   - echo ${zt_private} > /var/lib/zerotier-one/identity.secret
   - mkdir -p /var/lib/zerotier-one/networks.d
   - touch /var/lib/zerotier-one/networks.d/${zt_mesh_network}.conf
+  - echo ${zt_mesh_network}=zt0 > /var/lib/zerotier-one/devicemap
   - iptables -F # Disable Oracle Cloud Firewall
   - netfilter-persistent save # Disable Oracle Cloud Firewall
   - [ systemctl, daemon-reload ]

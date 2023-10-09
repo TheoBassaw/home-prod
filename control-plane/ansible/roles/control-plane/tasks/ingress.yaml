@@ -1,3 +1,11 @@
+- name: Enable IP Forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: true
+    state: present
+    reload: true
+
 - name: Installing frr
   ansible.builtin.apt:
     name:
@@ -10,6 +18,13 @@
     rule: allow
     port: '179'
 
+- name: Allow Zerotier Devices to access
+  community.general.ufw:
+    rule: allow
+    route: true
+    if_in: zt1
+    if_out: zt0
+    
 - name: Write the frr daemon file
   ansible.builtin.copy: 
     src: daemons 

@@ -41,6 +41,8 @@ runcmd:
   - mkdir -p /var/lib/zerotier-one/networks.d
   - touch /var/lib/zerotier-one/networks.d/${zt_mesh_network}.conf
   - touch /var/lib/zerotier-one/networks.d/${zt_ingress_network}.conf
+  - echo ${zt_mesh_network}=zt0 > /var/lib/zerotier-one/devicemap
+  - echo ${zt_ingress_network}=zt1 >> /var/lib/zerotier-one/devicemap
   - iptables -F # Disable Oracle Cloud Firewall
   - netfilter-persistent save # Disable Oracle Cloud Firewall
   - [ systemctl, daemon-reload ]
