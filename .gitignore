@@ -18,4 +18,5 @@ terraform.rc
 .vscode
 
 **/secrets/**
+**/ansible/userdata/**
 !**/.gitkeep
