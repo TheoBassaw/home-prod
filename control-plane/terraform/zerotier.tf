@@ -127,3 +127,10 @@ resource "zerotier_member" "ingress_router_backup" {
   network_id     = zerotier_network.ingress_backup.id
   ip_assignments = ["10.30.2.1"]
 }
+
+resource "doppler_secret" "zt_mesh_network" {
+  project = "control-plane"
+  config = "prd"
+  name = "ZT_MESH_NETWORK"
+  value = zerotier_network.router_overlay.id
+}

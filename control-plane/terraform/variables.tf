@@ -37,3 +37,8 @@ variable "ZEROTIER_CENTRAL_TOKEN" {
   type      = string
   sensitive = true
 }
+
+variable "DOPPLER_TOKEN" {
+  type      = string
+  sensitive = true
+}

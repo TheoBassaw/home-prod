@@ -67,3 +67,19 @@ autoinstall:
       - libvirt-clients
       - bridge-utils
       - frr
+
+    runcmd:
+      - mkdir -p /var/lib/zerotier-one
+      - echo {{ zt_public }} > /var/lib/zerotier-one/identity.public
+      - echo {{ zt_private }} > /var/lib/zerotier-one/identity.secret
+      - mkdir -p /var/lib/zerotier-one/networks.d
+      - touch /var/lib/zerotier-one/networks.d/{{ zt_network }}.conf
+      - echo {{ zt_network }}=zt0 > /var/lib/zerotier-one/devicemap
+      - curl -s 'https://download.zerotier.com/contact@zerotier.com.gpg' | gpg --dearmor | tee /etc/apt/keyrings/zerotier.gpg
+      - echo "deb [signed-by=/etc/apt/keyrings/zerotier.gpg] https://download.zerotier.com/debian/jammy jammy main" > /etc/apt/sources.list.d/zerotier.list
+      - apt update
+      - apt install -y zerotier-one
+      - ufw enable
+      - ufw allow 9993
+      - ufw allow 22/tcp
+      - reboot
