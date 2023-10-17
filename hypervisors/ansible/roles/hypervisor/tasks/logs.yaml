@@ -1,0 +1,22 @@
+- name: Add vector gpg key
+  ansible.builtin.get_url:
+    url: https://repositories.timber.io/public/vector/gpg.3543DB2D0A2BC4B8.key
+    dest: /usr/share/keyrings/timber-vector-archive-keyring.asc
+    mode: '0644'
+
+- name: Add vector apt repository
+  apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/timber-vector-archive-keyring.asc] https://repositories.timber.io/public/vector/deb/ubuntu {{ ansible_facts['distribution_release'] }} main
+
+- name: Installing vector
+  ansible.builtin.apt:
+    name:
+      - vector
+    state: present
+    update_cache: true
+
+- name: Write the vector config file
+  ansible.builtin.template: 
+    src: vector.yaml.j2
+    dest: /etc/vector/vector.yaml
+  notify: Restart vector

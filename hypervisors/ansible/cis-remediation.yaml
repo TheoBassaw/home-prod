@@ -1,6 +1,6 @@
 - become: true
   hosts: all
-  name: Hardening ubuntu 22.04
+  name: Hardening ubuntu hypervisors
   vars:
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
   roles:

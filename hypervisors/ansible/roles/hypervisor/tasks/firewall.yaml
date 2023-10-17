@@ -1,0 +1,59 @@
+- name: Allow ip masquerading
+  blockinfile:
+    path: /etc/ufw/before.rules
+    block: |
+      # NAT table rules
+      *nat
+      :POSTROUTING ACCEPT [0:0]
+
+      # Forward traffic through eth0 - Change to match you out-interface
+      -A POSTROUTING -s 10.30.8.0/24 -o {{ ansible_default_ipv4.interface }} -j MASQUERADE
+      -A POSTROUTING -s 10.30.9.0/24 -o {{ ansible_default_ipv4.interface }} -j MASQUERADE
+
+      # don't delete the 'COMMIT' line or these nat table rules won't
+      # be processed
+      COMMIT
+
+    insertbefore: "^# Don't delete these required lines"
+  notify:
+    - Reload ufw
+
+- name: Don't allow vms to access nodes outside overlay
+  community.general.ufw:
+    rule: deny
+    route: true
+    src: "{{ item }}"
+    dest: "{{ ansible_default_ipv4.network }}/24"
+  loop: 
+    - '10.30.8.0/24'
+    - '10.30.9.0/24'
+
+- name: Allow vms to internet
+  community.general.ufw:
+    rule: allow
+    route: true
+    if_in: "{{ item }}"
+    if_out: "{{ ansible_default_ipv4.interface }}"
+  loop: 
+    - 'br8'
+    - 'br9'
+
+- name: Allow ingress 1
+  community.general.ufw:
+    rule: allow
+    route: true
+    src: "10.30.0.3/32"
+    dest: "{{ item }}"
+  loop: 
+    - '10.30.8.0/24'
+    - '10.30.9.0/24'
+
+- name: Allow ingress 2
+  community.general.ufw:
+    rule: allow
+    route: true
+    src: "10.30.0.4/32"
+    dest: "{{ item }}"
+  loop: 
+    - '10.30.8.0/24'
+    - '10.30.9.0/24'

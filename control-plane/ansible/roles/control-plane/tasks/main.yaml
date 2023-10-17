@@ -1,10 +1,13 @@
-- name: Setup Zerotier
+- name: Setup zerotier
   include_tasks: zerotier.yaml
 
-- name: Setup Route Controller
+- name: Setup logging and metrics
+  include_tasks: logs.yaml
+
+- name: Setup route controller
   include_tasks: route-controller.yaml
   when: inventory_hostname in groups["route_controller"]
 
-- name: Setup Ingress
+- name: Setup ingress
   include_tasks: ingress.yaml
   when: inventory_hostname in groups["ingress"]

@@ -2,7 +2,7 @@ frr defaults datacenter
 log syslog informational
 service integrated-vtysh-config
 !
-router bgp 212364 view RR
+router bgp 212364
  bgp router-id {{ ansible_default_ipv4.address }}
  bgp log-neighbor-changes
  bgp graceful-restart
@@ -14,7 +14,20 @@ router bgp 212364 view RR
   neighbor mesh activate
   neighbor mesh route-reflector-client
   neighbor mesh soft-reconfiguration inbound
+  neighbor mesh route-map ALLOWED in
  exit-address-family
  !
+ address-family l2vpn evpn
+  neighbor mesh activate
+  neighbor mesh route-reflector-client
+  neighbor mesh soft-reconfiguration inbound
+ exit-address-family
+!
+access-list ALLOWED deny 10.30.0.0/24
+access-list ALLOWED permit 10.30.0.0/16
+!
+route-map ALLOWED permit 10
+ match ip address ALLOWED
+!
 line vty
 !

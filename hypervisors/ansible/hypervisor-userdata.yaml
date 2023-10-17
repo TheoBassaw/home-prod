@@ -1,13 +1,13 @@
 - become: false
   hosts: localhost
-  name: Create Hypervisor user-data
+  name: Create hypervisor user-data
   tasks:
     - name: Create meta-data file
       ansible.builtin.copy:
         content: ""
         dest: userdata/meta-data
 
-    - name: Create Hypervisor Home 1 user-data
+    - name: Create hypervisor-home-1 user-data file
       include_role: 
         name: ubuntu-autoinstall
       vars:
@@ -15,3 +15,12 @@
         zt_public: "{{ (lookup('ansible.builtin.env', 'HYPERVISOR_HOME_1_ZT') | from_yaml).zt_public }}"
         zt_private: "{{ (lookup('ansible.builtin.env', 'HYPERVISOR_HOME_1_ZT') | from_yaml).zt_private }}"
         zt_network: "{{ (lookup('ansible.builtin.env', 'HYPERVISOR_HOME_1_ZT') | from_yaml).zt_network }}"
+
+    - name: Create hypervisor-home-2 user-data file
+      include_role: 
+        name: ubuntu-autoinstall
+      vars:
+        hostname: hypervisor-anghelo-1
+        zt_public: "{{ (lookup('ansible.builtin.env', 'HYPERVISOR_ANGHELO_1_ZT') | from_yaml).zt_public }}"
+        zt_private: "{{ (lookup('ansible.builtin.env', 'HYPERVISOR_ANGHELO_1_ZT') | from_yaml).zt_private }}"
+        zt_network: "{{ (lookup('ansible.builtin.env', 'HYPERVISOR_ANGHELO_1_ZT') | from_yaml).zt_network }}"

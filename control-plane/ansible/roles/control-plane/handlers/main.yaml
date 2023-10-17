@@ -4,6 +4,11 @@
     enabled: true
     state: restarted
 
+- name: Restart vector
+  ansible.builtin.service: 
+    name: vector
+    state: restarted
+
 - name: Restart frr
   ansible.builtin.service: 
     name: frr

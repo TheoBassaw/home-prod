@@ -1,6 +1,6 @@
 - become: true
   hosts: all
-  name: Configure Control Plane
+  name: Configure control plane
   vars:
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
   roles:

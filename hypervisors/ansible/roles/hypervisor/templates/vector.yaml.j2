@@ -1,0 +1,35 @@
+sources:
+  syslog:
+    type: file
+    include:
+      - /var/log/syslog
+  host_metrics:
+    type: host_metrics
+sinks:
+  logs:
+    type: http
+    inputs:
+      - syslog
+    uri: https://api.openobserve.ai/api/theophilus_organization_3270_OdMjjaUJw5nt7C9/default/_json
+    method: post
+    auth:
+      strategy: basic
+      user: {{ observe_user | default(lookup('ansible.builtin.env', 'OBSERVE_USER')) }}
+      password: {{ observe_pass | default(lookup('ansible.builtin.env', 'OBSERVE_PASS')) }}
+    compression: gzip
+    encoding:
+      codec: json
+      timestamp_format: rfc3339
+    healthcheck:
+      enabled: false
+  metrics:
+    type: prometheus_remote_write
+    inputs:
+      - host_metrics
+    endpoint: https://api.openobserve.ai/api/theophilus_organization_3270_OdMjjaUJw5nt7C9/prometheus/api/v1/write
+    auth:
+      strategy: basic
+      user: {{ observe_user | default(lookup('ansible.builtin.env', 'OBSERVE_USER')) }}
+      password: {{ observe_pass | default(lookup('ansible.builtin.env', 'OBSERVE_PASS')) }}
+    healthcheck:
+      enabled: false

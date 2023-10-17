@@ -1,10 +1,12 @@
 ubtu22cis_rule_1_4_1: false
 ubtu22cis_rule_1_4_3: false
+ubtu22cis_rule_5_2_16: false
 ubtu22cis_rule_5_3_4: false
 ubtu22cis_is_router: true
 ubtu22cis_apparmor_enforce_only: true
-ubtu22cis_syslog_service: journald
 ubtu22cis_ufw_allow_out_ports: all
+ubtu22cis_allow_usb_storage: true
+ubtu22cis_syslog_service: journald
 ubtu22cis_sshd:
   log_level: "INFO"
   max_auth_tries: 4
