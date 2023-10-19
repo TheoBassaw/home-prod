@@ -1,0 +1,32 @@
+- name: Allow remote devices to access
+  community.general.ufw:
+    rule: allow
+    route: true
+    if_in: zt1
+    if_out: zt0
+
+- name: Allow ingress to networks
+  community.general.ufw:
+    rule: allow
+    route: true
+    src: "10.30.0.0/24"
+    dest: "{{ item }}"
+  loop: 
+    - '10.30.8.0/24'
+    - '10.30.9.0/24'
+
+- name: write the host frr config file
+  ansible.builtin.template: 
+    src: frr.conf.j2
+    dest: /etc/frr/frr.conf
+  notify: Restart frr
+
+- name: Setup nginx
+  include_role: 
+    name: nginxinc.nginx
+
+- name: Write the vector config file
+  ansible.builtin.template: 
+    src: vector.yaml.j2
+    dest: /etc/vector/vector.yaml
+  notify: Restart vector

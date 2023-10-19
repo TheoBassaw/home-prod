@@ -1,7 +1,20 @@
 - become: true
-  hosts: all
-  name: Hardening ubuntu 22.04
+  hosts: route_controllers
+  name: Hardening ubuntu route controllers
+  vars_files:
+   - cis-vars.yaml
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    ubtu22cis_dns_server: true
+  roles:
+    - role: UBUNTU22-CIS
+
+- become: true
+  hosts: ingresses
+  name: Hardening ubuntu ingresses
+  vars_files:
+   - cis-vars.yaml
   vars:
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
   roles:
-    - role: cis-remediation
+    - role: UBUNTU22-CIS

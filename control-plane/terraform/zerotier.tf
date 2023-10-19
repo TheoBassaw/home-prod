@@ -1,17 +1,22 @@
 resource "zerotier_network" "router_overlay" {
-  name = "Router Overlay"
-
-  assign_ipv4 {
-    zerotier = true
-  }
-
-  assignment_pool {
-    start = "10.30.0.10"
-    end   = "10.30.0.250"
-  }
+  name = var.router_overlay_name
 
   route {
-    target = "10.30.0.0/24"
+    target = var.router_overlay_network
+  }
+
+  dynamic "route"{
+    for_each = local.ingresses
+    
+    content {
+      target = route.value.ingress_network.network
+      via    = route.value.overlay_ip
+    }
+  }
+
+  dns {
+    domain = var.domain
+    servers = [for route_controller in local.route_controllers: route_controller.overlay_ip]
   }
 
   enable_broadcast = true
@@ -20,24 +25,31 @@ resource "zerotier_network" "router_overlay" {
 }
 
 resource "zerotier_network" "ingress" {
-  name = "Ingress"
+  for_each = local.ingresses
+
+  name = each.value.ingress_network.name
 
   assign_ipv4 {
     zerotier = true
   }
 
   assignment_pool {
-    start = "10.30.1.10"
-    end   = "10.30.1.250"
+    start = cidrhost(each.value.ingress_network.network, 10)
+    end   = cidrhost(each.value.ingress_network.network, 250)
   }
 
   route {
-    target = "10.30.1.0/24"
+    target = each.value.ingress_network.network
   }
 
   route {
-    target = "10.30.0.0/16"
-    via    = "10.30.1.1"
+    target = var.prod_network_aggregation
+    via    = each.value.ingress_ip
+  }
+
+  dns {
+    domain = var.domain
+    servers = [for route_controller in local.route_controllers: route_controller.overlay_ip]
   }
 
   enable_broadcast = true
@@ -45,82 +57,44 @@ resource "zerotier_network" "ingress" {
   flow_rules       = "accept;"
 }
 
-resource "zerotier_network" "ingress_backup" {
-  name = "Ingress Backup"
-
-  assign_ipv4 {
-    zerotier = true
-  }
-
-  assignment_pool {
-    start = "10.30.2.10"
-    end   = "10.30.2.250"
-  }
-
-  route {
-    target = "10.30.2.0/24"
-  }
-
-  route {
-    target = "10.30.0.0/16"
-    via    = "10.30.2.1"
-  }
-
-  enable_broadcast = true
-  private          = true
-  flow_rules       = "accept;"
+resource "zerotier_identity" "route_controllers" {
+  for_each = local.route_controllers
 }
 
-resource "zerotier_identity" "route_controller_1" {}
-resource "zerotier_identity" "route_controller_2" {}
-resource "zerotier_identity" "ingress_1" {}
-resource "zerotier_identity" "ingress_2" {}
-
-resource "zerotier_member" "route_controller_1" {
-  name           = "route-controller-1"
-  member_id      = zerotier_identity.route_controller_1.id
-  network_id     = zerotier_network.router_overlay.id
-  ip_assignments = ["10.30.0.1"]
+resource "zerotier_identity" "ingresses" {
+  for_each = local.ingresses
 }
 
-resource "zerotier_member" "route_controller_2" {
-  name           = "route-controller-2"
-  member_id      = zerotier_identity.route_controller_2.id
+resource "zerotier_member" "route_controllers" {
+  for_each = local.route_controllers
+
+  name           = each.value.host_name
+  member_id      = zerotier_identity.route_controllers[each.key].id
   network_id     = zerotier_network.router_overlay.id
-  ip_assignments = ["10.30.0.2"]
+  ip_assignments = [each.value.overlay_ip]
 }
 
-resource "zerotier_member" "ingress_1" {
-  name           = "ingress-1"
-  member_id      = zerotier_identity.ingress_1.id
-  network_id     = zerotier_network.router_overlay.id
-  ip_assignments = ["10.30.0.3"]
-}
+resource "zerotier_member" "ingresses" {
+  for_each = local.ingresses
 
-resource "zerotier_member" "ingress_2" {
-  name           = "ingress-2"
-  member_id      = zerotier_identity.ingress_2.id
+  name           = each.value.host_name
+  member_id      = zerotier_identity.ingresses[each.key].id
   network_id     = zerotier_network.router_overlay.id
-  ip_assignments = ["10.30.0.4"]
+  ip_assignments = [each.value.overlay_ip]
 }
 
 resource "zerotier_member" "ingress_router" {
-  name           = "ingress-1"
-  member_id      = zerotier_identity.ingress_1.id
-  network_id     = zerotier_network.ingress.id
-  ip_assignments = ["10.30.1.1"]
+  for_each = local.ingresses
+
+  name           = each.value.host_name
+  member_id      = zerotier_identity.ingresses[each.key].id
+  network_id     = zerotier_network.ingress[each.key].id
+  ip_assignments = [each.value.ingress_ip]
 }
 
-resource "zerotier_member" "ingress_router_backup" {
-  name           = "ingress-2"
-  member_id      = zerotier_identity.ingress_2.id
-  network_id     = zerotier_network.ingress_backup.id
-  ip_assignments = ["10.30.2.1"]
-}
-
-resource "doppler_secret" "zt_mesh_network" {
+resource "doppler_secret" "router_overlay" {
   project = "control-plane"
   config = "prd"
-  name = "ZT_MESH_NETWORK"
+  name = "ZT_ROUTER_OVERLAY"
   value = zerotier_network.router_overlay.id
 }

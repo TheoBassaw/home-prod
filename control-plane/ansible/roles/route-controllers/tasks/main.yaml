@@ -1,0 +1,49 @@
+- name: Allow dns
+  community.general.ufw:
+    rule: allow
+    port: '53'
+
+- name: Installing bind9
+  ansible.builtin.apt:
+    name:
+      - bind9
+    state: present
+    update_cache: true
+
+- name: Write the frr config file
+  ansible.builtin.template: 
+    src: frr.conf.j2
+    dest: /etc/frr/frr.conf
+  notify: Restart frr
+
+- name: Write the named.conf.options file
+  ansible.builtin.copy: 
+    src: named.conf.options
+    dest: /etc/bind/named.conf.options
+  notify: Restart bind9
+
+- name: Write the named.conf.local file
+  ansible.builtin.template: 
+    src: named.conf.local.j2
+    dest: /etc/bind/named.conf.local
+  notify: Restart bind9
+
+- name: Write the db.internal.paradisenetworkz.com file
+  ansible.builtin.template: 
+    src: db.paradisenetworkz.com.j2
+    dest: /var/lib/bind/db.paradisenetworkz.com
+    group: bind
+  notify: Restart bind9
+
+- name: Write the db.30.10.in-addr.arpa file
+  ansible.builtin.template: 
+    src: db.30.10.in-addr.arpa.j2
+    dest: /var/lib/bind/db.30.10.in-addr.arpa
+    group: bind
+  notify: Restart bind9
+
+- name: Write the vector config file
+  ansible.builtin.template: 
+    src: vector.yaml.j2
+    dest: /etc/vector/vector.yaml
+  notify: Restart vector

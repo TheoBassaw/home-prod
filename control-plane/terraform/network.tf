@@ -1,8 +1,7 @@
 resource "oci_core_vcn" "control" {
   compartment_id = var.compartment_id
   display_name   = "Control Network"
-  dns_label      = "paradise"
-  cidr_blocks    = ["10.0.0.0/24"]
+  cidr_blocks    = [var.oci_default_network]
   is_ipv6enabled = true
 }
 
@@ -28,7 +27,7 @@ resource "oci_core_route_table" "public_routes" {
 
 resource "oci_core_subnet" "control_public" {
   compartment_id    = var.compartment_id
-  cidr_block        = "10.0.0.0/24"
+  cidr_block        = var.oci_default_network
   ipv6cidr_block    = cidrsubnet(oci_core_vcn.control.ipv6cidr_blocks[0], 8, 0)
   vcn_id            = oci_core_vcn.control.id
   display_name      = "Control Public"
@@ -50,7 +49,7 @@ resource "oci_core_security_list" "public_sl" {
 
   ingress_security_rules {
     protocol    = "all"
-    source      = "10.0.0.0/24"
+    source      = var.oci_default_network
   }
 
   ingress_security_rules {

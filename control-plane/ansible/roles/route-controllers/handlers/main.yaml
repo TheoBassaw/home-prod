@@ -1,0 +1,14 @@
+- name: Restart vector
+  ansible.builtin.service: 
+    name: vector
+    state: restarted
+
+- name: Restart frr
+  ansible.builtin.service: 
+    name: frr
+    state: restarted
+
+- name: Restart bind9
+  ansible.builtin.service: 
+    name: bind9
+    state: restarted

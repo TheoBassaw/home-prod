@@ -1,7 +1,23 @@
 - become: true
   hosts: all
-  name: Configure control plane
+  name: Configure hosts
   vars:
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
   roles:
-    - role: control-plane
+    - role: hosts
+
+- become: true
+  hosts: route_controllers
+  name: Configure route controllers
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+  roles:
+    - role: route-controllers
+
+- become: true
+  hosts: ingresses
+  name: Configure ingresses
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+  roles:
+    - role: ingresses

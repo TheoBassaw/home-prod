@@ -1,0 +1,49 @@
+- name: Enable ip forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: true
+    state: present
+    reload: true
+
+- name: Installing frr & bind9
+  ansible.builtin.apt:
+    name:
+      - frr
+      - bind9
+    state: present
+    update_cache: true
+
+- name: Allow bgp, vxlan & dns
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+  loop:
+    - '179'
+    - '4789'
+    - '53'
+
+- name: Write the frr daemon file
+  ansible.builtin.copy: 
+    src: daemons 
+    dest: /etc/frr/daemons
+  notify: Restart frr
+
+- name: write the frr config file
+  ansible.builtin.template: 
+    src: frr.conf.j2
+    dest: /etc/frr/frr.conf
+  notify: Restart frr
+
+- name: Write the netplan config file
+  ansible.builtin.template: 
+    src: hypervisor-netplan.yaml.j2
+    dest: /etc/netplan/10-hypervisor.yaml
+    mode: '600'
+  notify: Apply netplan config
+
+- name: Write the named.conf.options file
+  ansible.builtin.copy: 
+    src: named.conf.options
+    dest: /etc/bind/named.conf.options
+  notify: Restart bind9

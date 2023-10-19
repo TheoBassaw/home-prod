@@ -1,0 +1,26 @@
+- name: Add ubuntu to libvirt group
+  ansible.builtin.user:
+    name: ubuntu
+    groups: libvirt,kvm
+    append: yes
+
+- name: Add ansible to libvirt group
+  ansible.builtin.user:
+    name: ansible
+    groups: libvirt,kvm
+    append: yes
+
+- name: Remove libvirt default network
+  ansible.builtin.file:
+    path: /etc/libvirt/qemu/networks/autostart/default.xml
+    state: absent
+  notify: Restart libvirtd
+
+- name: Setup network
+  include_tasks: network.yaml
+
+- name: Setup firewall
+  include_tasks: firewall.yaml
+
+- name: Setup logging and metrics
+  include_tasks: logs.yaml

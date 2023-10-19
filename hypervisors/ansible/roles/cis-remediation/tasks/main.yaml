@@ -1,3 +1,0 @@
-- name: CIS Remediation - Hypervisor
-  include_role: 
-    name: UBUNTU22-CIS
