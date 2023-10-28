@@ -1,0 +1,8 @@
+- name: Setup network
+  include_tasks: network.yaml
+
+- name: Setup firewall
+  include_tasks: firewall.yaml
+
+- name: Setup logging and metrics
+  include_tasks: logs.yaml

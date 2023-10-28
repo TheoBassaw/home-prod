@@ -1,7 +1,0 @@
-- become: true
-  hosts: all
-  name: Configure hypervisors
-  vars:
-    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-  roles:
-    - role: hypervisor

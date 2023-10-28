@@ -18,19 +18,19 @@ autoinstall:
       - { type: format, id: root, volume: root-partition, fstype: ext4 }
       - { type: mount, id: root-mount, device: root, path: / }
 
-      - { type: disk, id: vm-disk, ptable: gpt, wipe: superblock, grub_device: false, match: { ssd: yes, size: largest }}
+      - { type: disk, id: storage-disk, ptable: gpt, wipe: superblock, grub_device: false, match: { ssd: yes, size: largest }}
 
-      - { type: partition, id: vm-root-partition, device: vm-disk, wipe: superblock, number: 1, size: -1 }
-      - { type: format, id: vm-root, volume: vm-root-partition, fstype: xfs }
-      - { type: mount, id: vm-root-mount, device: vm-root, path: /vm-storage }
+      - { type: partition, id: storage-root-partition, device: storage-disk, wipe: superblock, number: 1, size: -1 }
+      - { type: format, id: storage-root, volume: storage-root-partition, fstype: xfs }
+      - { type: mount, id: storage-root-mount, device: storage-root, path: /storage }
 
   ssh:
     install-server: true
     allow-pw: false
 
   user-data:
-    hostname: {{ host_name }}
-    fqdn: {{ host_name }}.{{ domain }}
+    hostname: {{ item.value.host_name }}
+    fqdn: {{ item.value.host_name }}.{{ domain }}
     manage_etc_hosts: true
     users:
       - name: ubuntu
@@ -56,25 +56,19 @@ autoinstall:
       expire: false
       users:
         - name: ubuntu
-          password: {{ user_password | default(lookup('ansible.builtin.env', 'USER_PASSWORD'))}}
+          password: {{ user_password }}
           type: text
 
     packages_update: true
     packages_upgrade: true
-    packages: 
-      - qemu-kvm
-      - libvirt-daemon-system
-      - libvirt-clients
-      - bridge-utils
-      - frr
-
+      
     runcmd:
       - mkdir -p /var/lib/zerotier-one
-      - echo {{ zt_public }} > /var/lib/zerotier-one/identity.public
-      - echo {{ zt_private }} > /var/lib/zerotier-one/identity.secret
+      - echo {{ item.value.zt_public }} > /var/lib/zerotier-one/identity.public
+      - echo {{ item.value.zt_private }} > /var/lib/zerotier-one/identity.secret
       - mkdir -p /var/lib/zerotier-one/networks.d
-      - touch /var/lib/zerotier-one/networks.d/{{ zt_network }}.conf
-      - echo {{ zt_network }}=zt0 > /var/lib/zerotier-one/devicemap
+      - touch /var/lib/zerotier-one/networks.d/{{ item.value.zt_network }}.conf
+      - echo {{ item.value.zt_network }}=zt0 > /var/lib/zerotier-one/devicemap
       - curl -s 'https://download.zerotier.com/contact@zerotier.com.gpg' | gpg --dearmor | tee /etc/apt/keyrings/zerotier.gpg
       - echo "deb [signed-by=/etc/apt/keyrings/zerotier.gpg] https://download.zerotier.com/debian/jammy jammy main" > /etc/apt/sources.list.d/zerotier.list
       - apt update

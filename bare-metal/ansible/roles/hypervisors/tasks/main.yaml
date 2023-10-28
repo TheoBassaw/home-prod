@@ -1,13 +1,22 @@
+- name: Installing libvirt & qemu
+  ansible.builtin.apt:
+    name:
+      - qemu-kvm
+      - libvirt-daemon-system
+      - libvirt-clients
+    state: present
+    update_cache: true
+
 - name: Add ubuntu to libvirt group
   ansible.builtin.user:
     name: ubuntu
-    groups: libvirt,kvm
+    groups: libvirt
     append: yes
 
 - name: Add ansible to libvirt group
   ansible.builtin.user:
     name: ansible
-    groups: libvirt,kvm
+    groups: libvirt
     append: yes
 
 - name: Remove libvirt default network
@@ -15,12 +24,3 @@
     path: /etc/libvirt/qemu/networks/autostart/default.xml
     state: absent
   notify: Restart libvirtd
-
-- name: Setup network
-  include_tasks: network.yaml
-
-- name: Setup firewall
-  include_tasks: firewall.yaml
-
-- name: Setup logging and metrics
-  include_tasks: logs.yaml

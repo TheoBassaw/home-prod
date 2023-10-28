@@ -1,6 +1,6 @@
 - become: true
   hosts: hypervisors
-  name: Hardening ubuntu hypervisors
+  name: Hardening ubuntu bare-metal hosts
   vars_files:
    - cis-vars.yaml
   vars:

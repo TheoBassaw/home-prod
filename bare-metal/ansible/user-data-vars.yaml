@@ -1,0 +1,3 @@
+domain: paradisenetworkz.com
+hypervisors: "{{ (lookup('ansible.builtin.env', 'HYPERVISORS') | from_yaml | dict2items) }}"
+user_password: "{{ lookup('ansible.builtin.env', 'USER_PASSWORD') }}"

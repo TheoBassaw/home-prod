@@ -1,0 +1,4 @@
+[hypervisors]
+%{ for key, value in inventory ~}
+${value.overlay_ip}
+%{ endfor ~}

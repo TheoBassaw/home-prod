@@ -16,15 +16,22 @@ resource "zerotier_member" "hypervisors" {
 }
 
 resource "doppler_secret" "hypervisors" {
-  for_each = local.hypervisors
-
-  project = "hypervisors"
-  config = "prd"
-  name = upper("HYPERVISOR_${each.key}_ZT")
-  value = yamlencode({
-    "zt_public": zerotier_identity.hypervisors[each.key].public_key
-    "zt_private": zerotier_identity.hypervisors[each.key].private_key
+  project = "bare-metal"
+  config  = "prd"
+  name    = "HYPERVISORS"
+  value   = yamlencode({ for k,v in local.hypervisors: k => {
+    "host_name": v.host_name
+    "overlay_ip": v.overlay_ip
+    "zt_public": zerotier_identity.hypervisors[k].public_key
+    "zt_private": zerotier_identity.hypervisors[k].private_key
     "zt_network": data.zerotier_network.router_overlay.id
-    "host_name": each.value.host_name
+  }})
+}
+
+resource "local_file" "hypervisor_inventory" {
+  filename = "${path.module}/../ansible/inventory/hypervisors"
+
+  content  = templatefile("${path.module}/templates/hypervisors.tftpl", {
+    inventory = local.hypervisors
   })
 }

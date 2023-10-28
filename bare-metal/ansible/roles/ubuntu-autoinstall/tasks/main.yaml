@@ -1,4 +1,5 @@
 - name: Write the userdata locally
   ansible.builtin.template: 
     src: autoinstall.j2
-    dest: userdata/{{ host_name }}
+    dest: userdata/{{ item.value.host_name }}
+  loop: "{{ hosts }}"
