@@ -1,9 +1,0 @@
-- become: true
-  hosts: hypervisors
-  name: Hardening ubuntu bare-metal hosts
-  vars_files:
-   - cis-vars.yaml
-  vars:
-    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-  roles:
-    - role: UBUNTU22-CIS

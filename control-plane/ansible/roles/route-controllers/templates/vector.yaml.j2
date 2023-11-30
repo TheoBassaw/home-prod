@@ -3,8 +3,17 @@ sources:
     type: file
     include:
       - /var/log/syslog
+      - /var/log/frr/frr.log
   host_metrics:
     type: host_metrics
+    cgroups:
+      groups:
+        excludes:
+          - "*"
+    disk:
+      devices:
+        excludes:
+          - "*"
 sinks:
   logs:
     type: http

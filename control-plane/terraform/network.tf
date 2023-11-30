@@ -1,3 +1,7 @@
+data "oci_identity_availability_domains" "ads" {
+  compartment_id = var.compartment_id
+}
+
 resource "oci_core_vcn" "control" {
   compartment_id = var.compartment_id
   display_name   = "Control Network"

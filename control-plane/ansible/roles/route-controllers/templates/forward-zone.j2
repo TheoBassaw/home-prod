@@ -1,0 +1,17 @@
+$ORIGIN {{ ansible_domain }}.
+$TTL 3600      ; 1 hour
+@                                               IN  SOA     {{ ansible_fqdn }}. info.{{ ansible_domain }}. (
+                                                                1          ; serial
+                                                                604800     ; refresh (1 week)
+                                                                86400      ; retry (1 day)
+                                                                2419200    ; expire (4 weeks)
+                                                                604800     ; minimum (1 week)
+                                                            )
+
+{% for host in groups['route_controllers'] %}
+                                                IN  NS      {{ hostvars[host]['ansible_fqdn'] }}.
+{% endfor %}
+
+{% for host in groups['all'] %}
+{{ hostvars[host]['ansible_hostname'] }}        IN  A       {{ hostvars[host]['ansible_env']['OVERLAY_IP'] }}
+{% endfor %}

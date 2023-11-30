@@ -17,8 +17,8 @@
   notify: Restart frr
 
 - name: Write the named.conf.options file
-  ansible.builtin.copy: 
-    src: named.conf.options
+  ansible.builtin.template: 
+    src: named.conf.options.j2
     dest: /etc/bind/named.conf.options
   notify: Restart bind9
 
@@ -28,17 +28,17 @@
     dest: /etc/bind/named.conf.local
   notify: Restart bind9
 
-- name: Write the db.internal.paradisenetworkz.com file
+- name: Write the forward zone file
   ansible.builtin.template: 
-    src: db.paradisenetworkz.com.j2
-    dest: /var/lib/bind/db.paradisenetworkz.com
+    src: forward-zone.j2
+    dest: /var/lib/bind/db.{{ ansible_domain }}
     group: bind
   notify: Restart bind9
 
-- name: Write the db.30.10.in-addr.arpa file
+- name: Write the reverse zone file
   ansible.builtin.template: 
-    src: db.30.10.in-addr.arpa.j2
-    dest: /var/lib/bind/db.30.10.in-addr.arpa
+    src: reverse-zone.j2
+    dest: /var/lib/bind/db.{{ ansible_env.AGGREGATE_NETWORK | ansible.utils.ipaddr('revdns') | regex_replace('^[0-9]+\\.+[0-9]+\\.', '') | regex_replace('\.$', '') }}
     group: bind
   notify: Restart bind9
 

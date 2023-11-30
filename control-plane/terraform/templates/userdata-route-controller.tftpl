@@ -39,8 +39,6 @@ write_files:
       ASN="${asn}"
       OVERLAY_NETWORK="${overlay_network}"
       AGGREGATE_NETWORK="${aggregate_network}"
-      INGRESS_NETWORK="${ingress_network}"
-      INGRESS_VIP="${ingress_vip}"
 
   - path: /var/lib/zerotier-one/identity.public
     content: ${zt_public}
@@ -52,12 +50,8 @@ write_files:
     content: ""
 
   - path: /var/lib/zerotier-one/devicemap
-    content: | 
-      ${zt_overlay}=zt0
-      ${zt_ingress}=zt1
-
-  - path: /var/lib/zerotier-one/networks.d/${zt_ingress}.conf
-    content: ""
+    append: true
+    content: ${zt_overlay}=zt0
 
 runcmd:
   - iptables -F # Disable Oracle Cloud Firewall

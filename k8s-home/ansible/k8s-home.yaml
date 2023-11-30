@@ -1,0 +1,13 @@
+- become: true
+  hosts: all
+  name: Configure k8s-home infra
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+  tasks:
+    - name: Include all vars
+      ansible.builtin.include_vars:
+        dir: vars
+
+    - name: Configure hosts
+      ansible.builtin.include_role: 
+        name: hosts

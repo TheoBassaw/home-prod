@@ -2,26 +2,21 @@ frr defaults datacenter
 log syslog informational
 service integrated-vtysh-config
 !
-router bgp 212364
- bgp router-id {{ ansible_default_ipv4.address }}
+router bgp {{ ansible_env.ASN }}
+ bgp router-id {{ ansible_env.OVERLAY_IP }}
  bgp log-neighbor-changes
  bgp graceful-restart
- neighbor 10.30.0.1 remote-as 212364
- neighbor 10.30.0.2 remote-as 212364
+ {% for host in groups['route_controllers'] %}
+ neighbor {{ hostvars[host]['ansible_env']['OVERLAY_IP'] }} remote-as {{ ansible_env.ASN }}
+ {% endfor %}
  !
  address-family ipv4 unicast
-  redistribute connected route-map ALLOWED
-  neighbor 10.30.0.1 activate
-  neighbor 10.30.0.1 soft-reconfiguration inbound
-  neighbor 10.30.0.2 activate
-  neighbor 10.30.0.2 soft-reconfiguration inbound
+  network {{ ansible_env.INGRESS_NETWORK }}
+  {% for host in groups['route_controllers'] %}
+  neighbor {{ hostvars[host]['ansible_env']['OVERLAY_IP'] }} activate
+  neighbor {{ hostvars[host]['ansible_env']['OVERLAY_IP'] }} soft-reconfiguration inbound
+  {% endfor %}
  exit-address-family
-!
-access-list ALLOWED deny 10.30.0.0/24
-access-list ALLOWED permit 10.30.0.0/16
-!
-route-map ALLOWED permit 10
- match ip address ALLOWED
 !
 line vty
 !

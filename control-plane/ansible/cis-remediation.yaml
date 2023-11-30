@@ -1,20 +1,21 @@
 - become: true
-  hosts: route_controllers
-  name: Hardening ubuntu route controllers
-  vars_files:
-   - cis-vars.yaml
+  hosts: all
+  name: Hardening control-plane
   vars:
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-    ubtu22cis_dns_server: true
-  roles:
-    - role: UBUNTU22-CIS
+  tasks:
+    - name: Include all vars
+      ansible.builtin.include_vars:
+        dir: vars
 
-- become: true
-  hosts: ingresses
-  name: Hardening ubuntu ingresses
-  vars_files:
-   - cis-vars.yaml
-  vars:
-    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-  roles:
-    - role: UBUNTU22-CIS
+    - name: Hardening route controllers
+      ansible.builtin.include_role:
+        name: UBUNTU22-CIS
+      vars:
+        ubtu22cis_dns_server: true
+      when: inventory_hostname in groups['route_controllers']
+    
+    - name: Hardening ingresses
+      ansible.builtin.include_role:
+        name: UBUNTU22-CIS
+      when: inventory_hostname in groups['ingresses']

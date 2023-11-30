@@ -1,23 +1,23 @@
 - become: true
   hosts: all
-  name: Configure hosts
+  name: Configure control-plane
   vars:
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-  roles:
-    - role: hosts
+  tasks:
+    - name: Include all vars
+      ansible.builtin.include_vars:
+        dir: vars
 
-- become: true
-  hosts: route_controllers
-  name: Configure route controllers
-  vars:
-    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-  roles:
-    - role: route-controllers
+    - name: Configure hosts
+      ansible.builtin.include_role: 
+        name: hosts
 
-- become: true
-  hosts: ingresses
-  name: Configure ingresses
-  vars:
-    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-  roles:
-    - role: ingresses
+    - name: Configure route controllers
+      ansible.builtin.include_role: 
+        name: route-controllers
+      when: inventory_hostname in groups['route_controllers']
+
+    - name: Configure ingresses
+      ansible.builtin.include_role: 
+        name: ingresses
+      when: inventory_hostname in groups['ingresses']

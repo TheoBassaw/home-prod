@@ -3,17 +3,17 @@ key "tsig-key" {
 	secret "{{ tsig_key | default(lookup('ansible.builtin.env', 'TSIG_KEY')) }}";
 };
 
-zone "paradisenetworkz.com" {
+zone "{{ ansible_domain }}" {
   type master;
-  file "/var/lib/bind/db.paradisenetworkz.com";
+  file "/var/lib/bind/db.{{ ansible_domain }}";
   update-policy {
 	  grant tsig-key zonesub ANY;
   };
 };
 
-zone "30.10.in-addr.arpa" {
+zone "{{ ansible_env.AGGREGATE_NETWORK | ansible.utils.ipaddr('revdns') | regex_replace('^[0-9]+\\.+[0-9]+\\.', '') | regex_replace('\.$', '') }}" {
   type master;
-  file "/var/lib/bind/db.30.10.in-addr.arpa";
+  file "/var/lib/bind/db.{{ ansible_env.AGGREGATE_NETWORK | ansible.utils.ipaddr('revdns') | regex_replace('^[0-9]+\\.+[0-9]+\\.', '') | regex_replace('\.$', '') }}";
   update-policy {
 	  grant tsig-key zonesub ANY;
   };
