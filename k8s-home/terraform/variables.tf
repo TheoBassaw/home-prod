@@ -1,18 +1,7 @@
 locals {
-  k8s = {
-    k8s_home_1 = {
-      overlay_ip = "10.30.0.10",
-      host_name  = "k8s-home-1",
-    },
-    k8s_home_2 = {
-      overlay_ip = "10.30.0.11",
-      host_name  = "k8s-home-2",
-    },
-    k8s_home_3 = {
-      overlay_ip = "10.30.0.12",
-      host_name  = "k8s-home-3",
-    }
-  }
+  network           = yamldecode(var.NETWORK)
+  route_controllers = yamldecode(var.ROUTE_CONTROLLERS)
+  k8s_hosts         = yamldecode(var.K8S_HOSTS)
 }
 
 variable "ZEROTIER_CENTRAL_TOKEN" {
@@ -20,9 +9,8 @@ variable "ZEROTIER_CENTRAL_TOKEN" {
   sensitive = true
 }
 
-variable "domain" {
-  type    = string
-  default = "paradisenetworkz.com"
+variable "DOMAIN" {
+  type = string
 }
 
 variable "USER_PASSWORD" {
@@ -33,4 +21,16 @@ variable "USER_PASSWORD" {
 variable "ZT_OVERLAY" {
   type      = string
   sensitive = true
+}
+
+variable "ROUTE_CONTROLLERS" {
+  type = string
+}
+
+variable "NETWORK" {
+  type = string
+}
+
+variable "K8S_HOSTS" {
+  type = string
 }

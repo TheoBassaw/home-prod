@@ -1,4 +1,4 @@
-[k8s_home]
+[k8s_hosts]
 %{ for key, value in inventory ~}
 ${value.overlay_ip}
 %{ endfor ~}

@@ -16,6 +16,7 @@ terraform.rc
 .terraform.lock.hcl
 
 .vscode
+.DS_Store
 
 **/userdata/**
 **/ansible/inventory/**

@@ -8,6 +8,6 @@
       ansible.builtin.include_vars:
         dir: vars
 
-    - name: Hardening k8s-home hosts
+    - name: Hardening k8s-hosts
       ansible.builtin.include_role:
         name: UBUNTU22-CIS

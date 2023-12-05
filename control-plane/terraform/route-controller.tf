@@ -1,20 +1,3 @@
-locals {
-  route_controllers = {
-    route_controller_1 = {
-      overlay_ip          = "10.30.0.1",
-      host_name           = "route-controller-1",
-      availability_domain = 0,
-      type                = "route_controller"
-    },
-    route_controller_2 = {
-      overlay_ip          = "10.30.0.2",
-      host_name           = "route-controller-2"
-      availability_domain = 1,
-      type                = "route_controller"
-    }
-  }
-}
-
 resource "zerotier_identity" "route_controllers" {
   for_each = local.route_controllers
 }
@@ -40,14 +23,14 @@ data "cloudinit_config" "route_controllers" {
 
     content = templatefile("${path.module}/templates/userdata-route-controller.tftpl", {
       "host_name"         = each.value.host_name
-      "domain"            = var.domain
+      "domain"            = var.DOMAIN
       "zt_public"         = zerotier_identity.route_controllers[each.key].public_key
       "zt_private"        = zerotier_identity.route_controllers[each.key].private_key
       "zt_overlay"        = zerotier_network.overlay.id
       "overlay_ip"        = each.value.overlay_ip
-      "asn"               = local.asn
-      "overlay_network"   = local.overlay.network
-      "aggregate_network" = local.aggregate
+      "asn"               = local.network.asn
+      "overlay_network"   = local.network.overlay.network
+      "aggregate_network" = local.network.aggregate
     })
   }
 }

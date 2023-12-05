@@ -61,14 +61,31 @@ autoinstall:
 
     packages_update: true
     packages_upgrade: true
+
+    write_files:
+      - path: /etc/environment
+        append: true
+        content: |
+          OVERLAY_IP="${overlay_ip}"
+          ASN="${asn}"
+          OVERLAY_NETWORK="${overlay_network}"
+          AGGREGATE_NETWORK="${aggregate_network}"
+          VIP="${vip}"
+          ROUTE_CONTROLLERS="${route_controllers}"
+
+      - path: /var/lib/zerotier-one/identity.public
+        content: ${zt_public}
+
+      - path: /var/lib/zerotier-one/identity.secret
+        content: ${zt_private}
+
+      - path: /var/lib/zerotier-one/networks.d/${zt_overlay}.conf
+        content: ""
+
+      - path: /var/lib/zerotier-one/devicemap
+        content: ${zt_overlay}=zt0
       
     runcmd:
-      - mkdir -p /var/lib/zerotier-one
-      - echo ${zt_public} > /var/lib/zerotier-one/identity.public
-      - echo ${zt_private} > /var/lib/zerotier-one/identity.secret
-      - mkdir -p /var/lib/zerotier-one/networks.d
-      - touch /var/lib/zerotier-one/networks.d/${zt_network}.conf
-      - echo ${zt_network}=zt0 > /var/lib/zerotier-one/devicemap
       - curl -s 'https://download.zerotier.com/contact@zerotier.com.gpg' | gpg --dearmor | tee /etc/apt/keyrings/zerotier.gpg
       - echo "deb [signed-by=/etc/apt/keyrings/zerotier.gpg] https://download.zerotier.com/debian/jammy jammy main" > /etc/apt/sources.list.d/zerotier.list
       - apt update

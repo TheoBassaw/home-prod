@@ -1,22 +1,3 @@
-locals {
-  ingresses = {
-    ingress_1 = {
-      overlay_ip          = "10.30.0.3",
-      ingress_ip          = "10.30.1.2",
-      host_name           = "ingress-1",
-      availability_domain = 0,
-      type                = "ingress"
-    },
-    ingress_2 = {
-      overlay_ip          = "10.30.0.4",
-      ingress_ip          = "10.30.1.3",
-      host_name           = "ingress-2",
-      availability_domain = 1,
-      type                = "ingress"
-    }
-  }
-}
-
 resource "zerotier_identity" "ingresses" {
   for_each = local.ingresses
 }
@@ -51,17 +32,17 @@ data "cloudinit_config" "ingresses" {
 
     content = templatefile("${path.module}/templates/userdata-ingress.tftpl", {
       "host_name"         = each.value.host_name
-      "domain"            = var.domain
+      "domain"            = var.DOMAIN
       "zt_public"         = zerotier_identity.ingresses[each.key].public_key
       "zt_private"        = zerotier_identity.ingresses[each.key].private_key
       "zt_overlay"        = zerotier_network.overlay.id
       "zt_ingress"        = zerotier_network.ingress.id
       "overlay_ip"        = each.value.overlay_ip
-      "asn"               = local.asn
-      "overlay_network"   = local.overlay.network
-      "aggregate_network" = local.aggregate
-      "ingress_network"   = local.ingress.network
-      "ingress_vip"       = local.ingress.vip
+      "asn"               = local.network.asn
+      "overlay_network"   = local.network.overlay.network
+      "aggregate_network" = local.network.aggregate
+      "ingress_network"   = local.network.ingress.network
+      "ingress_vip"       = local.network.ingress.vip
     })
   }
 }

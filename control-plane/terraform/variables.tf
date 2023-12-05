@@ -1,3 +1,9 @@
+locals {
+  network           = yamldecode(var.NETWORK)
+  ingresses         = yamldecode(var.INGRESSES)
+  route_controllers = yamldecode(var.ROUTE_CONTROLLERS)
+}
+
 variable "oci_config_profile" {
   type    = string
   default = "DEFAULT"
@@ -23,11 +29,6 @@ variable "region" {
   default = "us-ashburn-1"
 }
 
-variable "domain" {
-  type    = string
-  default = "paradisenetworkz.com"
-}
-
 variable "shape" {
   type    = string
   default = "VM.Standard.A1.Flex"
@@ -41,6 +42,22 @@ variable "source_type" {
 variable "image_ocid" {
   type    = string
   default = "ocid1.image.oc1.iad.aaaaaaaalwr5atko6n7ia2pz5q2s5soy6ad6paujwqslgeqmrgyy4hnqoilq"
+}
+
+variable "DOMAIN" {
+  type = string
+}
+
+variable "ROUTE_CONTROLLERS" {
+  type = string
+}
+
+variable "INGRESSES" {
+  type = string
+}
+
+variable "NETWORK" {
+  type = string
 }
 
 variable "ZEROTIER_CENTRAL_TOKEN" {

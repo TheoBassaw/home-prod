@@ -1,22 +1,8 @@
-locals {
-  asn       = "212364"
-  aggregate = "10.30.0.0/16"
-  overlay = {
-    name    = "Overlay", 
-    network = "10.30.0.0/24"
-  }
-  ingress = { 
-    name    = "Ingress", 
-    network = "10.30.1.0/24",
-    vip     = "10.30.1.1"
-  }
-}
-
 resource "zerotier_network" "overlay" {
-  name = local.overlay.name
+  name = local.network.overlay.name
 
   route {
-    target = local.overlay.network
+    target = local.network.overlay.network
   }
 
   enable_broadcast = true
@@ -25,24 +11,24 @@ resource "zerotier_network" "overlay" {
 }
 
 resource "zerotier_network" "ingress" {
-  name = local.ingress.name
+  name = local.network.ingress.name
 
   assign_ipv4 {
     zerotier = true
   }
 
   assignment_pool {
-    start = cidrhost(local.ingress.network, 10)
-    end   = cidrhost(local.ingress.network, 250)
+    start = cidrhost(local.network.ingress.network, 10)
+    end   = cidrhost(local.network.ingress.network, 250)
   }
 
   route {
-    target = local.ingress.network
+    target = local.network.ingress.network
   }
 
   route {
-    target = local.aggregate
-    via    = local.ingress.vip
+    target = local.network.aggregate
+    via    = local.network.ingress.vip
   }
 
   enable_broadcast = true
@@ -50,9 +36,9 @@ resource "zerotier_network" "ingress" {
   flow_rules       = "accept;"
 }
 
-resource "doppler_secret" "overlay" {
-  project = "k8s-home"
+resource "doppler_secret" "zt_overlay" {
+  project = "shared-secrets"
   config  = "prd"
-  name    = "TF_VAR_ZT_OVERLAY"
+  name    = "ZT_OVERLAY"
   value   = zerotier_network.overlay.id
 }

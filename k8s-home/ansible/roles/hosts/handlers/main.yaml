@@ -2,3 +2,8 @@
   ansible.builtin.service: 
     name: frr
     state: restarted
+
+- name: Restart keepalived
+  ansible.builtin.service:
+    name: keepalived
+    state: restarted

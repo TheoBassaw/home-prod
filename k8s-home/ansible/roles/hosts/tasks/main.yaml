@@ -1,2 +1,5 @@
 - name: Setup network
   include_tasks: network.yaml
+
+- name: Setup rke2
+  include_tasks: rke2.yaml
