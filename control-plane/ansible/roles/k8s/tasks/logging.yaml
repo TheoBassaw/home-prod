@@ -1,0 +1,5 @@
+- name: Write the vector config file
+  ansible.builtin.template: 
+    src: vector.yaml.j2
+    dest: /etc/vector/vector.yaml
+  notify: Restart vector

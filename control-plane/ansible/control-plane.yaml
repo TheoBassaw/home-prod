@@ -1,23 +1,17 @@
 - become: true
   hosts: all
   name: Configure control-plane
+  vars_files:
+    - vars/control-plane.yaml
   vars:
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
   tasks:
-    - name: Include all vars
-      ansible.builtin.include_vars:
-        dir: vars
-
-    - name: Configure hosts
-      ansible.builtin.include_role: 
-        name: hosts
-
     - name: Configure route controllers
       ansible.builtin.include_role: 
         name: route-controllers
       when: inventory_hostname in groups['route_controllers']
 
-    - name: Configure ingresses
+    - name: Configure k8s hosts
       ansible.builtin.include_role: 
-        name: ingresses
-      when: inventory_hostname in groups['ingresses']
+        name: k8s
+      when: inventory_hostname in (groups['k8s_server'] or groups['k8s_agent'])

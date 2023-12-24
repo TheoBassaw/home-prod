@@ -26,19 +26,7 @@ resource "zerotier_network" "ingress" {
     target = local.network.ingress.network
   }
 
-  route {
-    target = local.network.aggregate
-    via    = local.network.ingress.vip
-  }
-
   enable_broadcast = true
   private          = true
   flow_rules       = "accept;"
-}
-
-resource "doppler_secret" "zt_overlay" {
-  project = "shared-secrets"
-  config  = "prd"
-  name    = "ZT_OVERLAY"
-  value   = zerotier_network.overlay.id
 }

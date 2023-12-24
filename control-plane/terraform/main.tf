@@ -24,13 +24,48 @@ terraform {
 }
 
 provider "oci" {
-  config_file_profile = var.oci_config_profile
+  config_file_profile = var.oci_config_profile_primary
+  alias               = "primary"
+}
+
+provider "oci" {
+  config_file_profile = var.oci_config_profile_secondary
+  alias               = "secondary"
 }
 
 provider "zerotier" {
-  zerotier_central_token = var.ZEROTIER_CENTRAL_TOKEN
+  zerotier_central_token = local.zerotier_central_token
 }
 
-provider "doppler" {
-  doppler_token = var.DOPPLER_TOKEN
+module "oci_primary" {
+  source = "./oci-primary"
+
+  zt_overlay_id     = zerotier_network.overlay.id
+  zt_ingress_id     = zerotier_network.ingress.id
+  domain            = local.domain
+  route_controllers = local.route_controllers
+  network           = local.network
+  k8s_hosts         = tomap({ k8s_control_1 = local.k8s_hosts.k8s_control_1 })
+
+  providers = {
+    oci = oci.primary
+  }
+}
+
+module "oci_secondary" {
+  source = "./oci-secondary"
+
+  zt_overlay_id     = zerotier_network.overlay.id
+  zt_ingress_id     = zerotier_network.ingress.id
+  domain            = local.domain
+  route_controllers = local.route_controllers
+  network           = local.network
+  k8s_hosts         = tomap({ 
+    k8s_control_2 = local.k8s_hosts.k8s_control_2
+    k8s_control_3 = local.k8s_hosts.k8s_control_3
+  })
+
+  providers = {
+    oci = oci.secondary
+  }
 }

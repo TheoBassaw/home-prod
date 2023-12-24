@@ -41,14 +41,9 @@ write_files:
   - path: /var/lib/zerotier-one/networks.d/${zt_overlay}.conf
     content: ""
 
-  - path: /var/lib/zerotier-one/networks.d/${zt_ingress}.conf
-    content: ""
-
   - path: /var/lib/zerotier-one/devicemap
-    content: |
+    content: | 
       ${zt_overlay}=zt0
-      ${zt_ingress}=zt1
-
 
 runcmd:
   - iptables -F # Disable Oracle Cloud Firewall

@@ -4,6 +4,6 @@ options {
 	dnssec-validation auto;
 
 	listen-on { any; };
-    allow-query { {{ ansible_env.AGGREGATE_NETWORK }}; };
+    allow-query { {{ aggregate_network }}; };
     forwarders { 8.8.8.8; 1.1.1.1; };
 };

@@ -1,8 +1,0 @@
-plugin: oracle.oci.oci
- 
-config_file: ~/.oci/config
-enable_parallel_processing: yes
-
-groups:
-  route_controllers: "'route_controller' == freeform_tags.type"
-  ingresses: "'ingress' == freeform_tags.type"

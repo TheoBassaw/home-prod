@@ -1,0 +1,18 @@
+{% if inventory_hostname == groups['k8s_server'][0] %}
+cluster-init: true
+{% else %}
+server: https://{{ hostvars[groups['k8s_server'][0]]['ansible_zt0']['ipv4']['address'] }}:6443
+{% endif %}
+token: {{ k3s_token }}
+write-kubeconfig-mode: "0644"
+flannel-backend: none
+disable:
+  - local-storage
+  - servicelb
+  - traefik
+disable-cloud-controller: true
+disable-kube-proxy: true
+secrets-encryption: true
+tls-san:
+  - {{ k8s_control_vip }}
+  - k8s-control.paradisenetworkz.com

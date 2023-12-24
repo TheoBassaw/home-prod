@@ -4,5 +4,8 @@
 - name: Setup network
   include_tasks: network.yaml
 
+- name: Setup k8s cluster
+  include_tasks: k3s.yaml
+
 - name: Setup logs & metrics
   include_tasks: logging.yaml

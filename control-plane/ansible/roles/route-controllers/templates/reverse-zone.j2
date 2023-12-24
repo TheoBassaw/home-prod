@@ -1,4 +1,4 @@
-$ORIGIN {{ ansible_env.AGGREGATE_NETWORK | ansible.utils.ipaddr('revdns') | regex_replace('^[0-9]+\\.+[0-9]+\\.', '') }}
+$ORIGIN {{ reverse_zone }}.
 $TTL 3600      ; 1 hour
 @                                   IN  SOA     {{ ansible_fqdn }}. info.{{ ansible_domain }}. (
                                                     1          ; serial
@@ -12,6 +12,6 @@ $TTL 3600      ; 1 hour
                                     IN  NS      {{ hostvars[host]['ansible_fqdn'] }}.
 {% endfor %}
 
-{% for host in groups['all'] %}
-{{ hostvars[host]['ansible_env']['OVERLAY_IP'] | ansible.utils.ipaddr('revdns') }}        IN  PTR     {{ hostvars[host]['ansible_fqdn'] }}.
+{% for host in groups['route_controllers'] %}
+{{ hostvars[host]['ansible_zt0']['ipv4']['address'] | ansible.utils.ipaddr('revdns') }}        IN  PTR     {{ hostvars[host]['ansible_fqdn'] }}.
 {% endfor %}

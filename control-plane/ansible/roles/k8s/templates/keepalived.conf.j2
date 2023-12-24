@@ -1,0 +1,20 @@
+vrrp_script chk_k3s {
+    script "pgrep k3s"
+    interval 5
+    fall 2
+    timeout 10
+}
+
+vrrp_instance VI_1 {
+    state BACKUP
+    interface {{ ansible_zt0.device }}
+    virtual_router_id 50
+    priority 50
+    advert_int 5
+    virtual_ipaddress {
+        {{ ingress_vip }}
+    }
+    track_script {
+        chk_k3s
+    }
+}

@@ -1,6 +1,6 @@
 key "tsig-key" {
   algorithm hmac-sha512;
-	secret "{{ tsig_key | default(lookup('ansible.builtin.env', 'TSIG_KEY')) }}";
+	secret "{{ tsig_key }}";
 };
 
 zone "{{ ansible_domain }}" {
@@ -11,9 +11,9 @@ zone "{{ ansible_domain }}" {
   };
 };
 
-zone "{{ ansible_env.AGGREGATE_NETWORK | ansible.utils.ipaddr('revdns') | regex_replace('^[0-9]+\\.+[0-9]+\\.', '') | regex_replace('\.$', '') }}" {
+zone "{{ reverse_zone }}" {
   type master;
-  file "/var/lib/bind/db.{{ ansible_env.AGGREGATE_NETWORK | ansible.utils.ipaddr('revdns') | regex_replace('^[0-9]+\\.+[0-9]+\\.', '') | regex_replace('\.$', '') }}";
+  file "/var/lib/bind/db.{{ reverse_zone }}";
   update-policy {
 	  grant tsig-key zonesub ANY;
   };
