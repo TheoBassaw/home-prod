@@ -58,8 +58,9 @@ variable "route_controllers" {
 variable "network" {
   type = object({
     overlay = object({
-      name    = string
-      network = string
+      name      = string
+      network   = string
+      aggregate = string
     })
     ingress = object({
       name    = string

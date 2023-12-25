@@ -26,6 +26,11 @@ resource "zerotier_network" "ingress" {
     target = local.network.ingress.network
   }
 
+  route {
+    target = local.network.overlay.aggregate
+    via    = local.network.ingress.vip
+  }
+
   enable_broadcast = true
   private          = true
   flow_rules       = "accept;"

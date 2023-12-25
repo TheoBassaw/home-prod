@@ -1,6 +1,6 @@
 vrrp_instance VI_1 {
     state BACKUP
-    interface {{ ansible_zt0.device }}
+    interface {{ ansible_zt1.device }}
     virtual_router_id 50
     priority 50
     advert_int 5

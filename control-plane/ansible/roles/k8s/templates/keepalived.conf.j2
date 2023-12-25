@@ -12,7 +12,7 @@ vrrp_instance VI_1 {
     priority 50
     advert_int 5
     virtual_ipaddress {
-        {{ ingress_vip }}
+        {{ k8s_control_vip }}
     }
     track_script {
         chk_k3s

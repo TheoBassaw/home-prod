@@ -1,8 +1,9 @@
 locals {
   network = {
     overlay = {
-      name    = "Overlay"
-      network = "10.30.0.0/24"
+      name      = "Overlay"
+      network   = "10.30.0.0/24"
+      aggregate = "10.30.0.0/16"
     }
     ingress = {
       name    = "Ingress"
