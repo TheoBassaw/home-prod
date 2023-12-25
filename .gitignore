@@ -18,8 +18,4 @@ terraform.rc
 .vscode
 .DS_Store
 
-**/userdata/**
-**/ansible/inventory/**
 !**/.gitkeep
-
-bare-metal-k8s
