@@ -14,17 +14,31 @@
   loop:
     - port: '179'
       proto: tcp
-    - port: '9993'
-      proto: udp
-    - port: '2379:2380'
+    - port: '2379:2381'
+      proto: tcp
+    - port: '4240'
+      proto: tcp
+    - port: '4244:4245'
+      proto: tcp
+    - port: '4250:4251'
+      proto: tcp
+    - port: '6060:6062'
+      proto: tcp
+    - port: '9878:9879'
+      proto: tcp
+    - port: '9890:9891'
+      proto: tcp
+    - port: '9893'
+      proto: tcp
+    - port: '9962:9964'
+      proto: tcp
+    - port: '9345'
       proto: tcp
     - port: '6443'
       proto: tcp
     - port: '10250'
       proto: tcp
-    - port: '8472'
-      proto: udp
-    - port: '4240'
+    - port: '30000:32767'
       proto: tcp
 
 - name: Write the frr daemon file

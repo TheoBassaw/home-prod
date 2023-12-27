@@ -1,18 +1,19 @@
 {% if inventory_hostname == groups['k8s_server'][0] %}
 cluster-init: true
 {% else %}
-server: https://{{ hostvars[groups['k8s_server'][0]]['ansible_zt0']['ipv4']['address'] }}:6443
+server: https://{{ hostvars[groups['k8s_server'][0]]['ansible_zt0']['ipv4']['address'] }}:9345
 {% endif %}
-token: {{ k3s_token }}
+bind-address: {{ ansible_zt0.ipv4.address }}
+node-ip: {{ ansible_zt0.ipv4.address }}
+token: {{ rke2_token }}
 write-kubeconfig-mode: "0644"
-flannel-backend: none
+profile: cis-1.23
+cni: cilium
 disable:
-  - local-storage
-  - servicelb
-  - traefik
+  - rke2-ingress-nginx
 disable-cloud-controller: true
 disable-kube-proxy: true
 secrets-encryption: true
 tls-san:
-  - {{ k8s_control_vip }}
+  - {{ k8s_control_vip | ansible.utils.ipv4('address') }}
   - k8s-control.paradisenetworkz.com

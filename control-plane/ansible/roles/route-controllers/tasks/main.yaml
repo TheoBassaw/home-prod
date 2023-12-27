@@ -1,8 +1,8 @@
 - name: Setup packages
-  include_tasks: packages.yaml
+  ansible.builtin.include_tasks: packages.yaml
 
 - name: Setup network
-  include_tasks: network.yaml
+  ansible.builtin.include_tasks: network.yaml
 
 - name: Setup logs & metrics
-  include_tasks: logging.yaml
+  ansible.builtin.include_tasks: logging.yaml

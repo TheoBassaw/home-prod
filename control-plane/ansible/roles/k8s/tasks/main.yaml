@@ -1,11 +1,11 @@
 - name: Setup packages
-  include_tasks: packages.yaml
+  ansible.builtin.include_tasks: packages.yaml
 
 - name: Setup network
-  include_tasks: network.yaml
+  ansible.builtin.include_tasks: network.yaml
 
-- name: Setup k8s cluster
-  include_tasks: k3s.yaml
+- name: Deploy rke2
+  ansible.builtin.include_tasks: rke2.yaml
 
 - name: Setup logs & metrics
-  include_tasks: logging.yaml
+  ansible.builtin.include_tasks: logging.yaml

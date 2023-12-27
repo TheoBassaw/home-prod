@@ -1,0 +1,93 @@
+- name: Enable k8s cis sysctl
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: true
+    state: present
+    reload: true
+  loop:
+    - name: vm.panic_on_oom
+      value: '0'
+    - name: vm.overcommit_memory
+      value: '1'
+    - name: kernel.panic
+      value: '10'
+    - name: kernel.panic_on_oops
+      value: '1'
+
+- name: Create etcd group
+  ansible.builtin.group:
+    name: etcd
+    state: present
+
+- name: Create etcd user
+  ansible.builtin.user:
+    name: etcd
+    group: etcd
+    shell: /sbin/nologin
+    system: true
+    create_home: false
+    state: present
+
+- name: Download rke2 binary
+  ansible.builtin.get_url:
+    url: https://github.com/rancher/rke2/releases/download/{{ rke2_version }}/rke2.linux-arm64
+    checksum: sha256:https://github.com/rancher/rke2/releases/download/{{ rke2_version }}/sha256sum-arm64.txt
+    dest: /usr/local/bin/rke2
+    mode: 0755
+
+- name: Ensure config directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0644
+  loop:
+    - /etc/rancher/rke2
+    - /var/lib/rancher/rke2/server/manifests
+
+- name: Copy rke2 config files
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  loop:
+    - src: config.yaml.j2
+      dest: /etc/rancher/rke2/config.yaml
+    - src: rke2-server.service.j2
+      dest: /etc/systemd/system/rke2-server.service
+    - src: bootstrap.yaml.j2
+      dest: /var/lib/rancher/rke2/server/manifests/bootstrap.yaml
+
+- name: Copy additional rke2 config files
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  loop:
+    - src: audit-policy.yaml
+      dest: /etc/rancher/rke2/audit-policy.yaml
+
+- name: Enable rke2 service
+  ansible.builtin.systemd:
+    name: rke2-server
+    enabled: true
+    state: started
+  register: rke2_service
+  until: rke2_service is succeeded
+  retries: 5
+
+- name: Get Kubernetes config file
+  run_once: true
+  ansible.builtin.slurp:
+    src: /etc/rancher/rke2/rke2.yaml
+  register: kubeconfig_base64
+  when: inventory_hostname in groups['k8s_server']
+
+- name: Write Kubernetes config file with the correct cluster address
+  ansible.builtin.copy:
+    content: "{{ kubeconfig_base64.content | b64decode | replace('127.0.0.1', (k8s_control_vip | ansible.utils.ipv4('address')) ) }}"
+    dest: "${HOME}/.kube/control-plane.yaml"
+    mode: 0600
+  delegate_to: localhost
+  run_once: true
+  become: false

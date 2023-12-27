@@ -1,0 +1,16 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: rke2-cilium
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    kubeProxyReplacement: true
+    k8sServiceHost: "{{ hostvars[groups['k8s_server'][0]]['ansible_zt0']['ipv4']['address'] }}"
+    k8sServicePort: 6443
+    routingMode: native
+    autoDirectNodeRoutes: true
+    ipv4NativeRoutingCIDR: {{ (ansible_zt0.ipv4.address + '/' + ansible_zt0.ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }}
+    ipam:
+      operator:
+        clusterPoolIPv4PodCIDRList: 10.42.0.0/16
