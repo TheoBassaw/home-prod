@@ -1,11 +1,209 @@
-- name: Setup packages
-  ansible.builtin.include_tasks: packages.yaml
+- name: Add gpg keys
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    mode: '0644'
+  loop:
+    - url: https://repositories.timber.io/public/vector/gpg.3543DB2D0A2BC4B8.key
+      dest: /etc/apt/keyrings/timber-vector-archive-keyring.asc
+    - url: https://download.zerotier.com/contact@zerotier.com.gpg
+      dest: /etc/apt/keyrings/zerotier.com.asc
 
-- name: Setup network
-  ansible.builtin.include_tasks: network.yaml
+- name: Add apt repositories
+  ansible.builtin.apt_repository:
+    repo: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - deb [signed-by=/etc/apt/keyrings/timber-vector-archive-keyring.asc] https://repositories.timber.io/public/vector/deb/ubuntu {{ ansible_facts['distribution_release'] }} main
+    - deb [signed-by=/etc/apt/keyrings/zerotier.com.asc] http://download.zerotier.com/debian/{{ ansible_facts['distribution_release'] }} {{ ansible_facts['distribution_release'] }} main
 
-- name: Deploy rke2
-  ansible.builtin.include_tasks: rke2.yaml
+- name: Installing needed applications
+  ansible.builtin.apt:
+    name:
+      - zerotier-one
+      - frr
+      - vector
+    state: present
+    update_cache: true
+  notify: Restart zerotier
 
-- name: Setup logs & metrics
-  ansible.builtin.include_tasks: logging.yaml
+- name: Installing keepalived
+  ansible.builtin.apt:
+    name:
+      - keepalived
+    state: present
+    update_cache: true
+  when: inventory_hostname in groups['k8s_server']
+
+- name: Gather new facts
+  ansible.builtin.setup:
+
+- name: Configure sysctl values
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: true
+    state: present
+    reload: true
+  loop:
+    - name: net.ipv4.ip_forward
+      value: '1'
+    - name: vm.panic_on_oom
+      value: '0'
+    - name: vm.overcommit_memory
+      value: '1'
+    - name: kernel.panic
+      value: '10'
+    - name: kernel.panic_on_oops
+      value: '1'
+
+- name: Allow neccessary ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+  loop:
+    - port: '179'
+      proto: tcp
+    - port: '2379:2381'
+      proto: tcp
+    - port: '4240'
+      proto: tcp
+    - port: '4244:4245'
+      proto: tcp
+    - port: '4250:4251'
+      proto: tcp
+    - port: '6060:6062'
+      proto: tcp
+    - port: '9878:9879'
+      proto: tcp
+    - port: '9890:9891'
+      proto: tcp
+    - port: '9893'
+      proto: tcp
+    - port: '9962:9964'
+      proto: tcp
+    - port: '9345'
+      proto: tcp
+    - port: '6443'
+      proto: tcp
+    - port: '10250'
+      proto: tcp
+    - port: '30000:32767'
+      proto: tcp
+
+- name: Allow keepalived multicast
+  community.general.ufw:
+    rule: allow
+    to: '224.0.0.18'
+
+- name: Ensure config directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0644
+  loop:
+    - /etc/rancher/rke2
+    - /var/lib/rancher/rke2/server/manifests
+
+- name: Write config files
+  ansible.builtin.copy: 
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - src: daemons
+      dest: /etc/frr/daemons
+    - src: zerotier-conf.json
+      dest: /var/lib/zerotier-one/local.conf
+  notify: 
+    - Restart frr
+    - Restart zerotier
+
+- name: Write additional config files
+  ansible.builtin.template: 
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - src: frr.conf.j2
+      dest: /etc/frr/frr.conf
+    - src: vector.yaml.j2
+      dest: /etc/vector/vector.yaml
+  notify: 
+    - Restart frr
+    - Restart vector
+
+- name: Write keepalived config file
+  ansible.builtin.template:
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+  notify: Restart keepalived
+  when: inventory_hostname in groups['k8s_server']
+
+- name: Create etcd group
+  ansible.builtin.group:
+    name: etcd
+    state: present
+
+- name: Create etcd user
+  ansible.builtin.user:
+    name: etcd
+    group: etcd
+    shell: /sbin/nologin
+    system: true
+    create_home: false
+    state: present
+
+- name: Download rke2 binary
+  ansible.builtin.get_url:
+    url: https://github.com/rancher/rke2/releases/download/{{ rke2_version }}/rke2.linux-arm64
+    checksum: sha256:https://github.com/rancher/rke2/releases/download/{{ rke2_version }}/sha256sum-arm64.txt
+    dest: /usr/local/bin/rke2
+    mode: 0755
+
+- name: Copy rke2 config files
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  loop:
+    - src: config.yaml.j2
+      dest: /etc/rancher/rke2/config.yaml
+    - src: rke2-server.service.j2
+      dest: /etc/systemd/system/rke2-server.service
+    - src: cilium.yaml.j2
+      dest: /var/lib/rancher/rke2/server/manifests/cilium.yaml
+
+- name: Copy additional rke2 config files
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  loop:
+    - src: audit-policy.yaml
+      dest: /etc/rancher/rke2/audit-policy.yaml
+
+- name: Enable rke2 service
+  ansible.builtin.systemd:
+    name: rke2-server
+    enabled: true
+    state: started
+  register: rke2_service
+  until: rke2_service is succeeded
+  retries: 5
+
+- name: Get Kubernetes config file
+  ansible.builtin.slurp:
+    src: /etc/rancher/rke2/rke2.yaml
+  register: kubeconfig_base64
+  when: inventory_hostname in groups['k8s_server']
+  run_once: true
+
+- name: Write Kubernetes config file with the correct cluster address
+  ansible.builtin.copy:
+    content: "{{ kubeconfig_base64.content | b64decode | replace('127.0.0.1', (k8s_control_vip | ansible.utils.ipv4('address')) ) }}"
+    dest: "~/.kube/control-plane.yaml"
+    mode: 0600
+  delegate_to: localhost
+  run_once: true
+  become: false

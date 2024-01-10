@@ -3,6 +3,12 @@
     name: bind9
     state: restarted
 
+- name: Restart conntrackd
+  ansible.builtin.service:
+    name: conntrackd
+    enabled: true
+    state: restarted
+
 - name: Restart frr
   ansible.builtin.service: 
     name: frr

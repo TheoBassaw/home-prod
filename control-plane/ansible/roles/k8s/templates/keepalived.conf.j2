@@ -1,3 +1,7 @@
+global_defs {
+    dynamic_interfaces
+}
+
 vrrp_script chk_rke2 {
     script "pgrep rke2"
     interval 5

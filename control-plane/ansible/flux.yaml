@@ -1,0 +1,24 @@
+- become: false
+  hosts: localhost
+  name: Flux bootstrap
+  environment:
+    K8S_AUTH_KUBECONFIG: "{{ lookup('ansible.builtin.env', 'HOME') }}/.kube/control-plane.yaml"
+  vars_files:
+    - vars/flux.yaml
+  tasks:
+    - name: Deploy flux
+      ansible.builtin.command:
+        argv:
+          - flux
+          - bootstrap
+          - gitlab
+          - --deploy-token-auth
+          - --owner={{ gitlab_owner }}
+          - --repository=k8s
+          - --branch=main
+          - --path=clusters/control-plane
+          - --kubeconfig={{ lookup('ansible.builtin.env', 'HOME') }}/.kube/control-plane.yaml
+          - --private=false
+          - --personal
+      register: result
+      changed_when: result.rc != 0  

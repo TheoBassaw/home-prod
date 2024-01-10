@@ -1,6 +1,15 @@
 resource "zerotier_network" "overlay" {
   name = local.network.overlay.name
 
+  assign_ipv4 {
+    zerotier = true
+  }
+
+  assignment_pool {
+    start = cidrhost(local.network.overlay.network, 200)
+    end   = cidrhost(local.network.overlay.network, 250)
+  }
+
   route {
     target = local.network.overlay.network
   }

@@ -1,3 +1,7 @@
+global_defs {
+    dynamic_interfaces
+}
+
 vrrp_instance VI_1 {
     state BACKUP
     interface {{ ansible_zt1.device }}
