@@ -14,3 +14,14 @@ spec:
     ipam:
       operator:
         clusterPoolIPv4PodCIDRList: 10.42.0.0/16
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  namespace: kube-system
+  name: external-secrets
+spec:
+  targetNamespace: external-secrets
+  createNamespace: true
+  chart: external-secrets
+  repo: https://charts.external-secrets.io

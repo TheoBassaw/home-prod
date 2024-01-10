@@ -1,6 +1,8 @@
 - become: true
   hosts: all
   name: Configure control-plane
+  environment:
+    K8S_AUTH_KUBECONFIG: "{{ lookup('ansible.builtin.env', 'HOME') }}/.kube/control-plane.yaml"
   vars_files:
     - vars/control-plane.yaml
   tasks:

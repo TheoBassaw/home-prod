@@ -171,8 +171,8 @@
       dest: /etc/rancher/rke2/config.yaml
     - src: rke2-server.service.j2
       dest: /etc/systemd/system/rke2-server.service
-    - src: cilium.yaml.j2
-      dest: /var/lib/rancher/rke2/server/manifests/cilium.yaml
+    - src: bootstrap.yaml.j2
+      dest: /var/lib/rancher/rke2/server/manifests/bootstrap.yaml
 
 - name: Copy additional rke2 config files
   ansible.builtin.copy:
@@ -204,6 +204,42 @@
     content: "{{ kubeconfig_base64.content | b64decode | replace('127.0.0.1', (k8s_control_vip | ansible.utils.ipv4('address')) ) }}"
     dest: "~/.kube/control-plane.yaml"
     mode: 0600
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: Create doppler secret
+  kubernetes.core.k8s:
+    wait: true
+    definition:
+      - apiVersion: v1
+        kind: Secret
+        metadata:
+          name: doppler-token-auth-api
+          namespace: external-secrets
+        type: Opaque
+        stringData:
+          dopplerToken: "{{ doppler_token }}"
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: Deploy flux
+  ansible.builtin.command:
+    argv:
+      - flux
+      - bootstrap
+      - gitlab
+      - --deploy-token-auth
+      - --owner={{ gitlab_owner }}
+      - --repository=k8s
+      - --branch=main
+      - --path=clusters/control-plane
+      - --kubeconfig={{ lookup('ansible.builtin.env', 'HOME') }}/.kube/control-plane.yaml
+      - --private=false
+      - --personal
+  register: result
+  changed_when: result.rc != 0
   delegate_to: localhost
   run_once: true
   become: false
