@@ -171,8 +171,8 @@
       dest: /etc/rancher/rke2/config.yaml
     - src: rke2-server.service.j2
       dest: /etc/systemd/system/rke2-server.service
-    - src: bootstrap.yaml.j2
-      dest: /var/lib/rancher/rke2/server/manifests/bootstrap.yaml
+    - src: cilium.yaml.j2
+      dest: /var/lib/rancher/rke2/server/manifests/cilium.yaml
 
 - name: Copy additional rke2 config files
   ansible.builtin.copy:
@@ -212,6 +212,10 @@
   kubernetes.core.k8s:
     wait: true
     definition:
+      - apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: external-secrets
       - apiVersion: v1
         kind: Secret
         metadata:
