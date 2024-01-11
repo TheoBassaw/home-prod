@@ -6,6 +6,8 @@ sources:
       - /var/log/frr/frr.log
   host_metrics:
     type: host_metrics
+  internal_metrics:
+    type: internal_metrics
 sinks:
   logs:
     type: http
@@ -27,6 +29,7 @@ sinks:
     type: prometheus_remote_write
     inputs:
       - host_metrics
+      - internal_metrics
     endpoint: https://api.openobserve.ai/api/theophilus_organization_3270_OdMjjaUJw5nt7C9/prometheus/api/v1/write
     auth:
       strategy: basic
