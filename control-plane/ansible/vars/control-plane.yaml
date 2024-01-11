@@ -6,5 +6,5 @@ ingress_vip: 10.30.1.1/24
 rke2_version: v1.29.0+rke2r1
 rke2_token: "{{ lookup('ansible.builtin.env', 'RKE2_TOKEN') }}"
 tsig_key: "{{ lookup('ansible.builtin.env', 'TSIG_KEY') }}"
-observe_user: "{{ lookup('ansible.builtin.env', 'OBSERVE_USER') }}"
-observe_pass: "{{ lookup('ansible.builtin.env', 'OBSERVE_PASS') }}"
+openobserve_user: "{{ lookup('ansible.builtin.env', 'OPENOBSERVE_USER') }}"
+openobserve_pass: "{{ lookup('ansible.builtin.env', 'OPENOBSERVE_PASS') }}"

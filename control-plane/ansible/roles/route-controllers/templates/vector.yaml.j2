@@ -17,8 +17,8 @@ sinks:
     method: post
     auth:
       strategy: basic
-      user: {{ observe_user }}
-      password: {{ observe_pass }}
+      user: {{ openobserve_user }}
+      password: {{ openobserve_pass }}
     compression: gzip
     encoding:
       codec: json
@@ -33,7 +33,7 @@ sinks:
     endpoint: https://api.openobserve.ai/api/theophilus_organization_3270_OdMjjaUJw5nt7C9/prometheus/api/v1/write
     auth:
       strategy: basic
-      user: {{ observe_user }}
-      password: {{ observe_pass }}
+      user: {{ openobserve_user }}
+      password: {{ openobserve_pass }}
     healthcheck:
       enabled: false
