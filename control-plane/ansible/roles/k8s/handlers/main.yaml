@@ -9,11 +9,6 @@
     enabled: true
     state: restarted
 
-- name: Restart vector
-  ansible.builtin.service: 
-    name: vector
-    state: restarted
-
 - name: Restart zerotier
   ansible.builtin.service:
     name: zerotier-one

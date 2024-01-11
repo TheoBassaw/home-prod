@@ -4,8 +4,6 @@
     dest: "{{ item.dest }}"
     mode: '0644'
   loop:
-    - url: https://repositories.timber.io/public/vector/gpg.3543DB2D0A2BC4B8.key
-      dest: /etc/apt/keyrings/timber-vector-archive-keyring.asc
     - url: https://download.zerotier.com/contact@zerotier.com.gpg
       dest: /etc/apt/keyrings/zerotier.com.asc
 
@@ -15,7 +13,6 @@
     state: present
     update_cache: yes
   loop:
-    - deb [signed-by=/etc/apt/keyrings/timber-vector-archive-keyring.asc] https://repositories.timber.io/public/vector/deb/ubuntu {{ ansible_facts['distribution_release'] }} main
     - deb [signed-by=/etc/apt/keyrings/zerotier.com.asc] http://download.zerotier.com/debian/{{ ansible_facts['distribution_release'] }} {{ ansible_facts['distribution_release'] }} main
 
 - name: Installing needed applications
@@ -23,7 +20,6 @@
     name:
       - zerotier-one
       - frr
-      - vector
     state: present
     update_cache: true
   notify: Restart zerotier
@@ -127,11 +123,8 @@
   loop:
     - src: frr.conf.j2
       dest: /etc/frr/frr.conf
-    - src: vector.yaml.j2
-      dest: /etc/vector/vector.yaml
   notify: 
     - Restart frr
-    - Restart vector
 
 - name: Write keepalived config file
   ansible.builtin.template:
