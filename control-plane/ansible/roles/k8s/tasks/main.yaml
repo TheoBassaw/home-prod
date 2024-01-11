@@ -194,7 +194,7 @@
 
 - name: Write Kubernetes config file with the correct cluster address
   ansible.builtin.copy:
-    content: "{{ kubeconfig_base64.content | b64decode | replace('127.0.0.1', (k8s_control_vip | ansible.utils.ipv4('address')) ) }}"
+    content: "{{ kubeconfig_base64.content | b64decode | replace(hostvars[groups['k8s_server'][0]]['ansible_zt0']['ipv4']['address'], (k8s_control_vip | ansible.utils.ipv4('address'))) }}"
     dest: "~/.kube/control-plane.yaml"
     mode: 0600
   delegate_to: localhost
