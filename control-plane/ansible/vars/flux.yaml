@@ -1,2 +1,2 @@
-gitlab_owner: TheDarkBrotherhood
+gitlab_owner: "{{ lookup('ansible.builtin.env', 'TF_HTTP_USERNAME') }}"
 doppler_token: "{{ lookup('ansible.builtin.env', 'K8S_DOPPLER_TOKEN') }}"
