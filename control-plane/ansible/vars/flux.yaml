@@ -1,2 +1,2 @@
 gitlab_owner: TheDarkBrotherhood
-doppler_token: "{{ lookup('ansible.builtin.env', 'DOPPLER_TOKEN') }}"
+doppler_token: "{{ lookup('ansible.builtin.env', 'K8S_DOPPLER_TOKEN') }}"
