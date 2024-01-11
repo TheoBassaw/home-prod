@@ -1,0 +1,2 @@
+gitlab_owner: TheDarkBrotherhood
+doppler_token: "{{ lookup('ansible.builtin.env', 'DOPPLER_TOKEN') }}"

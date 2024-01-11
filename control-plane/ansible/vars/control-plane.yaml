@@ -8,5 +8,3 @@ rke2_token: "{{ lookup('ansible.builtin.env', 'RKE2_TOKEN') }}"
 tsig_key: "{{ lookup('ansible.builtin.env', 'TSIG_KEY') }}"
 observe_user: "{{ lookup('ansible.builtin.env', 'OBSERVE_USER') }}"
 observe_pass: "{{ lookup('ansible.builtin.env', 'OBSERVE_PASS') }}"
-gitlab_owner: TheDarkBrotherhood
-doppler_token: "{{ lookup('ansible.builtin.env', 'DOPPLER_TOKEN') }}"
