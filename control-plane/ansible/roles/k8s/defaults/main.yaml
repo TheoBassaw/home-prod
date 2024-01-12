@@ -1,4 +1,4 @@
-asn: "{{ lookup('ansible.builtin.env', 'ASN') }}"
-k8s_control_vip: "{{ lookup('ansible.builtin.env', 'K8S_CONTROL_VIP') }}"
+asn: "212364"
+k8s_control_vip: 10.30.0.13/24
 rke2_version: v1.29.0+rke2r1
 rke2_token: "{{ lookup('ansible.builtin.env', 'RKE2_TOKEN') }}"

@@ -1,7 +1,7 @@
-asn: "{{ lookup('ansible.builtin.env', 'ASN') }}"
-aggregate_network: "{{ lookup('ansible.builtin.env', 'AGGREGATE_NETWORK') }}"
-reverse_zone: "{{ lookup('ansible.builtin.env', 'REVERSE_ZONE') }}"
-ingress_vip: "{{ lookup('ansible.builtin.env', 'INGRESS_VIP') }}"
+asn: "212364"
+aggregate_network: 10.30.0.0/16
+reverse_zone: 30.10.in-addr.arpa
+ingress_vip: 10.30.1.1/24
 tsig_key: "{{ lookup('ansible.builtin.env', 'TSIG_KEY') }}"
 openobserve_user: "{{ lookup('ansible.builtin.env', 'OPENOBSERVE_USER') }}"
 openobserve_pass: "{{ lookup('ansible.builtin.env', 'OPENOBSERVE_PASS') }}"
