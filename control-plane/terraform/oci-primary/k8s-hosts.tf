@@ -1,18 +1,17 @@
 resource "zerotier_identity" "k8s_hosts" {
-  for_each = var.k8s_hosts
+  for_each = { for k,v in var.hosts: k => v if v.type == "k8s-server"}
 }
 
 resource "zerotier_member" "k8s_hosts" {
-  for_each = var.k8s_hosts
+  for_each = { for k,v in var.hosts: k => v if v.type == "k8s-server"}
 
   name           = each.value.host_name
   member_id      = zerotier_identity.k8s_hosts[each.key].id
   network_id     = var.zt_overlay_id
-  ip_assignments = [each.value.overlay_ip]
 }
 
 data "cloudinit_config" "k8s_hosts" {
-  for_each = var.k8s_hosts
+  for_each = { for k,v in var.hosts: k => v if v.type == "k8s-server"}
 
   gzip          = true
   base64_encode = true
@@ -32,7 +31,7 @@ data "cloudinit_config" "k8s_hosts" {
 }
 
 resource "oci_core_instance" "k8s_hosts" {
-  for_each = var.k8s_hosts
+  for_each = { for k,v in var.hosts: k => v if v.type == "k8s-server"}
 
   compartment_id      = var.compartment_id
   availability_domain = data.oci_identity_availability_domains.ads.availability_domains[each.value.availability_domain].name
