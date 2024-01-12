@@ -1,9 +1,9 @@
 resource "zerotier_identity" "route_controllers" {
-  for_each = { for k,v in var.hosts: k => v if v.type == "route-controller"}
+  for_each = { for k,v in var.hosts: k => v if v.type == "route_controller"}
 }
 
 resource "zerotier_member" "route_controllers" {
-  for_each = { for k,v in var.hosts: k => v if v.type == "route-controller"}
+  for_each = { for k,v in var.hosts: k => v if v.type == "route_controller"}
 
   name           = each.value.host_name
   member_id      = zerotier_identity.route_controllers[each.key].id
@@ -11,7 +11,7 @@ resource "zerotier_member" "route_controllers" {
 }
 
 resource "zerotier_member" "ingress_controllers" {
-  for_each = { for k,v in var.hosts: k => v if v.type == "route-controller"}
+  for_each = { for k,v in var.hosts: k => v if v.type == "route_controller"}
 
   name           = each.value.host_name
   member_id      = zerotier_identity.route_controllers[each.key].id
@@ -19,7 +19,7 @@ resource "zerotier_member" "ingress_controllers" {
 }
 
 data "cloudinit_config" "route_controllers" {
-  for_each = { for k,v in var.hosts: k => v if v.type == "route-controller"}
+  for_each = { for k,v in var.hosts: k => v if v.type == "route_controller"}
   gzip          = true
   base64_encode = true
 
@@ -39,7 +39,7 @@ data "cloudinit_config" "route_controllers" {
 }
 
 resource "oci_core_instance" "route_controllers" {
-  for_each = { for k,v in var.hosts: k => v if v.type == "route-controller"}
+  for_each = { for k,v in var.hosts: k => v if v.type == "route_controller"}
 
   compartment_id      = var.compartment_id
   availability_domain = data.oci_identity_availability_domains.ads.availability_domains[each.value.availability_domain].name

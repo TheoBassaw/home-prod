@@ -1,0 +1,34 @@
+- name: Create doppler secret
+  kubernetes.core.k8s:
+    kubeconfig: "{{ lookup('ansible.builtin.env', 'HOME') }}/.kube/control-plane.yaml"
+    wait: true
+    definition:
+      - apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: external-secrets
+      - apiVersion: v1
+        kind: Secret
+        metadata:
+          name: doppler-token-auth-api
+          namespace: external-secrets
+        type: Opaque
+        stringData:
+          dopplerToken: "{{ doppler_token }}"
+
+- name: Deploy flux
+  ansible.builtin.command:
+    argv:
+      - flux
+      - bootstrap
+      - gitlab
+      - --deploy-token-auth
+      - --owner={{ gitlab_owner }}
+      - --repository=k8s
+      - --branch=main
+      - --path=clusters/control-plane
+      - --kubeconfig={{ lookup('ansible.builtin.env', 'HOME') }}/.kube/control-plane.yaml
+      - --private=false
+      - --personal
+  register: result
+  changed_when: result.rc != 0

@@ -1,8 +1,6 @@
 - become: true
   hosts: all
   name: Configure control-plane
-  vars_files:
-    - vars/control-plane.yaml
   tasks:
     - name: Configure route controllers
       ansible.builtin.include_role: 

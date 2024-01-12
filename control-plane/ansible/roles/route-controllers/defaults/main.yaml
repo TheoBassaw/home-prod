@@ -1,10 +1,7 @@
 asn: "{{ lookup('ansible.builtin.env', 'ASN') }}"
 aggregate_network: "{{ lookup('ansible.builtin.env', 'AGGREGATE_NETWORK') }}"
 reverse_zone: "{{ lookup('ansible.builtin.env', 'REVERSE_ZONE') }}"
-k8s_control_vip: "{{ lookup('ansible.builtin.env', 'K8S_CONTROL_VIP') }}"
 ingress_vip: "{{ lookup('ansible.builtin.env', 'INGRESS_VIP') }}"
-rke2_version: v1.29.0+rke2r1
-rke2_token: "{{ lookup('ansible.builtin.env', 'RKE2_TOKEN') }}"
 tsig_key: "{{ lookup('ansible.builtin.env', 'TSIG_KEY') }}"
 openobserve_user: "{{ lookup('ansible.builtin.env', 'OPENOBSERVE_USER') }}"
 openobserve_pass: "{{ lookup('ansible.builtin.env', 'OPENOBSERVE_PASS') }}"

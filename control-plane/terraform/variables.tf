@@ -91,17 +91,17 @@ variable "PRIMARY_HOSTS" {
     route_controller_1 = {
       availability_domain = 0
       host_name           = "route-controller-1"
-      type                = "route-controller"
+      type                = "route_controller"
     }
     route_controller_2 = {
       availability_domain = 1
       host_name           = "route-controller-2"
-      type                = "route-controller"
+      type                = "route_controller"
     }
     k8s_control_1 = {
       availability_domain = 1
       host_name           = "k8s-control-1"
-      type                = "k8s-server"
+      type                = "k8s_server"
     }
   }
 }
@@ -117,12 +117,12 @@ variable "SECONDARY_HOSTS" {
     k8s_control_2 = {
       availability_domain = 0
       host_name           = "k8s-control-2"
-      type                = "k8s-server"
+      type                = "k8s_server"
     }
     k8s_control_3 = {
       availability_domain = 2
       host_name           = "k8s-control-3"
-      type                = "k8s-server"
+      type                = "k8s_server"
     }
   }
 }
