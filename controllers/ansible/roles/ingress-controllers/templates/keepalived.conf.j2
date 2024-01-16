@@ -1,0 +1,14 @@
+global_defs {
+    dynamic_interfaces
+}
+
+vrrp_instance VI_1 {
+    state BACKUP
+    interface {{ ansible_zt1.device }}
+    virtual_router_id 50
+    priority 50
+    advert_int 5
+    virtual_ipaddress {
+        {{ ingress_vip }}
+    }
+}

@@ -1,0 +1,27 @@
+frr defaults datacenter
+log syslog informational
+service integrated-vtysh-config
+!
+router bgp {{ asn }}
+ bgp router-id {{ ansible_zt0.ipv4.address }}
+ bgp log-neighbor-changes
+ bgp graceful-restart
+ neighbor mesh peer-group
+ neighbor mesh remote-as {{ asn }}
+ bgp listen range {{ (ansible_zt0.ipv4.address + '/' + ansible_zt0.ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }} peer-group mesh
+ !
+ address-family ipv4 unicast
+  network {{ (ansible_zt1.ipv4.address + '/' + ansible_zt1.ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }}
+  neighbor mesh activate
+  neighbor mesh route-reflector-client
+  neighbor mesh soft-reconfiguration inbound
+  neighbor mesh route-map ALLOWED in
+ exit-address-family
+!
+access-list ALLOWED permit {{ aggregate_network }}
+!
+route-map ALLOWED permit 10
+ match ip address ALLOWED
+!
+line vty
+!

@@ -1,0 +1,20 @@
+key "tsig-key" {
+  algorithm hmac-sha512;
+	secret "{{ tsig_key }}";
+};
+
+zone "{{ ansible_domain }}" {
+  type master;
+  file "/var/lib/bind/db.{{ ansible_domain }}";
+  update-policy {
+	  grant tsig-key zonesub ANY;
+  };
+};
+
+zone "{{ reverse_zone }}" {
+  type master;
+  file "/var/lib/bind/db.{{ reverse_zone }}";
+  update-policy {
+	  grant tsig-key zonesub ANY;
+  };
+};

@@ -1,0 +1,13 @@
+- become: true
+  hosts: all
+  name: Configure control-plane
+  tasks:
+    - name: Configure route controllers
+      ansible.builtin.include_role: 
+        name: route-controllers
+      when: inventory_hostname in groups['route_controllers']
+
+    - name: Configure ingress controllers
+      ansible.builtin.include_role: 
+        name: ingress-controllers
+      when: inventory_hostname in groups['ingress_controllers']

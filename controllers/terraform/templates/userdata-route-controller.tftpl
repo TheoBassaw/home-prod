@@ -42,8 +42,9 @@ write_files:
     content: ""
 
   - path: /var/lib/zerotier-one/devicemap
-    content: | 
+    content: |
       ${zt_overlay}=zt0
+
 
 runcmd:
   - iptables -F # Disable Oracle Cloud Firewall

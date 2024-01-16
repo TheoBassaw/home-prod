@@ -1,17 +1,17 @@
 resource "zerotier_network" "overlay" {
-  name = var.OVERLAY_NAME
+  name = var.overlay_name
 
   assign_ipv4 {
     zerotier = true
   }
 
   assignment_pool {
-    start = cidrhost(var.OVERLAY_NETWORK, 100)
-    end   = cidrhost(var.OVERLAY_NETWORK, 250)
+    start = cidrhost(var.overlay_network, 100)
+    end   = cidrhost(var.overlay_network, 250)
   }
 
   route {
-    target = var.OVERLAY_NETWORK
+    target = var.overlay_network
   }
 
   enable_broadcast = true
@@ -20,24 +20,24 @@ resource "zerotier_network" "overlay" {
 }
 
 resource "zerotier_network" "ingress" {
-  name = var.INGRESS_NAME
+  name = var.ingress_name
 
   assign_ipv4 {
     zerotier = true
   }
 
   assignment_pool {
-    start = cidrhost(var.INGRESS_NETWORK, 10)
-    end   = cidrhost(var.INGRESS_NETWORK, 250)
+    start = cidrhost(var.ingress_network, 10)
+    end   = cidrhost(var.ingress_network, 250)
   }
 
   route {
-    target = var.INGRESS_NETWORK
+    target = var.ingress_network
   }
 
   route {
-    target = var.AGGREGATE_NETWORK
-    via    = var.INGRESS_VIP
+    target = var.aggregate_network
+    via    = var.ingress_vip
   }
 
   enable_broadcast = true

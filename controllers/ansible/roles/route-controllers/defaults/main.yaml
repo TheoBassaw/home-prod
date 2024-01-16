@@ -1,0 +1,6 @@
+asn: "212364"
+aggregate_network: 10.30.0.0/16
+reverse_zone: 30.10.in-addr.arpa
+tsig_key: "{{ lookup('ansible.builtin.env', 'TSIG_KEY') }}"
+openobserve_user: "{{ lookup('ansible.builtin.env', 'OPENOBSERVE_USER') }}"
+openobserve_pass: "{{ lookup('ansible.builtin.env', 'OPENOBSERVE_PASS') }}"
