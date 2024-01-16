@@ -11,7 +11,6 @@ router bgp {{ asn }}
  bgp listen range {{ (ansible_zt0.ipv4.address + '/' + ansible_zt0.ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }} peer-group mesh
  !
  address-family ipv4 unicast
-  network {{ (ansible_zt1.ipv4.address + '/' + ansible_zt1.ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }}
   neighbor mesh activate
   neighbor mesh route-reflector-client
   neighbor mesh soft-reconfiguration inbound

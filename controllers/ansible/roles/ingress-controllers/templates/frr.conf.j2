@@ -11,6 +11,7 @@ router bgp {{ asn }}
 {% endfor %}
  !
  address-family ipv4 unicast
+  network {{ (ansible_zt1.ipv4.address + '/' + ansible_zt1.ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }}
 {% for host in groups['route_controllers'] %}
   neighbor {{ hostvars[host]['ansible_zt0']['ipv4']['address'] }} activate
   neighbor {{ hostvars[host]['ansible_zt0']['ipv4']['address'] }} soft-reconfiguration inbound
