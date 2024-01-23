@@ -1,9 +1,0 @@
-plugin: oracle.oci.oci
- 
-config_file: ~/.oci/config
-enable_parallel_processing: yes
-config_profile: SECONDARY
-
-groups:
-  k8s_server: "'k8s_server' == freeform_tags.type"
-  k8s_agent: "'k8s_agent' == freeform_tags.type"

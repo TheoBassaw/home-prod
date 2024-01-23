@@ -1,7 +1,0 @@
-- become: false
-  hosts: localhost
-  name: Flux bootstrap
-  tasks:
-    - name: Configure route controllers
-      ansible.builtin.include_role: 
-        name: flux
