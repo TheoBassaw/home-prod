@@ -82,3 +82,29 @@ resource "oci_core_security_list" "public_sl" {
     }
   }
 }
+
+resource "oci_network_load_balancer_network_load_balancer" "ingress_nlb" {
+  compartment_id                 = var.oci.compartment_id
+  display_name                   = "Ingress NLB"
+  subnet_id                      = oci_core_subnet.control_public.id
+  is_private                     = false
+  is_preserve_source_destination = false
+}
+
+resource "oci_network_load_balancer_backend_set" "bastion_backend_set" {
+  name                     = "Bastion Backend Set"
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.ingress_nlb.id
+  policy                   = "FIVE_TUPLE"
+
+  health_checker {
+    protocol = "TCP"
+  }
+}
+
+resource "oci_network_load_balancer_listener" "bastion_listener" {
+  default_backend_set_name = oci_network_load_balancer_backend_set.bastion_backend_set.name
+  name                     = "Bastion_Listener"
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.ingress_nlb.id
+  port                     = 22
+  protocol                 = "TCP_AND_UDP"
+}

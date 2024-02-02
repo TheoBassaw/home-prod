@@ -47,3 +47,12 @@ resource "oci_core_instance" "ingresses" {
     source_type = var.oci.source_type
   }
 }
+
+resource "oci_network_load_balancer_backend" "bastion_backend" {
+  for_each = var.ingresses
+
+  backend_set_name         = oci_network_load_balancer_backend_set.bastion_backend_set.name
+  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.ingress_nlb.id
+  port                     = 22
+  ip_address               = oci_core_instance.ingresses[each.key].private_ip
+}
