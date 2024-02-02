@@ -31,6 +31,12 @@
 - name: Gather new facts
   ansible.builtin.setup:
 
+- name: Enable tcp forwarding
+  ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^AllowTcpForwarding|^#AllowTcpForwarding'
+      line: 'AllowTcpForwarding yes'
+
 - name: Enable ip forwarding
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
