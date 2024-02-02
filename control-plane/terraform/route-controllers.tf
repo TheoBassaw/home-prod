@@ -1,15 +1,3 @@
-resource "zerotier_identity" "route_controllers" {
-  for_each = var.route_controllers
-}
-
-resource "zerotier_member" "route_controllers" {
-  for_each = var.route_controllers
-
-  name       = each.value.host_name
-  member_id  = zerotier_identity.route_controllers[each.key].id
-  network_id = var.zt_overlay_id
-}
-
 data "cloudinit_config" "route_controllers" {
   for_each = var.route_controllers
   
@@ -20,12 +8,12 @@ data "cloudinit_config" "route_controllers" {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
 
-    content = templatefile("${path.module}/templates/userdata-route-controller.tftpl", {
+    content = templatefile("${path.root}/templates/userdata.tftpl", {
       "host_name"  = each.value.host_name
       "domain"     = var.domain
       "zt_public"  = zerotier_identity.route_controllers[each.key].public_key
       "zt_private" = zerotier_identity.route_controllers[each.key].private_key
-      "zt_overlay" = var.zt_overlay_id
+      "zt_overlay" = zerotier_network.overlay.id
     })
   }
 }

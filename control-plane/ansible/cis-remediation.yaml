@@ -28,9 +28,8 @@
         ubtu22cis_dns_server: true
       when: inventory_hostname in groups['route_controllers']
     
-    - name: Hardening other nodes
+    - name: Hardening ingresses
       ansible.builtin.include_role:
         name: UBUNTU22-CIS
       when: 
-        - inventory_hostname in groups['ingresses'] or
-          inventory_hostname in groups['bastions']
+        - inventory_hostname in groups['ingresses']

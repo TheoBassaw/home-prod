@@ -19,28 +19,28 @@ resource "zerotier_network" "overlay" {
   flow_rules       = "accept;"
 }
 
-resource "zerotier_network" "bastion" {
-  name = var.network.bastion_name
+resource "zerotier_identity" "route_controllers" {
+  for_each = var.route_controllers
+}
 
-  assign_ipv4 {
-    zerotier = true
-  }
+resource "zerotier_member" "route_controllers" {
+  for_each = var.route_controllers
 
-  assignment_pool {
-    start = cidrhost(var.network.bastion_network, 10)
-    end   = cidrhost(var.network.bastion_network, 250)
-  }
+  name           = each.value.host_name
+  member_id      = zerotier_identity.route_controllers[each.key].id
+  network_id     = zerotier_network.overlay.id
+  ip_assignments = [each.value.zerotier_ip]
+}
 
-  route {
-    target = var.network.bastion_network
-  }
+resource "zerotier_identity" "ingresses" {
+  for_each = var.ingresses
+}
 
-  route {
-    target = var.network.aggregate_network
-    via    = var.network.bastion_vip
-  }
+resource "zerotier_member" "ingresses" {
+  for_each = var.ingresses
 
-  enable_broadcast = true
-  private          = true
-  flow_rules       = "accept;"
+  name           = each.value.host_name
+  member_id      = zerotier_identity.ingresses[each.key].id
+  network_id     = zerotier_network.overlay.id
+  ip_assignments = [each.value.zerotier_ip]
 }

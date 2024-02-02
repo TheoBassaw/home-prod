@@ -1,15 +1,3 @@
-resource "zerotier_identity" "ingresses" {
-  for_each = var.ingresses
-}
-
-resource "zerotier_member" "ingresses" {
-  for_each = var.ingresses
-
-  name       = each.value.host_name
-  member_id  = zerotier_identity.ingresses[each.key].id
-  network_id = var.zt_overlay_id
-}
-
 data "cloudinit_config" "ingresses" {
   for_each = var.ingresses
   
@@ -20,12 +8,12 @@ data "cloudinit_config" "ingresses" {
     filename     = "init.cfg"
     content_type = "text/cloud-config"
 
-    content = templatefile("${path.module}/templates/userdata-host.tftpl", {
+    content = templatefile("${path.root}/templates/userdata.tftpl", {
       "host_name"  = each.value.host_name
       "domain"     = var.domain
       "zt_public"  = zerotier_identity.ingresses[each.key].public_key
       "zt_private" = zerotier_identity.ingresses[each.key].private_key
-      "zt_overlay" = var.zt_overlay_id
+      "zt_overlay" = zerotier_network.overlay.id
     })
   }
 }

@@ -11,8 +11,3 @@
       ansible.builtin.include_role: 
         name: ingress
       when: inventory_hostname in groups['ingresses']
-
-    - name: Configure bastions
-      ansible.builtin.include_role: 
-        name: bastion
-      when: inventory_hostname in groups['bastions']
