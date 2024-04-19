@@ -1,0 +1,15 @@
+$ORIGIN paradisenetworkz.com.
+$TTL 3600      ; 1 hour
+@                                               IN  SOA     {{ ansible_fqdn }}. info.paradisenetworkz.com. (
+                                                                1          ; serial
+                                                                604800     ; refresh (1 week)
+                                                                86400      ; retry (1 day)
+                                                                2419200    ; expire (4 weeks)
+                                                                604800     ; minimum (1 week)
+                                                            )
+
+                                                IN  NS      ingress-router-1.paradisenetworkz.com.
+                                                IN  NS      ingress-router-2.paradisenetworkz.com.
+
+ingress-router-1                                IN  A       10.30.8.1
+ingress-router-2                                IN  A       10.30.8.2

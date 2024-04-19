@@ -1,0 +1,67 @@
+- name: Installing Required Applications
+  ansible.builtin.apt:
+    name:
+      - conntrack
+      - conntrackd
+      - frr
+      - keepalived
+    state: present
+    update_cache: true
+
+- name: Enabling IP Forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_set: true
+    state: present
+    reload: true
+
+- name: Opening Ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+  loop:
+    - port: '179'
+      proto: tcp
+    - port: '3780'
+      proto: udp
+
+- name: Allowing Ingress
+  community.general.ufw:
+    rule: allow
+    route: true
+    src: "{{ aggregate_network | ansible.utils.ipsubnet(24, 9) }}"
+    dest: "{{ aggregate_network }}"
+
+- name: Allowing Multicast
+  community.general.ufw:
+    rule: allow
+    to: "{{ item }}"
+  loop: 
+    - '224.0.0.18' # Keepalived
+    - '224.0.0.5'  # OSPF
+    - '224.0.0.6'  # OSPF
+
+- name: Writing Config Files
+  block:
+    - ansible.builtin.copy: 
+        src: daemons
+        dest: /etc/frr/daemons
+      notify:
+        - Restart Frr
+
+    - ansible.builtin.template: 
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      loop:
+        - src: frr.conf.j2
+          dest: /etc/frr/frr.conf
+        - src: keepalived.conf.j2
+          dest: /etc/keepalived/keepalived.conf
+        - src: conntrackd.conf.j2
+          dest: /etc/conntrackd/conntrackd.conf
+      notify:
+        - Restart Frr
+        - Restart Keepalived
+        - Restart Conntrackd

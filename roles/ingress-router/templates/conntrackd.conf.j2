@@ -1,0 +1,54 @@
+Sync {
+    Mode FTFW {
+        DisableExternalCache On
+        PurgeTimeout 5
+    }
+
+    UDP {
+        # Dedicated link for connection replication
+        IPv4_address {{ ansible_zt1.ipv4.address }}
+{% if inventory_hostname == groups['ingress_routers'][0] %}
+        IPv4_Destination_Address {{ hostvars[groups['ingress_routers'][1]]['ansible_zt1']['ipv4']['address'] }}
+{% else %}
+        IPv4_Destination_Address {{ hostvars[groups['ingress_routers'][0]]['ansible_zt1']['ipv4']['address'] }}
+{% endif %}
+        Port 3780
+        Interface {{ ansible_zt1.device }}
+        SndSocketBuffer 1249280
+        RcvSocketBuffer 1249280
+        Checksum on
+    }
+}
+
+General {
+    Systemd on
+    Nice -20
+    HashSize 32768
+    HashLimit 131072
+    LogFile on
+    Syslog on
+    NetlinkOverrunResync 5
+    NetlinkEventsReliable on
+    PollSecs 5
+    EventIterationLimit 200
+    LockFile /var/lock/conntrack.lock
+    UNIX {
+        Path /var/run/conntrackd.ctl
+        Backlog 20
+    }
+    NetlinkBufferSize 2097152
+    NetlinkBufferSizeMaxGrowth 8388608
+    Filter From Userspace {
+        Protocol Accept {
+            TCP
+            UDP
+            ICMP
+        }
+        Address Ignore {
+            IPv4_address 127.0.0.1 # loopback
+            IPv4_address 10.30.9.1
+            IPv4_address 10.30.9.2
+            IPv4_address 10.30.9.3
+        }
+    }
+}

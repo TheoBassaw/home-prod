@@ -1,0 +1,8 @@
+plugin: oracle.oci.oci
+ 
+config_file: ~/.oci/config
+config_profile: TERTIARY
+enable_parallel_processing: yes
+
+groups:
+  oci_k8s_masters: "'k8s_master' == freeform_tags.type"

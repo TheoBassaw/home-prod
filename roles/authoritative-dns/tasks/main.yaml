@@ -1,0 +1,38 @@
+- name: Installing Bind9
+  ansible.builtin.apt:
+    name:
+      - bind9
+    state: present
+    update_cache: true
+
+- name: Allow DNS
+  community.general.ufw:
+    rule: allow
+    port: '53'
+
+- name: Writing Config Files
+  block:
+    - ansible.builtin.template: 
+        src: named.conf.local.j2
+        dest: /etc/bind/named.conf.local
+      notify:
+        - Restart Bind9
+
+    - ansible.builtin.copy: 
+        src: named.conf.options
+        dest: /etc/bind/named.conf.options
+      notify:
+        - Restart Bind9
+
+    - ansible.builtin.template: 
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        group: "{{ item.group }}"
+      loop:
+        - src: forward-zone.j2
+          dest: /var/lib/bind/db.db.paradisenetworkz.com
+          group: bind
+        - src: reverse-zone.j2
+          dest: /var/lib/bind/db.30.10.in-addr.arpa
+          group: bind
+      notify: Restart Bind9

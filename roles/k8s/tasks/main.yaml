@@ -1,0 +1,240 @@
+- name: Allow Node Routing
+  block:
+    - name: Installing Frr
+      ansible.builtin.apt:
+        name:
+          - frr
+        state: present
+        update_cache: true
+
+    - name: Allow IP Forwarding
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        sysctl_set: true
+        state: present
+        reload: true
+
+    - name: Allow BGP
+      community.general.ufw:
+        rule: allow
+        port: '179'
+        proto: tcp
+
+    - name: Allow OSPF Multicast
+      community.general.ufw:
+        rule: allow
+        to: "{{ item }}"
+      loop: 
+        - '224.0.0.5'  # OSPF
+        - '224.0.0.6'  # OSPF
+
+    - name: Creating Frr Daemons File
+      ansible.builtin.copy: 
+        src: daemons
+        dest: /etc/frr/daemons
+      notify: 
+        - Restart Frr
+
+    - name: Creating Frr Config File
+      ansible.builtin.template: 
+        src: frr.conf.j2
+        dest: /etc/frr/frr.conf
+      notify: 
+        - Restart Frr
+  when: k8s_route
+
+- name: Configure K8S Node
+  block:
+    - name: Create RKE2 Folder Directory
+      ansible.builtin.file:
+        path: /etc/rancher/rke2
+        state: directory
+        mode: 0644
+
+    - name: Configure Sysctl Values
+      ansible.posix.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        sysctl_set: true
+        state: present
+        reload: true
+      loop:
+        - name: vm.panic_on_oom
+          value: '0'
+        - name: vm.overcommit_memory
+          value: '1'
+        - name: kernel.panic
+          value: '10'
+        - name: kernel.panic_on_oops
+          value: '1'
+
+    - name: Opening Ports
+      community.general.ufw:
+        rule: allow
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+      loop:
+        - port: '2379:2381'
+          proto: tcp
+        - port: '4240'
+          proto: tcp
+        - port: '4244:4245'
+          proto: tcp
+        - port: '4250:4251'
+          proto: tcp
+        - port: '6060:6062'
+          proto: tcp
+        - port: '9878:9879'
+          proto: tcp
+        - port: '9890:9891'
+          proto: tcp
+        - port: '9962:9964'
+          proto: tcp
+        - port: '9345'
+          proto: tcp
+        - port: '6443'
+          proto: tcp
+        - port: '10250'
+          proto: tcp
+        - port: '30000:32767'
+          proto: tcp
+
+    - name: Downloading RKE2 Binary
+      ansible.builtin.get_url:
+        url: https://github.com/rancher/rke2/releases/download/{{ rke2_version }}/rke2.linux-{{ architecture }}
+        checksum: sha256:https://github.com/rancher/rke2/releases/download/{{ rke2_version }}/sha256sum-{{ architecture }}.txt
+        dest: /usr/local/bin/rke2
+        mode: 0755
+
+    - name: Creating RKE2 Config File
+      ansible.builtin.template:
+        src: config.yaml.j2
+        dest: /etc/rancher/rke2/config.yaml
+        mode: 0644
+
+- name: Configure K8S Master
+  block:
+    - name: Creating Etcd Group
+      ansible.builtin.group:
+        name: etcd
+        state: present
+
+    - name: Creating Etcd User
+      ansible.builtin.user:
+        name: etcd
+        group: etcd
+        shell: /sbin/nologin
+        system: true
+        create_home: false
+        state: present
+
+    - name: Installing Keepalived
+      ansible.builtin.apt:
+        name:
+          - keepalived
+        state: present
+        update_cache: true
+
+    - name: Allow Keepalived Multicast
+      community.general.ufw:
+        rule: allow
+        to: '224.0.0.18'
+
+    - name: Creating Manifest Directory
+      ansible.builtin.file:
+        path: /var/lib/rancher/rke2/server/manifests
+        state: directory
+        mode: 0644
+
+    - name: Creating RKE2 Master Files
+      block:
+        - ansible.builtin.copy:
+            src: "{{ item.src }}"
+            dest: "{{ item.dest }}"
+            mode: 0644
+          loop:
+            - src: rke2-server.service
+              dest: /etc/systemd/system/rke2-server.service
+            - src: audit-policy.yaml
+              dest: /etc/rancher/rke2/audit-policy.yaml
+
+        - ansible.builtin.template:
+            src: "{{ item.src }}"
+            dest: "{{ item.dest }}"
+            mode: 0644
+          loop:
+            - src: cilium.yaml.j2
+              dest: /var/lib/rancher/rke2/server/manifests/cilium.yaml
+            - src: keepalived.conf.j2
+              dest: /etc/keepalived/keepalived.conf
+      notify: Restart Keepalived
+
+    - name: K8S - Flushing Handlers
+      meta: flush_handlers
+
+    - name: Enabling RKE2 Master Service
+      ansible.builtin.systemd:
+        name: rke2-server
+        enabled: true
+        state: started
+      register: rke2_service
+      until: rke2_service is succeeded
+      retries: 5
+
+    - name: Get Kubernetes Config File
+      ansible.builtin.slurp:
+        src: /etc/rancher/rke2/rke2.yaml
+      register: kubeconfig_base64
+      run_once: true
+
+    - name: Writing Kubernetes Config File
+      ansible.builtin.copy:
+        content: "{{ kubeconfig_base64.content | b64decode | replace(hostvars[groups[group][0]]['ansible_' + interface]['ipv4']['address'], (k8s_vip | ansible.utils.ipv4('address'))) }}"
+        dest: "{{ kubeconfig_location }}"
+        mode: 0600
+      delegate_to: localhost
+      run_once: true
+      become: false
+
+    - name: Creating Doppler Secret
+      kubernetes.core.k8s:
+        kubeconfig: "{{ kubeconfig_location }}"
+        wait: true
+        definition:
+          - apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: external-secrets
+          - apiVersion: v1
+            kind: Secret
+            metadata:
+              name: doppler-token-auth-api
+              namespace: external-secrets
+            type: Opaque
+            stringData:
+              dopplerToken: "{{ doppler_token }}"
+      delegate_to: localhost
+      run_once: true
+      become: false
+
+    - name: Deploying Flux2
+      ansible.builtin.command:
+        argv:
+          - flux
+          - bootstrap
+          - gitlab
+          - --deploy-token-auth
+          - --owner={{ gitlab_owner }}
+          - --repository={{ git_repo }}
+          - --branch=main
+          - --path={{ git_cluster_path }}
+          - --kubeconfig={{ kubeconfig_location }}
+          - --private=false
+          - --personal
+      register: result
+      changed_when: result.rc != 0
+      delegate_to: localhost
+      run_once: true
+      become: false
+  when: k8s_master

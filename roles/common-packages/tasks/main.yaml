@@ -1,0 +1,75 @@
+- name: Creating Directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0644'
+  loop: 
+    - /usr/share/falco
+    - /var/log/trivy
+
+- name: Check If Trivy File Exists
+  stat:
+    path: /var/log/trivy/trivy.json
+  register: file_result
+
+- name: Touching Trivy File
+  ansible.builtin.file:
+    path: /var/log/trivy/trivy.json
+    state: touch
+    mode: '0644'
+  when: not file_result.stat.exists
+
+- name: Adding GPG Keys
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    mode: '0644'
+  loop:
+    - url: https://aquasecurity.github.io/trivy-repo/deb/public.key
+      dest: /etc/apt/keyrings/trivy.asc
+    - url: https://falco.org/repo/falcosecurity-packages.asc
+      dest: /etc/apt/keyrings/falco-archive-keyring.asc
+    - url: https://packages.fluentbit.io/fluentbit.key
+      dest: /etc/apt/keyrings/fluentbit-keyring.asc
+
+- name: Adding APT Repositories
+  ansible.builtin.apt_repository:
+    repo: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - deb [signed-by=/etc/apt/keyrings/trivy.asc] https://aquasecurity.github.io/trivy-repo/deb {{ ansible_facts['distribution_release'] }} main
+    - deb [signed-by=/etc/apt/keyrings/falco-archive-keyring.asc] https://download.falco.org/packages/deb stable main
+    - deb [signed-by=/etc/apt/keyrings/fluentbit-keyring.asc] https://packages.fluentbit.io/ubuntu/{{ ansible_facts['distribution_release'] }} {{ ansible_facts['distribution_release'] }} main
+
+- name: Installing Required Applications
+  environment: 
+    FALCO_FRONTEND: noninteractive
+  ansible.builtin.apt:
+    name:
+      - falco
+      - fluent-bit
+      - jq
+      - trivy
+    state: present
+    update_cache: true
+
+- name: Writing Config Files
+  block:
+    - ansible.builtin.copy: 
+        src: falco.yaml
+        dest: /etc/falco/falco.yaml
+      notify:
+        - Restart Falco
+
+    - ansible.builtin.template: 
+        src: fluent-bit.conf.j2
+        dest: /etc/fluent-bit/fluent-bit.conf
+      notify:
+        - Restart Fluent-bit
+
+- name: Enable Trivy Hourly Vuln Scanner
+  ansible.builtin.cron:
+    name: "Trivy Hourly Vuln Scanner"
+    special_time: hourly
+    job: "trivy rootfs / --scanners vuln --severity HIGH,CRITICAL -f json | jq -c | tee -a /var/log/trivy/trivy.json"

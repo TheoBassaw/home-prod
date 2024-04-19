@@ -1,0 +1,24 @@
+global_defs {
+    dynamic_interfaces
+}
+
+vrrp_script chk_rke2 {
+    script "pgrep rke2"
+    interval 5
+    fall 2
+    timeout 10
+}
+
+vrrp_instance VI_1 {
+    state BACKUP
+    interface {{ hostvars[inventory_hostname]['ansible_' + interface]['device'] }}
+    virtual_router_id 50
+    priority 50
+    advert_int 5
+    virtual_ipaddress {
+        {{ k8s_vip }}
+    }
+    track_script {
+        chk_rke2
+    }
+}

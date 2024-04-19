@@ -1,0 +1,32 @@
+- name: Adding Zerotier GPG Key
+  ansible.builtin.get_url:
+    url: https://download.zerotier.com/contact@zerotier.com.gpg
+    dest: /etc/apt/keyrings/zerotier.com.asc
+    mode: '0644'
+
+- name: Adding Zerotier APT Repository
+  ansible.builtin.apt_repository:
+    repo: deb [signed-by=/etc/apt/keyrings/zerotier.com.asc] http://download.zerotier.com/debian/{{ ansible_facts['distribution_release'] }} {{ ansible_facts['distribution_release'] }} main
+    state: present
+    update_cache: yes
+
+- name: Installing Zerotier
+  ansible.builtin.apt:
+    name:
+      - zerotier-one
+    state: present
+    update_cache: true
+
+- name: Allow Zerotier Traffic
+  community.general.ufw:
+    rule: allow
+    port: '9993'
+    proto: udp
+
+- name: Writing Zerotier Config Files
+  ansible.builtin.copy: 
+    src: zerotier-conf.json
+    dest: /var/lib/zerotier-one/local.conf
+  notify: 
+    - Restart Zerotier
+  when: k8s_master or k8s_worker

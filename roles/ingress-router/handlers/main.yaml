@@ -1,0 +1,16 @@
+- name: Restart Conntrackd
+  ansible.builtin.service:
+    name: conntrackd
+    enabled: true
+    state: restarted
+
+- name: Restart Frr
+  ansible.builtin.service: 
+    name: frr
+    state: restarted
+
+- name: Restart Keepalived
+  ansible.builtin.service:
+    name: keepalived
+    enabled: true
+    state: restarted

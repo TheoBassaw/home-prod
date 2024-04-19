@@ -1,0 +1,22 @@
+frr defaults datacenter
+log syslog informational
+service integrated-vtysh-config
+!
+router bgp 212364
+ bgp router-id {{ ansible_zt0.ipv4.address }}
+ bgp log-neighbor-changes
+ bgp graceful-restart
+!
+router ospf
+ ospf router-id {{ ansible_zt0.ipv4.address }}
+ network 10.30.8.0/24 area 0.0.0.0
+ network 10.30.9.0/24 area 0.0.0.0
+ area 0.0.0.0 route-map ALLOWED
+!
+access-list ALLOWED permit 10.30.0.0/16
+!
+route-map ALLOWED permit 10
+ match ip address ALLOWED
+!
+line vty
+!

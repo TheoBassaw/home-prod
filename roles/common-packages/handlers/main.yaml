@@ -1,0 +1,14 @@
+- name: Restart Falco
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: true
+    state: restarted
+  loop: 
+    - falco-modern-bpf
+    - falcoctl-artifact-follow
+
+- name: Restart Fluent-bit
+  ansible.builtin.service: 
+    name: fluent-bit
+    enabled: true
+    state: restarted
