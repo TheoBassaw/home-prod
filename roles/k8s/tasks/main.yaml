@@ -197,6 +197,14 @@
       run_once: true
       become: false
 
+    - name: Waiting For K8S VIP
+      ansible.builtin.wait_for:
+        timeout: 300
+        port: 22
+        host: "{{ k8s_vip | ansible.utils.ipv4('address') }}"
+      connection: local
+      become: false
+
     - name: Creating Doppler Secret
       kubernetes.core.k8s:
         kubeconfig: "{{ kubeconfig_location }}"
