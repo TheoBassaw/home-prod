@@ -18,25 +18,25 @@
     
     - meta: refresh_inventory
 
-- become: true
-  hosts: ingress_routers:oci_k8s_masters
-  gather_facts: false
-  name: CIS-Benchmarking
-  vars_files:
-    - vars/cis-benchmark-default.yaml
-  pre_tasks:
-    - name: Wait For Hosts To Be Availiable
-      ansible.builtin.wait_for:
-        timeout: 300
-        port: 22
-        host: "{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
-      connection: local
-      become: false
+#- become: true
+#  hosts: ingress_routers:oci_k8s_masters
+#  gather_facts: false
+#  name: CIS-Benchmarking
+#  vars_files:
+#    - vars/cis-benchmark-default.yaml
+#  pre_tasks:
+#    - name: Wait For Hosts To Be Availiable
+#      ansible.builtin.wait_for:
+#        timeout: 300
+#        port: 22
+#        host: "{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}"
+#      connection: local
+#      become: false
 
-    - name: Gather Facts
-      setup:
-  roles:
-    - role: UBUNTU22-CIS
+#    - name: Gather Facts
+#      setup:
+#  roles:
+#    - role: UBUNTU22-CIS
 
 - become: true
   hosts: ingress_routers

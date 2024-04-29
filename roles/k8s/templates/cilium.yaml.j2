@@ -8,6 +8,7 @@ spec:
     kubeProxyReplacement: true
     k8sServiceHost: "{{ cilium_service_host }}"
     k8sServicePort: 6443
+    enableIPv4BIGTCP: true
     routingMode: native
     autoDirectNodeRoutes: true
     ipv4NativeRoutingCIDR: 10.42.0.0/16

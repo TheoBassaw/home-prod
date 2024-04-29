@@ -46,6 +46,13 @@
 
 - name: Configure K8S Node
   block:
+    - name: Installing Required Applications
+      ansible.builtin.apt:
+        name:
+          - cryptsetup
+        state: present
+        update_cache: true
+
     - name: Create RKE2 Folder Directory
       ansible.builtin.file:
         path: /etc/rancher/rke2
@@ -168,19 +175,12 @@
               dest: /var/lib/rancher/rke2/server/manifests/cilium.yaml
             - src: keepalived.conf.j2
               dest: /etc/keepalived/keepalived.conf
-      notify: Restart Keepalived
+      notify: 
+        - Restart RKE2 Server
+        - Restart Keepalived
 
     - name: K8S - Flushing Handlers
       meta: flush_handlers
-
-    - name: Enabling RKE2 Master Service
-      ansible.builtin.systemd:
-        name: rke2-server
-        enabled: true
-        state: started
-      register: rke2_service
-      until: rke2_service is succeeded
-      retries: 5
 
     - name: Get Kubernetes Config File
       ansible.builtin.slurp:

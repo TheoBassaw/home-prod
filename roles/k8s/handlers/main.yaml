@@ -8,3 +8,12 @@
     name: keepalived
     enabled: true
     state: restarted
+
+- name: Restart RKE2 Server
+  ansible.builtin.systemd:
+    name: rke2-server
+    enabled: true
+    state: restarted
+  register: rke2_server
+  until: rke2_server is succeeded
+  retries: 5
