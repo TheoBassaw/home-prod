@@ -2,11 +2,6 @@ frr defaults datacenter
 log syslog informational
 service integrated-vtysh-config
 !
-router bgp 212364
- bgp router-id {{ ansible_zt0.ipv4.address }}
- bgp log-neighbor-changes
- bgp graceful-restart
-!
 router ospf
  ospf router-id {{ ansible_zt0.ipv4.address }}
  network 10.30.8.0/24 area 0.0.0.0
