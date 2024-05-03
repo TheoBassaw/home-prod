@@ -1,16 +1,25 @@
-- name: Restart Conntrackd
-  ansible.builtin.service:
-    name: conntrackd
-    enabled: true
-    state: restarted
-
 - name: Restart Frr
   ansible.builtin.service: 
     name: frr
     state: restarted
 
-- name: Restart Keepalived
+- name: Restart Falco
   ansible.builtin.service:
-    name: keepalived
+    name: "{{ item }}"
+    enabled: true
+    state: restarted
+  loop: 
+    - falco-modern-bpf
+    - falcoctl-artifact-follow
+
+- name: Restart Fluent-bit
+  ansible.builtin.service: 
+    name: fluent-bit
+    enabled: true
+    state: restarted
+
+- name: Restart Zerotier
+  ansible.builtin.service:
+    name: zerotier-one
     enabled: true
     state: restarted

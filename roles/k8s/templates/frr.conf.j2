@@ -3,8 +3,8 @@ log syslog informational
 service integrated-vtysh-config
 !
 router ospf
- ospf router-id {{ hostvars[inventory_hostname]['ansible_' + interface]['ipv4']['address'] }}
- network 10.30.8.0/24 area 0.0.0.0
+ ospf router-id {{ hostvars[inventory_hostname]['ansible_zt0']['ipv4']['address'] }}
+ network {{ (ansible_zt0.ipv4.address + '/' + ansible_zt0.ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }} area 0.0.0.0
  area 0.0.0.0 route-map ALLOWED
 !
 access-list ALLOWED permit 10.30.0.0/16

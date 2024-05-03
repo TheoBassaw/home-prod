@@ -13,18 +13,15 @@
         init_reconfigure: true
         state: present
         variables:
-          ZEROTIER_CENTRAL_TOKEN: "{{ lookup('ansible.builtin.env', 'ZEROTIER_CENTRAL_TOKEN') }}"
-          VULTR_API_KEY: "{{ lookup('ansible.builtin.env', 'VULTR_API_KEY') }}"
-    
+          zerotier_central_token: "{{ lookup('ansible.builtin.env', 'ZEROTIER_CENTRAL_TOKEN') }}"
+          vultr_api_key: "{{ lookup('ansible.builtin.env', 'VULTR_API_KEY') }}" 
     - meta: refresh_inventory
 
 - become: true
-  hosts: ingress_routers:oci_k8s_masters
+  hosts: management_plane
   gather_facts: false
-  name: CIS-Benchmarking
-  vars_files:
-    - vars/cis-benchmark-default.yaml
-  pre_tasks:
+  name: Wait For Hosts To Be Available
+  tasks:
     - name: Wait For Hosts To Be Availiable
       ansible.builtin.wait_for:
         timeout: 300
@@ -33,8 +30,11 @@
       connection: local
       become: false
 
-    - name: Gather Facts
-      setup:
+- become: true
+  hosts: management_plane
+  name: CIS-Hardening
+  vars_files:
+    - vars/cis-hardening-default.yaml
   roles:
     - role: UBUNTU22-CIS
 
@@ -42,20 +42,9 @@
   hosts: ingress_routers
   name: Configuring Ingress Routers
   tasks:
-    - name: Installing Zerotier
-      ansible.builtin.import_role:
-        name: zerotier
-
-    - name: Applying Common Packages
-      ansible.builtin.import_role:
-        name: common-packages
-
     - name: Applying DNS Server Configuration
       ansible.builtin.import_role:
         name: authoritative-dns
-
-    - name: Gathering New Facts
-      ansible.builtin.setup:
 
     - name: Applying Ingress Router Configuration
       ansible.builtin.import_role:
@@ -67,11 +56,8 @@
     - name: Sleeping For 5 Minutes - Please Manually Join Zerotier Network
       ansible.builtin.wait_for:
         timeout: 300
-        host: "{{ item }}"
+        host: "{{ hostvars[inventory_hostname]['ansible_zt1']['ipv4']['address'] }}"
         port: 22
-      loop:
-        - "{{ hostvars[groups['ingress_routers'][0]]['ansible_zt1']['ipv4']['address'] }}"
-        - "{{ hostvars[groups['ingress_routers'][1]]['ansible_zt1']['ipv4']['address'] }}"
       connection: local
       become: false
 
@@ -79,19 +65,12 @@
   hosts: oci_k8s_masters
   name: Creating Management Cluster
   tasks:
-    - name: Installing Zerotier
-      ansible.builtin.import_role:
-        name: zerotier
-
-    - name: Gather new facts
-      ansible.builtin.setup:
-
     - name: Creating K8S Cluster
       environment:
         GITLAB_TOKEN: "{{ lookup('ansible.builtin.env', 'GITLAB_PAT') }}"
       vars:
-        cilium_service_host: "{{ hostvars[groups['oci_k8s_masters'][0]]['ansible_' + interface]['ipv4']['address'] }}"
-        rke2_init_server: "{{ hostvars[groups['oci_k8s_masters'][0]]['ansible_' + interface]['ipv4']['address'] }}"
+        cilium_service_host: "{{ hostvars[groups['oci_k8s_masters'][0]]['ansible_zt0']['ipv4']['address'] }}"
+        rke2_init_server: "{{ hostvars[groups['oci_k8s_masters'][0]]['ansible_zt0']['ipv4']['address'] }}"
         kubeconfig_location: "{{ lookup('ansible.builtin.env', 'HOME') }}/.kube/management-cluster.yaml"
         doppler_token: "{{ lookup('ansible.builtin.env', 'MANAGEMENT_CLUSTER_DOPPLER_TOKEN') }}"
         rke2_token: "{{ lookup('ansible.builtin.env', 'MANAGEMENT_CLUSTER_RKE2_TOKEN') }}"

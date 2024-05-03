@@ -1,2 +1,0 @@
-openobserve_user: "{{ lookup('ansible.builtin.env', 'OPENOBSERVE_USER') }}"
-openobserve_pass: "{{ lookup('ansible.builtin.env', 'OPENOBSERVE_PASS') }}"

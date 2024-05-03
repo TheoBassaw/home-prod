@@ -9,6 +9,12 @@
     enabled: true
     state: restarted
 
+- name: Restart Zerotier
+  ansible.builtin.service:
+    name: zerotier-one
+    enabled: true
+    state: restarted
+
 - name: Restart RKE2 Server
   ansible.builtin.systemd:
     name: rke2-server

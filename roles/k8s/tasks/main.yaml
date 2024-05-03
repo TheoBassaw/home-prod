@@ -1,81 +1,80 @@
-- name: Allow Node Routing
+- name: Installing Required Applications
   block:
-    - name: Installing Frr
+    - name: Adding Zerotier GPG Keys
+      ansible.builtin.get_url:
+        url: https://download.zerotier.com/contact@zerotier.com.gpg
+        dest: /etc/apt/keyrings/zerotier.com.asc
+        mode: '0644'
+
+    - name: Adding Zerotier APT Repository
+      ansible.builtin.apt_repository:
+        repo: deb [signed-by=/etc/apt/keyrings/zerotier.com.asc] http://download.zerotier.com/debian/{{ ansible_facts['distribution_release'] }} {{ ansible_facts['distribution_release'] }} main
+        state: present
+        update_cache: yes
+
+    - name: Installing Applications
       ansible.builtin.apt:
         name:
+          - cryptsetup
+          - zerotier-one
           - frr
         state: present
         update_cache: true
 
-    - name: Allow IP Forwarding
-      ansible.posix.sysctl:
-        name: net.ipv4.ip_forward
-        value: '1'
-        sysctl_set: true
-        state: present
-        reload: true
+- name: Gathering New Facts
+  ansible.builtin.setup:
 
-    - name: Allow BGP
-      community.general.ufw:
-        rule: allow
-        port: '179'
-        proto: tcp
+- name: Configure Sysctl Values
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: true
+    state: present
+    reload: true
+  loop:
+    - name: vm.panic_on_oom
+      value: '0'
+    - name: vm.overcommit_memory
+      value: '1'
+    - name: kernel.panic
+      value: '10'
+    - name: kernel.panic_on_oops
+      value: '1'
+    - name: net.ipv4.ip_forward
+      value: '1'
 
-    - name: Allow OSPF Multicast
-      community.general.ufw:
-        rule: allow
-        to: "{{ item }}"
-      loop: 
-        - '224.0.0.5'  # OSPF
-        - '224.0.0.6'  # OSPF
+- name: Writing Config Files
+  block:
+    - ansible.builtin.copy: 
+        src: zerotier-conf.json
+        dest: /var/lib/zerotier-one/local.conf
 
-    - name: Creating Frr Daemons File
-      ansible.builtin.copy: 
+    - ansible.builtin.copy: 
         src: daemons
         dest: /etc/frr/daemons
-      notify: 
-        - Restart Frr
 
-    - name: Creating Frr Config File
-      ansible.builtin.template: 
+    - ansible.builtin.template: 
         src: frr.conf.j2
         dest: /etc/frr/frr.conf
-      notify: 
-        - Restart Frr
-  when: k8s_route
-
-- name: Configure K8S Node
-  block:
-    - name: Installing Required Applications
-      ansible.builtin.apt:
-        name:
-          - cryptsetup
-        state: present
-        update_cache: true
-
+      
     - name: Create RKE2 Folder Directory
       ansible.builtin.file:
         path: /etc/rancher/rke2
         state: directory
         mode: 0644
 
-    - name: Configure Sysctl Values
-      ansible.posix.sysctl:
-        name: "{{ item.name }}"
-        value: "{{ item.value }}"
-        sysctl_set: true
-        state: present
-        reload: true
-      loop:
-        - name: vm.panic_on_oom
-          value: '0'
-        - name: vm.overcommit_memory
-          value: '1'
-        - name: kernel.panic
-          value: '10'
-        - name: kernel.panic_on_oops
-          value: '1'
+    - name: Downloading RKE2 Binary
+      ansible.builtin.get_url:
+        url: https://github.com/rancher/rke2/releases/download/{{ rke2_version }}/rke2.linux-{{ architecture }}
+        checksum: sha256:https://github.com/rancher/rke2/releases/download/{{ rke2_version }}/sha256sum-{{ architecture }}.txt
+        dest: /usr/local/bin/rke2
+        mode: 0755
+  notify: 
+    - Restart Zerotier
+    - Restart Frr
 
+- name: Allow Traffic
+  block:
     - name: Opening Ports
       community.general.ufw:
         rule: allow
@@ -106,19 +105,16 @@
           proto: tcp
         - port: '30000:32767'
           proto: tcp
+        - port: '179'
+          proto: tcp
 
-    - name: Downloading RKE2 Binary
-      ansible.builtin.get_url:
-        url: https://github.com/rancher/rke2/releases/download/{{ rke2_version }}/rke2.linux-{{ architecture }}
-        checksum: sha256:https://github.com/rancher/rke2/releases/download/{{ rke2_version }}/sha256sum-{{ architecture }}.txt
-        dest: /usr/local/bin/rke2
-        mode: 0755
-
-    - name: Creating RKE2 Config File
-      ansible.builtin.template:
-        src: config.yaml.j2
-        dest: /etc/rancher/rke2/config.yaml
-        mode: 0644
+    - name: Allow OSPF Multicast
+      community.general.ufw:
+        rule: allow
+        to: "{{ item }}"
+      loop: 
+        - '224.0.0.5'
+        - '224.0.0.6'
 
 - name: Configure K8S Master
   block:
@@ -175,6 +171,8 @@
               dest: /var/lib/rancher/rke2/server/manifests/cilium.yaml
             - src: keepalived.conf.j2
               dest: /etc/keepalived/keepalived.conf
+            - src: config.yaml.j2
+              dest: /etc/rancher/rke2/config.yaml
       notify: 
         - Restart RKE2 Server
         - Restart Keepalived
@@ -190,7 +188,7 @@
 
     - name: Writing Kubernetes Config File
       ansible.builtin.copy:
-        content: "{{ kubeconfig_base64.content | b64decode | replace(hostvars[groups[group][0]]['ansible_' + interface]['ipv4']['address'], (k8s_vip | ansible.utils.ipv4('address'))) }}"
+        content: "{{ kubeconfig_base64.content | b64decode | replace(hostvars[inventory_hostname]['ansible_zt0']['ipv4']['address'], (k8s_vip | ansible.utils.ipv4('address'))) }}"
         dest: "{{ kubeconfig_location }}"
         mode: 0600
       delegate_to: localhost

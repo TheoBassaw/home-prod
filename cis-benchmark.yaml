@@ -1,7 +1,0 @@
-- become: true
-  hosts: all
-  name: CIS-Benchmarking Hosts
-  vars_files:
-    - vars/cis-benchmark-default.yaml
-  roles:
-    - role: UBUNTU22-CIS

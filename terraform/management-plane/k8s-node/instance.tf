@@ -9,9 +9,9 @@ data "cloudinit_config" "k8s_node" {
     content = templatefile("${path.root}/templates/userdata.tftpl", {
       "host_name"  = var.host_name
       "domain"     = var.domain
-      "zt_public"  = var.zt_public_key
-      "zt_private" = var.zt_private_key
-      "zt_overlay" = var.zt_network
+      "zt_public"  = zerotier_identity.k8s_node.public_key
+      "zt_private" = zerotier_identity.k8s_node.private_key
+      "zt_overlay" = var.zt_overlay_network
     })
   }
 }

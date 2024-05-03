@@ -23,16 +23,10 @@ variable "vcn_cidr_block" {
   default = "10.0.0.0/24"
 }
 
-variable "zt_network" {
+variable "zt_overlay_network" {
   type = string
 }
 
-variable "zt_public_key" {
-  type      = string
-  sensitive = true
-}
-
-variable "zt_private_key" {
-  type      = string
-  sensitive = true
+variable "zt_overlay_ip" {
+  type = string
 }

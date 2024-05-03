@@ -11,7 +11,7 @@ vrrp_script chk_rke2 {
 
 vrrp_instance VI_1 {
     state BACKUP
-    interface {{ hostvars[inventory_hostname]['ansible_' + interface]['device'] }}
+    interface {{ hostvars[inventory_hostname]['ansible_zt0']['device'] }}
     virtual_router_id 50
     priority 50
     advert_int 5

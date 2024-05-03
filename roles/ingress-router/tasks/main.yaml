@@ -1,67 +1,127 @@
 - name: Installing Required Applications
-  ansible.builtin.apt:
-    name:
-      - conntrack
-      - conntrackd
-      - frr
-      - keepalived
-    state: present
-    update_cache: true
+  block:
+    - name: Adding GPG Keys
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ item.dest }}"
+        mode: '0644'
+      loop:
+        - url: https://aquasecurity.github.io/trivy-repo/deb/public.key
+          dest: /etc/apt/keyrings/trivy.asc
+        - url: https://falco.org/repo/falcosecurity-packages.asc
+          dest: /etc/apt/keyrings/falco-archive-keyring.asc
+        - url: https://packages.fluentbit.io/fluentbit.key
+          dest: /etc/apt/keyrings/fluentbit-keyring.asc
+        - url: https://download.zerotier.com/contact@zerotier.com.gpg
+          dest: /etc/apt/keyrings/zerotier.com.asc
 
-- name: Enabling IP Forwarding
-  ansible.posix.sysctl:
-    name: net.ipv4.ip_forward
-    value: '1'
-    sysctl_set: true
-    state: present
-    reload: true
+    - name: Adding APT Repositories
+      ansible.builtin.apt_repository:
+        repo: "{{ item }}"
+        state: present
+        update_cache: yes
+      loop:
+        - deb [signed-by=/etc/apt/keyrings/trivy.asc] https://aquasecurity.github.io/trivy-repo/deb {{ ansible_facts['distribution_release'] }} main
+        - deb [signed-by=/etc/apt/keyrings/falco-archive-keyring.asc] https://download.falco.org/packages/deb stable main
+        - deb [signed-by=/etc/apt/keyrings/fluentbit-keyring.asc] https://packages.fluentbit.io/ubuntu/{{ ansible_facts['distribution_release'] }} {{ ansible_facts['distribution_release'] }} main
+        - deb [signed-by=/etc/apt/keyrings/zerotier.com.asc] http://download.zerotier.com/debian/{{ ansible_facts['distribution_release'] }} {{ ansible_facts['distribution_release'] }} main
 
-- name: Opening Ports
-  community.general.ufw:
-    rule: allow
-    port: "{{ item.port }}"
-    proto: "{{ item.proto }}"
-  loop:
-    - port: '179'
-      proto: tcp
-    - port: '3780'
-      proto: udp
+    - name: Installing Applications
+      environment: 
+        FALCO_FRONTEND: noninteractive
+      ansible.builtin.apt:
+        name:
+          - frr
+          - falco
+          - fluent-bit
+          - jq
+          - trivy
+          - zerotier-one
+        state: present
+        update_cache: true
 
-- name: Allowing Ingress
-  community.general.ufw:
-    rule: allow
-    route: true
-    src: "{{ aggregate_network | ansible.utils.ipsubnet(24, 9) }}"
-    dest: "{{ aggregate_network }}"
+- name: Gathering New Facts
+  ansible.builtin.setup:
 
-- name: Allowing Multicast
-  community.general.ufw:
-    rule: allow
-    to: "{{ item }}"
-  loop: 
-    - '224.0.0.18' # Keepalived
-    - '224.0.0.5'  # OSPF
-    - '224.0.0.6'  # OSPF
+- name: Allow Traffic
+  block:
+    - name: Allow IP Forwarding
+      ansible.posix.sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        sysctl_set: true
+        state: present
+        reload: true
+
+    - name: Opening Ports
+      community.general.ufw:
+        rule: allow
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+      loop:
+        - port: '9993'
+          proto: udp
+        - port: '179'
+          proto: tcp
+
+    - name: Allow OSPF Multicast
+      community.general.ufw:
+        rule: allow
+        to: "{{ item }}"
+      loop: 
+        - '224.0.0.5'
+        - '224.0.0.6'
+
+    - name: Allow Ingress Traffic
+      community.general.ufw:
+        rule: allow
+        route: true
+        src: "{{ (ansible_zt1.ipv4.address + '/' + ansible_zt1.ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }}"
+        dest: "{{ aggregate_network }}"
 
 - name: Writing Config Files
   block:
+    - ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0644'
+      loop: 
+        - /usr/share/falco
+        - /var/log/trivy
+
+    - name: Check If Trivy File Exists
+      stat:
+        path: /var/log/trivy/trivy.json
+      register: file_result
+
+    - ansible.builtin.file:
+        path: /var/log/trivy/trivy.json
+        state: touch
+        mode: '0644'
+      when: not file_result.stat.exists
+
     - ansible.builtin.copy: 
         src: daemons
         dest: /etc/frr/daemons
-      notify:
-        - Restart Frr
 
     - ansible.builtin.template: 
-        src: "{{ item.src }}"
-        dest: "{{ item.dest }}"
-      loop:
-        - src: frr.conf.j2
-          dest: /etc/frr/frr.conf
-        - src: keepalived.conf.j2
-          dest: /etc/keepalived/keepalived.conf
-        - src: conntrackd.conf.j2
-          dest: /etc/conntrackd/conntrackd.conf
-      notify:
-        - Restart Frr
-        - Restart Keepalived
-        - Restart Conntrackd
+        src: frr.conf.j2
+        dest: /etc/frr/frr.conf
+
+    - ansible.builtin.copy: 
+        src: falco.yaml
+        dest: /etc/falco/falco.yaml
+
+    - ansible.builtin.template: 
+        src: fluent-bit.conf.j2
+        dest: /etc/fluent-bit/fluent-bit.conf       
+  notify:
+    - Restart Frr
+    - Restart Falco
+    - Restart Fluent-bit
+
+- name: Enable Trivy Hourly Vuln Scanner
+  ansible.builtin.cron:
+    name: "Trivy Hourly Vuln Scanner"
+    special_time: hourly
+    job: "trivy rootfs / --scanners vuln --severity HIGH,CRITICAL -f json | jq -c | tee -a /var/log/trivy/trivy.json"

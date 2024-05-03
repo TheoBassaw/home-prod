@@ -4,9 +4,9 @@ terraform {
       source  = "zerotier/zerotier"
       version = ">= 1.4.2"
     }
-    oci = {
-      source  = "oracle/oci"
-      version = ">= 5.33.0"
+    vultr = {
+      source  = "vultr/vultr"
+      version = ">= 2.19.0"
     }
   }
 }
