@@ -3,15 +3,15 @@ log syslog informational
 service integrated-vtysh-config
 !
 router ospf
- ospf router-id {{ ansible_zt0.ipv4.address }}
- network {{ (ansible_zt0.ipv4.address + '/' + ansible_zt0.ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }} area 0.0.0.0
- network {{ (ansible_zt1.ipv4.address + '/' + ansible_zt1.ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }} area 0.0.0.0
- area 0.0.0.0 route-map ALLOWED
+  ospf router-id {{ ansible_zt0.ipv4.address }}
+  network {{ (ansible_zt0.ipv4.address + '/' + ansible_zt0.ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }} area 0.0.0.0
+  network {{ (ansible_zt1.ipv4.address + '/' + ansible_zt1.ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }} area 0.0.0.0
+  area 0.0.0.0 route-map ALLOWED
 !
 access-list ALLOWED permit {{ aggregate_network }}
 !
 route-map ALLOWED permit 10
- match ip address ALLOWED
+  match ip address ALLOWED
 !
 line vty
 !
