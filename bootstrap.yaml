@@ -30,20 +30,20 @@
       connection: local
       become: false
 
-#- become: true
-#  hosts: management_plane
-#  name: CIS-Hardening
-#  vars_files:
-#    - vars/cis-hardening-default.yaml
-#  roles:
-#    - role: UBUNTU22-CIS
+- become: true
+  hosts: management_plane
+  name: CIS-Hardening
+  vars_files:
+    - vars/cis-hardening-default.yaml
+  roles:
+    - role: UBUNTU22-CIS
 
-#- become: true
-#  hosts: ingress_routers
-#  name: Configuring Ingress Routers
-#  roles:
-#    - authoritative-dns
-#    - ingress-router
+- become: true
+  hosts: ingress_routers
+  name: Configuring Ingress Routers
+  roles:
+    - authoritative-dns
+    - ingress-router
 
 - become: true
   hosts: oci_k8s_masters
