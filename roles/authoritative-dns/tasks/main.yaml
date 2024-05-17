@@ -30,7 +30,7 @@
         group: "{{ item.group }}"
       loop:
         - src: forward-zone.j2
-          dest: /var/lib/bind/db.db.paradisenetworkz.com
+          dest: /var/lib/bind/db.paradisenetworkz.com
           group: bind
         - src: reverse-zone.j2
           dest: /var/lib/bind/db.30.10.in-addr.arpa
