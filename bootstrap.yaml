@@ -30,50 +30,32 @@
       connection: local
       become: false
 
-- become: true
-  hosts: management_plane
-  name: CIS-Hardening
-  vars_files:
-    - vars/cis-hardening-default.yaml
-  roles:
-    - role: UBUNTU22-CIS
+#- become: true
+#  hosts: management_plane
+#  name: CIS-Hardening
+#  vars_files:
+#    - vars/cis-hardening-default.yaml
+#  roles:
+#    - role: UBUNTU22-CIS
 
-- become: true
-  hosts: ingress_routers
-  name: Configuring Ingress Routers
-  tasks:
-    - name: Applying DNS Server Configuration
-      ansible.builtin.import_role:
-        name: authoritative-dns
-
-    - name: Applying Ingress Router Configuration
-      ansible.builtin.import_role:
-        name: ingress-router
-    
-    - name: Flushing Handlers Before Continuing
-      meta: flush_handlers
-
-    - name: Sleeping For 5 Minutes - Please Manually Join Zerotier Network
-      ansible.builtin.wait_for:
-        timeout: 300
-        host: "{{ hostvars[inventory_hostname]['ansible_zt1']['ipv4']['address'] }}"
-        port: 22
-      connection: local
-      become: false
+#- become: true
+#  hosts: ingress_routers
+#  name: Configuring Ingress Routers
+#  roles:
+#    - authoritative-dns
+#    - ingress-router
 
 - become: true
   hosts: oci_k8s_masters
   name: Creating Management Cluster
-  tasks:
-    - name: Creating K8S Cluster
-      environment:
-        GITLAB_TOKEN: "{{ lookup('ansible.builtin.env', 'GITLAB_PAT') }}"
-      vars:
-        cilium_service_host: "{{ hostvars[groups['oci_k8s_masters'][0]]['ansible_zt0']['ipv4']['address'] }}"
-        rke2_init_server: "{{ hostvars[groups['oci_k8s_masters'][0]]['ansible_zt0']['ipv4']['address'] }}"
-        kubeconfig_location: "{{ lookup('ansible.builtin.env', 'HOME') }}/.kube/management-cluster.yaml"
-        doppler_token: "{{ lookup('ansible.builtin.env', 'MANAGEMENT_CLUSTER_DOPPLER_TOKEN') }}"
-        rke2_token: "{{ lookup('ansible.builtin.env', 'MANAGEMENT_CLUSTER_RKE2_TOKEN') }}"
-        gitlab_owner: "{{ lookup('ansible.builtin.env', 'GITLAB_USER') }}"
-      ansible.builtin.import_role:
-        name: k8s
+  vars:
+    cilium_service_host: "{{ hostvars[groups['oci_k8s_masters'][0]]['ansible_zt0']['ipv4']['address'] }}"
+    rke2_init_server: "{{ hostvars[groups['oci_k8s_masters'][0]]['ansible_zt0']['ipv4']['address'] }}"
+    kubeconfig_location: "{{ lookup('ansible.builtin.env', 'HOME') }}/.kube/management-cluster.yaml"
+    doppler_token: "{{ lookup('ansible.builtin.env', 'MANAGEMENT_CLUSTER_DOPPLER_TOKEN') }}"
+    rke2_token: "{{ lookup('ansible.builtin.env', 'MANAGEMENT_CLUSTER_RKE2_TOKEN') }}"
+    gitlab_owner: "{{ lookup('ansible.builtin.env', 'GITLAB_USER') }}"
+  environment:
+    GITLAB_TOKEN: "{{ lookup('ansible.builtin.env', 'GITLAB_PAT') }}"
+  roles:
+    - k8s

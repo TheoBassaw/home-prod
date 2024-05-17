@@ -18,8 +18,13 @@
           - cryptsetup
           - zerotier-one
           - frr
+          - python3-pip
         state: present
         update_cache: true
+
+    - name: Install Kubernetes Python Client
+      ansible.builtin.pip:
+        name: kubernetes
 
 - name: Gathering New Facts
   ansible.builtin.setup:
@@ -132,6 +137,19 @@
         create_home: false
         state: present
 
+    - name: Downloading Flux2 Tar
+      ansible.builtin.get_url:
+        url: https://github.com/fluxcd/flux2/releases/download/v{{ flux2_version }}/flux_{{ flux2_version }}_linux_{{ architecture }}.tar.gz
+        checksum: sha256:https://github.com/fluxcd/flux2/releases/download/v{{ flux2_version }}/flux_{{ flux2_version }}_checksums.txt
+        dest: /tmp/flux_{{ flux2_version }}_linux_{{ architecture }}.tar.gz
+        mode: 0644
+
+    - name: Unarchive a file that is already on the remote machine
+      ansible.builtin.unarchive:
+        src: /tmp/flux_{{ flux2_version }}_linux_{{ architecture }}.tar.gz
+        dest: /usr/local/bin
+        remote_src: yes
+
     - name: Installing Keepalived
       ansible.builtin.apt:
         name:
@@ -195,17 +213,9 @@
       run_once: true
       become: false
 
-    - name: Waiting For K8S VIP
-      ansible.builtin.wait_for:
-        timeout: 300
-        port: 22
-        host: "{{ k8s_vip | ansible.utils.ipv4('address') }}"
-      connection: local
-      become: false
-
     - name: Creating Doppler Secret
       kubernetes.core.k8s:
-        kubeconfig: "{{ kubeconfig_location }}"
+        kubeconfig: /etc/rancher/rke2/rke2.yaml
         wait: true
         definition:
           - apiVersion: v1
@@ -220,9 +230,7 @@
             type: Opaque
             stringData:
               dopplerToken: "{{ doppler_token }}"
-      delegate_to: localhost
       run_once: true
-      become: false
 
     - name: Deploying Flux2
       ansible.builtin.command:
@@ -235,12 +243,10 @@
           - --repository={{ git_repo }}
           - --branch=main
           - --path={{ git_cluster_path }}
-          - --kubeconfig={{ kubeconfig_location }}
+          - --kubeconfig=/etc/rancher/rke2/rke2.yaml
           - --private=false
           - --personal
       register: result
       changed_when: result.rc != 0
-      delegate_to: localhost
       run_once: true
-      become: false
   when: k8s_master
