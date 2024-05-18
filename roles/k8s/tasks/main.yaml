@@ -110,8 +110,6 @@
           proto: tcp
         - port: '30000:32767'
           proto: tcp
-        - port: '179'
-          proto: tcp
 
     - name: Allow OSPF Multicast
       community.general.ufw:
@@ -120,6 +118,13 @@
       loop: 
         - '224.0.0.5'
         - '224.0.0.6'
+
+    - name: Allow LB Traffic
+      community.general.ufw:
+        rule: allow
+        route: true
+        src: "10.30.0.0/16"
+        dest: "{{ lb_network }}"
 
 - name: Configure K8S Master
   block:

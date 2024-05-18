@@ -14,3 +14,4 @@ management_plane:
         architecture: arm64
         git_cluster_path: clusters/management-plane
         git_repo: k8s
+        lb_network: 10.30.11.0/24
