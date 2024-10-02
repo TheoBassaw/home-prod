@@ -1,5 +1,5 @@
 variable "kube_config" {
-  type = string
+  type = any
 }
 
 variable "flux_git_url" {
