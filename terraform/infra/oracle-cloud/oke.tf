@@ -64,5 +64,5 @@ resource "oci_containerengine_node_pool" "node_pool" {
 
 resource "flux_bootstrap_git" "bootstrap" {
   path       = "k8s/clusters/kamaji-cluster"
-  depends_on = [oci_containerengine_node_pool.node_pool]
+  depends_on = [data.oci_containerengine_cluster_kube_config.kube_config]
 }
