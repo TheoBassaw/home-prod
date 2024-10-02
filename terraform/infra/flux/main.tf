@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    flux = {
+      source = "fluxcd/flux"
+      version = ">= 1.4.0"
+    }
+  }
+}
+
 locals {
   kube_config            = yamldecode(var.kube_config)
   cluster_ca_certificate = base64decode(local.kube_config.clusters[0].cluster.certificate-authority-data)
