@@ -1,5 +1,0 @@
-plugin: vultr.cloud.vultr
-groups:
-  ingress_routers: "'ingress_router' in vultr_tags"
-compose:
-  ansible_host: vultr_main_ip or vultr_v6_main_ip

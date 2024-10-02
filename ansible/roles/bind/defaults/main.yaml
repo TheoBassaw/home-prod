@@ -1,0 +1,6 @@
+bind_listen_port: 53
+bind_listen_address_v4:
+  - any
+bind_forwarders:
+  - 1.1.1.1
+  - 8.8.8.8

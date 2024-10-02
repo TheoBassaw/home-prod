@@ -1,3 +1,0 @@
-aggregate_network: 10.30.0.0/16
-openobserve_user: "{{ lookup('ansible.builtin.env', 'OPENOBSERVE_USER') }}"
-openobserve_pass: "{{ lookup('ansible.builtin.env', 'OPENOBSERVE_PASS') }}"

@@ -1,1 +1,0 @@
-tsig_key: "{{ lookup('ansible.builtin.env', 'TSIG_KEY') }}"

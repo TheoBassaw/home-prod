@@ -1,0 +1,70 @@
+- name: Configuring Sysctl Values
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: true
+    state: present
+    reload: true
+  loop:
+    - name: net.ipv4.ip_forward
+      value: '1'
+    - name: net.ipv6.conf.all.forwarding
+      value: '1'
+  when: tailscale_subnet_router == true
+
+- name: Adding Tailscale GPG Key
+  ansible.builtin.get_url:
+    url: "https://pkgs.tailscale.com/stable/{{ ansible_distribution|lower }}/{{ ansible_distribution_release }}.asc"
+    dest: /etc/apt/keyrings/tailscale-keyring.asc
+    mode: '0644'
+
+- name: Adding Tailscale Apt Repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/tailscale-keyring.asc] https://pkgs.tailscale.com/stable/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} main"
+    state: present
+    update_cache: yes
+
+- name: Installing Tailscale
+  ansible.builtin.apt:
+    name:
+      - tailscale
+      - tailscale-archive-keyring
+    state: present
+    update_cache: true
+
+- name: Starting Tailscale
+  ansible.builtin.systemd:
+    name: tailscaled
+    enabled: true
+    state: started
+
+- name: Running tailscale up - General
+  ansible.builtin.command:
+    argv:
+      - tailscale 
+      - up
+      - --accept-routes
+      - --authkey={{ tailscale_tailnet_key }}
+  register: tailscale_up_result
+  changed_when: tailscale_up_result.rc != 0
+  when:
+    - tailscale_tailnet_key is defined
+    - tailscale_subnet_router == false
+
+- name: Running tailscale up - Subnet Router
+  ansible.builtin.command:
+    argv:
+      - tailscale 
+      - up
+      - --accept-routes
+      - --snat-subnet-routes=false
+      - --authkey={{ tailscale_tailnet_key }}
+      - --advertise-routes={{ tailscale_advertised_routes }}
+  register: tailscale_up_result
+  changed_when: tailscale_up_result.rc != 0
+  when:
+    - tailscale_tailnet_key is defined
+    - tailscale_subnet_router == true
+    - tailscale_advertised_routes is defined
+
+- ansible.builtin.setup:

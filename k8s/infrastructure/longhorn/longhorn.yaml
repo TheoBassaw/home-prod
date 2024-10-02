@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: longhorn-system
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: longhorn-crypto
+  namespace: longhorn-system
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: doppler-auth-api
+  target:
+    name: longhorn-crypto
+  data:
+    - secretKey: CRYPTO_KEY_VALUE
+      remoteRef:
+        key: CRYPTO_KEY_VALUE
+    - secretKey: CRYPTO_KEY_PROVIDER
+      remoteRef:
+        key: CRYPTO_KEY_PROVIDER
+    - secretKey: CRYPTO_KEY_CIPHER
+      remoteRef:
+        key: CRYPTO_KEY_CIPHER
+    - secretKey: CRYPTO_KEY_HASH
+      remoteRef:
+        key: CRYPTO_KEY_HASH
+    - secretKey: CRYPTO_KEY_SIZE
+      remoteRef:
+        key: CRYPTO_KEY_SIZE
+    - secretKey: CRYPTO_PBKDF
+      remoteRef:
+        key: CRYPTO_PBKDF
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: longhorn-crypto-3
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  numberOfReplicas: "3"
+  fsType: xfs
+  dataLocality: best-effort
+  encrypted: "true"
+  csi.storage.k8s.io/provisioner-secret-name: "longhorn-crypto"
+  csi.storage.k8s.io/provisioner-secret-namespace: "longhorn-system"
+  csi.storage.k8s.io/node-publish-secret-name: "longhorn-crypto"
+  csi.storage.k8s.io/node-publish-secret-namespace: "longhorn-system"
+  csi.storage.k8s.io/node-stage-secret-name: "longhorn-crypto"
+  csi.storage.k8s.io/node-stage-secret-namespace: "longhorn-system"
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: longhorn-grpc-tls
+  namespace: longhorn-system
+spec:
+  secretName: longhorn-grpc-tls
+  renewBefore: 240h
+  duration: 2160h
+  commonName: longhorn-backend
+  dnsNames:
+    - longhorn-backend
+    - longhorn-backend.longhorn-system
+    - longhorn-backend.longhorn-system.svc
+    - longhorn-frontend
+    - longhorn-frontend.longhorn-system
+    - longhorn-frontend.longhorn-system.svc
+    - longhorn-engine-manager
+    - longhorn-engine-manager.longhorn-system
+    - longhorn-engine-manager.longhorn-system.svc
+    - longhorn-replica-manager
+    - longhorn-replica-manager.longhorn-system
+    - longhorn-replica-manager.longhorn-system.svc
+    - longhorn-csi
+    - longhorn-csi.longhorn-system
+    - longhorn-csi.longhorn-system.svc
+  ipAddresses:
+    - 127.0.0.1
+  issuerRef:
+    name: intermediate-ca-issuer
+    kind: ClusterIssuer

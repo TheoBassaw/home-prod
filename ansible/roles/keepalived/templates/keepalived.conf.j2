@@ -1,0 +1,52 @@
+#jinja2:lstrip_blocks: True
+{% if keepalived_global_defs is defined %}
+global_defs {
+{% for def in keepalived_global_defs %}
+  {{ def }}
+{% endfor %}
+}
+{% endif %}
+
+{% for instance in keepalived_vrrp_instances %}
+vrrp_instance {{ instance.name }} {
+  state {{ instance.state }}
+  interface {{ instance.interface }}
+  virtual_router_id {{ instance.virtual_router_id }}
+  priority {{ instance.priority }}
+  advert_int {{ instance.advert_int }}
+  unicast_src_ip {{ instance.unicast_src_ip }}
+
+  unicast_peer {
+  {% for peer in instance.unicast_peers %}
+    {{ peer }}
+  {% endfor %}
+  }
+
+  {% if instance.virtual_ipaddresses is defined %}
+  virtual_ipaddress {
+  {% for virtual_ipaddress in instance.virtual_ipaddresses %}
+    {{ virtual_ipaddress }}
+  {% endfor %}
+  }
+  {% endif %}
+
+  {% if instance.track_interfaces is defined %}
+  track_interface {
+  {% for track_interface in instance.track_interfaces %}
+    {{ track_interface }}
+  {% endfor %}
+  }
+  {% endif %}
+
+  {% if instance.authentication is defined %}
+  authentication {
+    auth_type {{ instance.authentication.auth_type }}
+    auth_pass {{ instance.authentication.auth_pass }}
+  }
+  {% endif %}
+
+  {% if instance.notify_master_script is defined %}
+  notify_master /opt/{{ instance.notify_master_script }}
+  {% endif %}
+}
+{% endfor %}

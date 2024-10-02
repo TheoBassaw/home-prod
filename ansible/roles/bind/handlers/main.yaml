@@ -1,0 +1,4 @@
+- name: Restarting Bind9
+  ansible.builtin.service: 
+    name: bind9
+    state: restarted

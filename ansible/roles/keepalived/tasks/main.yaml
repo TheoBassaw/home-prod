@@ -1,0 +1,28 @@
+- name: Installing Keepalived
+  ansible.builtin.apt:
+    name:
+      - keepalived
+    state: present
+    update_cache: true
+
+- name: Creating Notify Master Scripts
+  ansible.builtin.template:
+    src: "{{ item.notify_master_script }}.j2"
+    dest: "/opt/{{ item.notify_master_script }}"
+    mode: 0744
+  notify: Restarting Keepalived
+  loop: "{{ keepalived_vrrp_instances }}"
+  when: item.notify_master_script is defined
+
+- name: Creating Keepalived Config
+  ansible.builtin.template:
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    mode: 0644
+  notify: Restarting Keepalived
+
+- name: Starting Keepalived
+  ansible.builtin.service:
+    name: keepalived
+    enabled: true
+    state: started

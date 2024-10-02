@@ -1,0 +1,107 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: fluent
+  namespace: flux-system
+spec:
+  interval: 10m
+  url: https://fluent.github.io/helm-charts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: fluent-bit
+  namespace: fluent-bit
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: fluent-bit
+      sourceRef:
+        kind: HelmRepository
+        name: fluent
+        namespace: flux-system
+  values:
+    securityContext:
+      capabilities:
+        drop:
+          - ALL
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000
+
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+    networkPolicy:
+      enabled: true
+
+    env:
+      - name: OPENOBSERVE_USER
+        valueFrom:
+          secretKeyRef:
+            name: openobserve-creds
+            key: OPENOBSERVE_USER
+      - name: OPENOBSERVE_PASS
+        valueFrom:
+          secretKeyRef:
+            name: openobserve-creds
+            key: OPENOBSERVE_PASS
+            
+    config:
+      inputs: |
+        [INPUT]
+            Name tail
+            Path /var/log/containers/*.log
+            multiline.parser docker, cri
+            Tag kube.*
+            Mem_Buf_Limit 5MB
+            Skip_Long_Lines On
+
+        [INPUT]
+            Name systemd
+            Tag host.*
+            Systemd_Filter _SYSTEMD_UNIT=kubelet.service
+            Read_From_Tail On
+
+        [INPUT]
+            Name            tail
+            Tag             logs 
+            Path            /var/log/syslog, /var/log/frr/frr.log
+            Buffer_Max_Size 2M
+
+        [INPUT]
+            Name            node_exporter_metrics
+            Tag             node_metrics
+            scrape_interval 5
+
+      outputs: |
+        [OUTPUT]
+            Name http
+            Match logs
+            URI /api/theophilus_organization_3270_OdMjjaUJw5nt7C9/default/_json
+            Host api.openobserve.ai
+            Port 443
+            Tls On
+            Format json
+            Json_date_key    _timestamp
+            Json_date_format iso8601
+            HTTP_User ${OPENOBSERVE_USER}
+            HTTP_Passwd ${OPENOBSERVE_PASS}
+            compress gzip
+
+        [OUTPUT]
+            Name                 prometheus_remote_write
+            Match                node_metrics
+            Host                 api.openobserve.ai
+            Port                 443
+            Uri                  /api/theophilus_organization_3270_OdMjjaUJw5nt7C9/prometheus/api/v1/write
+            Log_response_payload True
+            Tls                  On
+            HTTP_User ${OPENOBSERVE_USER}
+            HTTP_Passwd ${OPENOBSERVE_PASS}

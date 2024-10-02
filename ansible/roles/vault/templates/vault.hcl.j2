@@ -1,0 +1,24 @@
+ui            = true
+cluster_addr  = "https://{{ vault_cluster_addr }}:8201"
+api_addr      = "https://{{ vault_api_addr }}:8200"
+disable_mlock = false
+
+seal "ocikms" {
+  auth_type_api_key   = "false"
+  crypto_endpoint     = "{{ oci_crypto_endpoint }}"
+  key_id              = "{{ oci_key_id }}"
+  management_endpoint = "{{ oci_management_endpoint }}"
+}
+
+storage "oci" {
+  auth_type_api_key = "false"
+  bucket_name       = "{{ oci_bucket }}"
+  ha_enabled        = "true"
+  lock_bucket_name  = "{{ oci_lock_bucket }}"
+  namespace_name    = "{{ oci_namespace }}"
+}
+
+listener "tcp" {
+  address       = "[::]:8200"
+  tls_disable   = true
+}
