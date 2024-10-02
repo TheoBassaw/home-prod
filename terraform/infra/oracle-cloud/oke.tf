@@ -1,7 +1,7 @@
-resource "oci_containerengine_cluster" "control_plane_cluster" {
+resource "oci_containerengine_cluster" "kamaji_cluster" {
   compartment_id     = var.compartment_id
   kubernetes_version = "v1.30.1"
-  name               = "Control Plane Cluster"
+  name               = "Kamaji Cluster"
   vcn_id             = oci_core_vcn.vcn.id
   type               = "BASIC_CLUSTER"
 
@@ -22,7 +22,7 @@ resource "oci_containerengine_cluster" "control_plane_cluster" {
 resource "oci_containerengine_node_pool" "node_pool" {
   compartment_id     = var.compartment_id
   name               = "Node Pool"
-  cluster_id         = oci_containerengine_cluster.control_plane_cluster.id
+  cluster_id         = oci_containerengine_cluster.kamaji_cluster.id
   node_shape         = "VM.Standard.A1.Flex"
   kubernetes_version = "v1.30.1"
 
@@ -60,4 +60,9 @@ resource "oci_containerengine_node_pool" "node_pool" {
       subnet_id           = oci_core_subnet.public_subnet_dos.id
     }
   }
+}
+
+resource "flux_bootstrap_git" "bootstrap" {
+  path       = "k8s/clusters/kamaji-cluster"
+  depends_on = [oci_containerengine_node_pool.node_pool]
 }

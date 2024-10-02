@@ -8,6 +8,10 @@ terraform {
       source  = "oracle/oci"
       version = ">= 5.33.0"
     }
+    flux = {
+      source = "fluxcd/flux"
+      version = ">= 1.4.0"
+    }
   }
 
   backend "s3" {}
@@ -26,7 +30,9 @@ module "tailscale" {
 }
 
 module "oracle_cloud" {
-  source         = "./oracle-cloud"
-  compartment_id = var.compartment_id
-  domain         = var.domain
+  source               = "./oracle-cloud"
+  compartment_id       = var.compartment_id
+  domain               = var.domain
+  flux_git_url         = var.flux_git_url
+  ssh_private_key_path = var.ssh_private_key_path
 }

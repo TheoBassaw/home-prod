@@ -12,26 +12,18 @@ variable "tailscale_client_secret" {
   sensitive = true
 }
 
-variable "user_ocid" {
-  type = string
-}
-
-variable "fingerprint" {
-  type = string
-}
-
-variable "private_key_path" {
-  type = string
-}
-
 variable "compartment_id" {
   type = string
 }
 
-variable "region" {
+variable "domain" {
   type = string
 }
 
-variable "domain" {
+variable "flux_git_url" {
+  type = string
+}
+
+variable "ssh_private_key_path" {
   type = string
 }
