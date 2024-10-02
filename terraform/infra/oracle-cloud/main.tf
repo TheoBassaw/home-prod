@@ -11,17 +11,9 @@ terraform {
   }
 }
 
-provider "flux" {
-  kubernetes = {
-    cluster_ca_certificate = local.cluster_ca_certificate
-    host = local.host
-    exec = local.exec
-  }
-  git = {
-    url = var.flux_git_url
-    ssh = {
-      username    = "git"
-      private_key = file(var.ssh_private_key_path)
-    }
-  }
+module "flux" {
+  source = "../flux"
+  kube_config          = data.oci_containerengine_cluster_kube_config.kube_config
+  ssh_private_key_path = var.ssh_private_key_path
+  flux_git_url         = var.flux_git_url
 }
