@@ -9,3 +9,7 @@ variable "flux_git_url" {
 variable "ssh_private_key_path" {
   type = string
 }
+
+variable "cluster_name" {
+  type = string
+}

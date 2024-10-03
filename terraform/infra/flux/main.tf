@@ -34,5 +34,5 @@ provider "flux" {
 
 
 resource "flux_bootstrap_git" "bootstrap" {
-  path = "k8s/clusters/kamaji-cluster"
+  path = "k8s/clusters/${var.cluster_name}"
 }
