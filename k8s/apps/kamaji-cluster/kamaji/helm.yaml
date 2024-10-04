@@ -1,0 +1,50 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: clastix
+  namespace: flux-system
+spec:
+  interval: 10m
+  url: https://clastix.github.io/charts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kamaji
+  namespace: kamaji-system
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: kamaji
+      version: "2.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: clastix
+        namespace: flux-system
+  values:
+    kamaji-etcd:
+      deploy: false
+    datastore:
+      enabled: true
+      driver: PostgreSQL
+      endpoints: ["kamaji-db-rw.kamaji-system:5432"]
+      tlsConfig:
+        certificateAuthority:
+          certificate:
+            name: kamaji-db-ca
+            namespace: kamaji-system
+            keyPath: ca.crt
+          privateKey:
+            name: kamaji-db-ca
+            namespace: kamaji-system
+            keyPath: ca.key
+        clientCertificate:
+          certificate:
+            name: kamaji-client-cert
+            namespace: kamaji-system
+            keyPath: tls.crt
+          privateKey:
+            name: kamaji-client-cert
+            namespace: kamaji-system
+            keyPath: tls.key
