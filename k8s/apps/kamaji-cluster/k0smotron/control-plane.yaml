@@ -1,5 +1,5 @@
-apiVersion: controlplane.cluster.x-k8s.io/v1beta1
-kind: K0smotronControlPlane
+apiVersion: k0smotron.io/v1beta1
+kind: Cluster
 metadata:
   name: home-cluster
   namespace: k0smotron
@@ -18,22 +18,3 @@ spec:
     type: ClusterIP
     apiPort: 6443
     konnectivityPort: 8132
----
-apiVersion: cluster.x-k8s.io/v1beta1
-kind: Cluster
-metadata:
-  name: home-cluster
-  namespace: k0smotron
-spec:
-  clusterNetwork:
-    serviceDomain: home.paradisenetworkz.com
-    pods:
-      cidrBlocks:
-        - 10.244.0.0/16
-    services:
-      cidrBlocks:
-        - 10.96.0.0/12
-  controlPlaneRef:
-    apiVersion: controlplane.cluster.x-k8s.io/v1beta1
-    kind: K0smotronControlPlane
-    name: home-cluster
