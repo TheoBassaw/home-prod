@@ -25,10 +25,8 @@ spec:
   values:
     kamaji-etcd:
       deploy: true
-      fullnameOverride: kamaji-etcd
       datastore:
         enabled: true
-        name: default
       replicas: 1
       persistentVolumeClaim:
         size: 10Gi
