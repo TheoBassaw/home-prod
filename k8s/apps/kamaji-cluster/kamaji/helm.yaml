@@ -26,6 +26,7 @@ spec:
     kamaji-etcd:
       datastore:
         enabled: false
+      deploy: false
     datastore:
       enabled: true
       driver: PostgreSQL
