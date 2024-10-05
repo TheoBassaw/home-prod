@@ -4,6 +4,7 @@ metadata:
   name: home-cluster
   namespace: k0smotron
 spec:
+  version: v1.31.1-k0s.0
   etcd:
     persistence:
       storageClass: longhorn-2
@@ -13,6 +14,8 @@ spec:
     persistentVolumeClaim:
       spec:
         storageClassName: longhorn-2
+        accessModes:
+          - ReadWriteOnce
   service:
     type: ClusterIP
     apiPort: 6443
