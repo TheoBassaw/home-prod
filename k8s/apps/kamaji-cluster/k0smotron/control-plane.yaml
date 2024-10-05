@@ -11,9 +11,6 @@ spec:
       size: 8Gi
   persistence:
     type: pvc
-    persistentVolumeClaim:
-      spec:
-        storageClassName: longhorn-2
   service:
     type: ClusterIP
     apiPort: 6443
