@@ -6,24 +6,3 @@ metadata:
     pod-security.kubernetes.io/enforce: restricted
     pod-security.kubernetes.io/audit: restricted
     pod-security.kubernetes.io/warn: restricted
----
-apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  name: kamaji-db-ca-issuer
-  namespace: kamaji-system
-spec:
-  ca:
-    secretName: kamaji-db-ca
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: kamaji-client-cert
-  namespace: kamaji-system
-spec:
-  secretName: kamaji-client-cert
-  commonName: kamaji
-  issuerRef:
-    name: kamaji-db-ca-issuer
-    kind: Issuer

@@ -23,13 +23,10 @@ spec:
         name: clastix
         namespace: flux-system
   values:
-    kamaji-etcd:
-      deploy: true
-      fullnameOverride: kamaji-etcd
-      datastore:
-        enabled: true
-        name: default
-      replicas: 1
-      persistentVolumeClaim:
-        size: 10Gi
-        storageClassName: longhorn-2
+    datastore:
+      enabled: true
+      name: default
+    replicas: 1
+    persistentVolumeClaim:
+      size: 10Gi
+      storageClassName: longhorn-2
