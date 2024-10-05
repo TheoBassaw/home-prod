@@ -24,7 +24,8 @@ spec:
         namespace: flux-system
   values:
     kamaji-etcd:
+      deploy: false
+      fullnameOverride: kamaji-etcd
       datastore:
-        enabled: true
-      persistentVolumeClaim:
-        storageClassName: longhorn-2
+        enabled: false
+        name: default
