@@ -23,7 +23,7 @@ spec:
         name: clastix
         namespace: flux-system
   values:
-    kamaji-etcd:
+    etcd:
       deploy: true
       fullnameOverride: kamaji-etcd
       datastore:
