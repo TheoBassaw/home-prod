@@ -17,7 +17,7 @@ spec:
   chart:
     spec:
       chart: kamaji
-      version: "*"
+      version: "1.0.0"
       sourceRef:
         kind: HelmRepository
         name: clastix
