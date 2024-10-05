@@ -27,26 +27,3 @@ spec:
       datastore:
         enabled: false
       deploy: false
-    datastore:
-      enabled: true
-      driver: PostgreSQL
-      endpoints: ["kamaji-db-rw.kamaji-system:5432"]
-      tlsConfig:
-        certificateAuthority:
-          certificate:
-            name: kamaji-db-ca
-            namespace: kamaji-system
-            keyPath: ca.crt
-          privateKey:
-            name: kamaji-db-ca
-            namespace: kamaji-system
-            keyPath: ca.key
-        clientCertificate:
-          certificate:
-            name: kamaji-client-cert
-            namespace: kamaji-system
-            keyPath: tls.crt
-          privateKey:
-            name: kamaji-client-cert
-            namespace: kamaji-system
-            keyPath: tls.key
