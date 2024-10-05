@@ -29,3 +29,7 @@ spec:
       datastore:
         enabled: false
         name: default
+      replicas: 1
+      persistentVolumeClaim:
+        size: 10Gi
+        storageClassName: longhorn-2
