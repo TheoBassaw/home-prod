@@ -25,5 +25,6 @@ spec:
   values:
     kamaji-etcd:
       datastore:
-        enabled: false
-      deploy: false
+        enabled: true
+      persistentVolumeClaim:
+        storageClassName: longhorn-2
