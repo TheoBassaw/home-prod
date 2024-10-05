@@ -2,7 +2,7 @@ apiVersion: controlplane.cluster.x-k8s.io/v1beta1
 kind: K0smotronControlPlane
 metadata:
   name: home-cluster
-  namespace: K0smotron
+  namespace: k0smotron
 spec:
   version: v1.31.1+k0s.1
   etcd:
@@ -23,7 +23,7 @@ apiVersion: cluster.x-k8s.io/v1beta1
 kind: Cluster
 metadata:
   name: home-cluster
-  namespace: K0smotron
+  namespace: k0smotron
 spec:
   clusterNetwork:
     serviceDomain: home.paradisenetworkz.com
