@@ -35,7 +35,7 @@ module "oracle_cloud" {
 }
 
 module "flux" {
-  source = "../flux"
+  source = "./flux"
   kube_config          = module.oracle_cloud.kube_config
   ssh_private_key_path = local.ssh_private_key_path
   flux_git_url         = local.flux_git_url
