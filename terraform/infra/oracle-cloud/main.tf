@@ -10,11 +10,8 @@ terraform {
     }
   }
 }
-/*
-module "flux" {
-  source = "../flux"
-  kube_config          = data.oci_containerengine_cluster_kube_config.kube_config.content
-  ssh_private_key_path = var.ssh_private_key_path
-  flux_git_url         = var.flux_git_url
-  cluster_name         = "management-cluster"
-}*/
+
+output "kube_config" {
+  value = data.oci_containerengine_cluster_kube_config.kube_config.content
+  depends_on = [oci_containerengine_node_pool.node_pool]
+}

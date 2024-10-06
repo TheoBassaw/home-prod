@@ -30,9 +30,14 @@ module "tailscale" {
 }
 
 module "oracle_cloud" {
-  source               = "./oracle-cloud"
-  compartment_id       = local.compartment_id
-  domain               = local.domain
-  flux_git_url         = local.flux_git_url
+  source         = "./oracle-cloud"
+  compartment_id = local.compartment_id
+}
+
+module "flux" {
+  source = "../flux"
+  kube_config          = module.oracle_cloud.kube_config
   ssh_private_key_path = local.ssh_private_key_path
+  flux_git_url         = local.flux_git_url
+  cluster_name         = "management-cluster"
 }
