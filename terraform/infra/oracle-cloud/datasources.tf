@@ -7,6 +7,6 @@ data "oci_objectstorage_namespace" "namespace" {
 }
 
 data "oci_containerengine_cluster_kube_config" "kube_config" {
-  cluster_id = oci_containerengine_cluster.kamaji_cluster.id
+  cluster_id = oci_containerengine_cluster.management-cluster.id
   depends_on = [oci_containerengine_node_pool.node_pool]
 }

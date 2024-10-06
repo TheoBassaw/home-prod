@@ -8,5 +8,5 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./k8s/infrastructure/kamaji-cluster
+  path: ./k8s/infrastructure/management-cluster
   prune: true

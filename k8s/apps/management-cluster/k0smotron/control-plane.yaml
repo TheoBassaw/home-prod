@@ -23,3 +23,11 @@ spec:
     type: ClusterIP
     apiPort: 6443
     konnectivityPort: 8132
+  k0sConfig:
+    apiVersion: k0s.k0sproject.io/v1beta1
+    kind: ClusterConfig
+    metadata:
+      name: k0s
+    spec:
+      network:
+        provider: custom

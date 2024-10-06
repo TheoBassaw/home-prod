@@ -1,7 +1,7 @@
-resource "oci_containerengine_cluster" "kamaji_cluster" {
+resource "oci_containerengine_cluster" "management-cluster" {
   compartment_id     = var.compartment_id
   kubernetes_version = "v1.30.1"
-  name               = "Kamaji Cluster"
+  name               = "Management Cluster"
   vcn_id             = oci_core_vcn.vcn.id
   type               = "BASIC_CLUSTER"
 
@@ -22,7 +22,7 @@ resource "oci_containerengine_cluster" "kamaji_cluster" {
 resource "oci_containerengine_node_pool" "node_pool" {
   compartment_id     = var.compartment_id
   name               = "Node Pool"
-  cluster_id         = oci_containerengine_cluster.kamaji_cluster.id
+  cluster_id         = oci_containerengine_cluster.management-cluster.id
   node_shape         = "VM.Standard.A1.Flex"
   kubernetes_version = "v1.30.1"
 
