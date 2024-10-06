@@ -8,12 +8,13 @@ terraform {
 }
 
 locals {
-  cluster_ca_certificate = base64decode(var.kube_config.clusters[0].cluster.certificate-authority-data)
-  host                   = var.kube_config.clusters[0].cluster.server
+  kube_config            = yamldecode(var.kube_config)
+  cluster_ca_certificate = base64decode(local.kube_config.clusters[0].cluster.certificate-authority-data)
+  host                   = local.kube_config.clusters[0].cluster.server
   exec = {
-    api_version = var.kube_config.users[0].user.exec.apiVersion
-    command     = var.kube_config.users[0].user.exec.command
-    args        = var.kube_config.users[0].user.exec.args
+    api_version = local.kube_config.users[0].user.exec.apiVersion
+    command     = local.kube_config.users[0].user.exec.command
+    args        = local.kube_config.users[0].user.exec.args
   }
 }
 
