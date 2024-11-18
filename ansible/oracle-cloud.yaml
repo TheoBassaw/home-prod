@@ -1,7 +1,0 @@
-#- ansible.builtin.import_playbook: cis-hardening.yaml
-#  when: inventory_hostname in groups["oci"]
-
-#- role: vault
-#- name: Installing Certbot Cloudflare Plugin
-#ansible.builtin.pip:
-#name: certbot-dns-cloudflare

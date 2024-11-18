@@ -1,3 +1,0 @@
-ubtu22cis_is_router: true
-tailscale_subnet_router: true
-tailscale_advertised_routes: "10.30.0.1/32"

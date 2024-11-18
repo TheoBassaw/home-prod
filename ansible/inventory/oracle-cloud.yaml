@@ -1,3 +1,0 @@
-plugin: cloud.terraform.terraform_provider
-project_path: ../terraform/oracle-cloud
-search_child_modules: true

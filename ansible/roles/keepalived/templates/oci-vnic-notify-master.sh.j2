@@ -1,3 +1,0 @@
-#!/bin/sh
-oci network vnic assign-private-ip --vnic-id {{ oci_vnic_id }} --ip-address {{ oci_vip }} --unassign-if-already-assigned --auth instance_principal
-oci network route-table update --rt-id ocid1.routetable.oc1.iad.aaaaaaaavzyzkvhuvohybxntxfazktkonuoinknnibtbtpfyhlxm535r5ofa --route-rules '[{"cidrBlock":"100.64.0.0/10","networkEntityId":"ocid1.privateip.oc1.iad.aaaaaaaapppe4lytuctwvlk5xyi2siu6w7cjizdahrv2sjyvlf7wm67yi4kq"}]' --auth instance_principal
