@@ -1,0 +1,207 @@
+- become: false
+  hosts: localhost
+  name: Talos Linux Cluster
+  vars_files:
+    - vars/oracle-cloud.yaml
+  tasks:
+    - name: Check if Talos Linux is already downloaded
+      stat:
+        path: ~/oracle-arm64.qcow2
+      register: result
+
+    - name: Download Talos Linux
+      get_url:
+        url: https://factory.talos.dev/image/376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba/v1.8.2/oracle-arm64.raw.xz
+        dest: ~/oracle-arm64.raw.xz
+        mode: '0644'
+      when: not result.stat.exists
+
+    - name: Extract Talos Linux
+      command: xz --decompress ~/oracle-arm64.raw.xz
+      when: not result.stat.exists
+
+    - name: Convert image to qcow2
+      command: qemu-img convert -f raw -O qcow2 ~/oracle-arm64.raw ~/oracle-arm64.qcow2
+      when: not result.stat.exists
+
+    - name: Get namespace
+      oracle.oci.oci_object_storage_namespace_facts:
+        compartment_id: "{{ compartment_id }}"
+      register: result
+
+    - set_fact:
+        namespace: "{{ result.namespace }}"
+
+    - name: Create bucket
+      oracle.oci.oci_object_storage_bucket:
+        compartment_id: "{{ compartment_id }}"
+        namespace_name: "{{ namespace }}"
+        name: "{{ bucket_name }}"
+
+    #- name: Create object
+    #  oracle.oci.oci_object_storage_object:
+    #    namespace_name: "{{ namespace }}"
+    #    bucket_name: "{{ bucket_name }}"
+    #    object_name: oracle-arm64.qcow2
+    #    src: /Users/theophilusbassaw/oracle-arm64.qcow2
+
+    - name: Create image
+      oracle.oci.oci_compute_image:
+        # required
+        compartment_id: "{{ compartment_id }}"
+
+        # optional
+        image_source_details:
+          # required
+          bucket_name: "{{ bucket_name }}"
+          namespace_name: "{{ namespace }}"
+          object_name: oracle-arm64.qcow2
+          source_type: objectStorageTuple
+
+          # optional
+          operating_system: "Talos"
+          operating_system_version: v1.8.2
+          source_image_type: QCOW2
+        launch_mode: PARAVIRTUALIZED
+        display_name: talos
+
+    - name: Create vcn
+      oracle.oci.oci_network_vcn:
+        compartment_id: "{{ compartment_id }}"
+        cidr_blocks: 10.0.0.0/24
+        is_ipv6_enabled: true
+      register: result
+
+    - set_fact:
+        vcn_id: "{{ result.vcn.id }}"
+        vcn_ipv6_block: "{{ result.vcn.ipv6_cidr_blocks[0] | ansible.utils.ipsubnet(64, 0) }}"
+
+    - name: Create internet_gateway
+      oracle.oci.oci_network_internet_gateway:
+        compartment_id: "{{ compartment_id }}"
+        vcn_id: "{{ vcn_id }}"
+        is_enabled: true
+      register: result
+
+    - set_fact:
+        ig_id: "{{ result.internet_gateway.id }}"
+
+    - name: Create route_table
+      oracle.oci.oci_network_route_table:
+        compartment_id: "{{ compartment_id }}"
+        vcn_id: "{{ vcn_id }}"
+        route_rules:
+          - network_entity_id: "{{ ig_id }}"
+            destination: 0.0.0.0/0
+            destination_type: CIDR_BLOCK
+            description: Default Route
+          - network_entity_id: "{{ ig_id }}"
+            destination: ::/0
+            destination_type: CIDR_BLOCK
+            description: Default Route
+      register: result
+
+    - set_fact:
+        rt_id: "{{ result.route_table.id }}"
+
+    - name: Create security_list
+      oracle.oci.oci_network_security_list:
+        compartment_id: "{{ compartment_id }}"
+        vcn_id: "{{ vcn_id }}"
+        egress_security_rules:
+          - destination: 0.0.0.0/0
+            protocol: all
+            destination_type: CIDR_BLOCK
+            description: To Internet
+
+          - destination: ::/0
+            protocol: all
+            destination_type: CIDR_BLOCK
+            description: To Internet
+            
+        ingress_security_rules:
+          - description: Allow K8S
+            protocol: 6
+            source: 0.0.0.0/0
+            source_type: CIDR_BLOCK
+            tcp_options:
+              destination_port_range:
+                max: 6443
+                min: 6443
+
+          - description: Allow K8S
+            protocol: 6
+            source: ::/0
+            source_type: CIDR_BLOCK
+            tcp_options:
+              destination_port_range:
+                max: 6443
+                min: 6443
+
+          - description: Allow Talos
+            protocol: 6
+            source: 0.0.0.0/0
+            source_type: CIDR_BLOCK
+            tcp_options:
+              destination_port_range:
+                max: 50000
+                min: 50000
+
+          - description: Allow Talos
+            protocol: 6
+            source: ::/0
+            source_type: CIDR_BLOCK
+            tcp_options:
+              destination_port_range:
+                max: 50000
+                min: 50000
+
+          - description: Allow Talos
+            protocol: 6
+            source: 0.0.0.0/0
+            source_type: CIDR_BLOCK
+            tcp_options:
+              destination_port_range:
+                max: 50001
+                min: 50001
+
+          - description: Allow Talos
+            protocol: 6
+            source: ::/0
+            source_type: CIDR_BLOCK
+            tcp_options:
+              destination_port_range:
+                max: 50001
+                min: 50001
+
+          - description: Allow Talos
+            protocol: 17
+            source: 0.0.0.0/0
+            source_type: CIDR_BLOCK
+            udp_options:
+              destination_port_range:
+                max: 51820
+                min: 51820
+
+          - description: Allow Talos
+            protocol: 17
+            source: ::/0
+            source_type: CIDR_BLOCK
+            udp_options:
+              destination_port_range:
+                max: 51820
+                min: 51820
+      register: result
+
+    - set_fact:
+        sl_id: "{{ result.security_list.id }}"
+
+    - name: Create subnet
+      oracle.oci.oci_network_subnet:
+        compartment_id: "{{ compartment_id }}"
+        vcn_id: "{{ vcn_id }}"
+        cidr_block: 10.0.0.0/24
+        ipv6_cidr_block: "{{ vcn_ipv6_block }}"
+        route_table_id: "{{ rt_id }}"
+        security_list_ids: "{{ sl_id }}"
+            
