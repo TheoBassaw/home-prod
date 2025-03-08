@@ -1,5 +1,0 @@
-collections:
-  - community.general
-  - ansible.utils
-  - kubernetes.core
-  - oracle.oci
