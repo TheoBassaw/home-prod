@@ -8,10 +8,10 @@ terraform {
 
   backend "remote" {
     hostname     = "app.terraform.io"
-	organization = "home-prod"
-	workspaces {
-	  name = "oracle-cloud"
-	}
+	  organization = "home-prod"
+	  workspaces {
+	    name = "oracle-cloud"
+	  }
   }
 }
 
@@ -27,3 +27,5 @@ data "oci_containerengine_cluster_kube_config" "kube_config" {
   cluster_id = oci_containerengine_cluster.bootstrap-cluster.id
   depends_on = [oci_containerengine_node_pool.node_pool]
 }
+
+provider "oci" {}

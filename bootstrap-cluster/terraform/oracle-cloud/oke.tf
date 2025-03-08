@@ -1,7 +1,7 @@
 resource "oci_containerengine_cluster" "bootstrap-cluster" {
   compartment_id     = var.compartment_id
   kubernetes_version = "v1.30.1"
-  name               = "Bootstrap Cluster"
+  name               = "bootstrap-cluster"
   vcn_id             = oci_core_vcn.vcn.id
   type               = "BASIC_CLUSTER"
 
