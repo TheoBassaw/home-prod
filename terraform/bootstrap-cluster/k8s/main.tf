@@ -52,5 +52,5 @@ provider "flux" {
 }
 
 resource "flux_bootstrap_git" "bootstrap" {
-  path = "bootstrap-cluster/k8s"
+  path = "kubernetes/clusters/bootstrap-cluster"
 }
