@@ -13,32 +13,38 @@ terraform {
 
   backend "remote" {
     hostname     = "app.terraform.io"
-	organization = "home-prod"
-	workspaces {
-	  name = "oracle-cloud-k8s"
-	}
+    organization = "home-prod"
+    workspaces {
+      name = "bootstrap-cluster-kubernetes"
+    }
   }
 }
 
-data "oci_containerengine_clusters" "boostrap_cluster" {
+data "oci_objectstorage_namespace" "namespace" {
   compartment_id = var.compartment_id
-  name           = "bootstrap-cluster"
 }
 
-data "oci_containerengine_cluster_kube_config" "kube_config" {
-  cluster_id = data.oci_containerengine_clusters.boostrap_cluster.clusters[0].id
+data "oci_objectstorage_bucket" "kubeconfigs" {
+  name      = "kube-configs"
+  namespace = data.oci_objectstorage_namespace.namespace.namespace
+}
+
+data "oci_objectstorage_object" "oke_kubeconfig" {
+  bucket    = data.oci_objectstorage_bucket.kubeconfigs.name
+  namespace = data.oci_objectstorage_namespace.namespace.namespace
+  object    = "bootstrap-cluster.yaml"
 }
 
 provider "oci" {}
 
 provider "flux" {
   kubernetes = {
-    cluster_ca_certificate = base64decode(yamldecode(data.oci_containerengine_cluster_kube_config.kube_config.content).clusters[0].cluster.certificate-authority-data)
-    host                   = yamldecode(data.oci_containerengine_cluster_kube_config.kube_config.content).clusters[0].cluster.server
+    cluster_ca_certificate = base64decode(yamldecode(data.oci_objectstorage_object.oke_kubeconfig.content).clusters[0].cluster.certificate-authority-data)
+    host                   = yamldecode(data.oci_objectstorage_object.oke_kubeconfig.content).clusters[0].cluster.server
     exec                   = {
-      api_version = yamldecode(data.oci_containerengine_cluster_kube_config.kube_config.content).users[0].user.exec.apiVersion
-      command     = yamldecode(data.oci_containerengine_cluster_kube_config.kube_config.content).users[0].user.exec.command
-      args        = yamldecode(data.oci_containerengine_cluster_kube_config.kube_config.content).users[0].user.exec.args
+      api_version = yamldecode(data.oci_objectstorage_object.oke_kubeconfig.content).users[0].user.exec.apiVersion
+      command     = yamldecode(data.oci_objectstorage_object.oke_kubeconfig.content).users[0].user.exec.command
+      args        = yamldecode(data.oci_objectstorage_object.oke_kubeconfig.content).users[0].user.exec.args
 
     }
   }

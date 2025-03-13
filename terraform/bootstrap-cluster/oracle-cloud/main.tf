@@ -10,7 +10,7 @@ terraform {
     hostname     = "app.terraform.io"
 	  organization = "home-prod"
 	  workspaces {
-	    name = "oracle-cloud"
+	    name = "bootstrap-cluster-oracle-cloud"
 	  }
   }
 }
