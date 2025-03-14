@@ -8,7 +8,10 @@ terraform {
       source  = "fluxcd/flux"
       version = ">= 1.4.0"
     }
-
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+      version = ">= 2.36.0"
+    }
   }
 
   backend "remote" {
@@ -35,8 +38,6 @@ data "oci_objectstorage_object" "oke_kubeconfig" {
   object    = "bootstrap-cluster.yaml"
 }
 
-provider "oci" {}
-
 provider "flux" {
   kubernetes = {
     cluster_ca_certificate = base64decode(yamldecode(data.oci_objectstorage_object.oke_kubeconfig.content).clusters[0].cluster.certificate-authority-data)
@@ -57,6 +58,14 @@ provider "flux" {
   }
 }
 
-resource "flux_bootstrap_git" "bootstrap" {
-  path = "kubernetes/clusters/bootstrap-cluster"
+provider "kubernetes" {
+  cluster_ca_certificate = base64decode(yamldecode(data.oci_objectstorage_object.oke_kubeconfig.content).clusters[0].cluster.certificate-authority-data)
+  host                   = yamldecode(data.oci_objectstorage_object.oke_kubeconfig.content).clusters[0].cluster.server
+  exec {
+    api_version = yamldecode(data.oci_objectstorage_object.oke_kubeconfig.content).users[0].user.exec.apiVersion
+    command     = yamldecode(data.oci_objectstorage_object.oke_kubeconfig.content).users[0].user.exec.command
+    args        = yamldecode(data.oci_objectstorage_object.oke_kubeconfig.content).users[0].user.exec.args
+  }
 }
+
+provider "oci" {}

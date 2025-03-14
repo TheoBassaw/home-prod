@@ -1,31 +1,22 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: talos-linux-home-ops
-  labels:
-    pod-security.kubernetes.io/enforce: privileged
-    pod-security.kubernetes.io/audit: privileged
-    pod-security.kubernetes.io/warn: privileged
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: talos-linux-control-home-ops
-  namespace: talos-linux-home-ops
+  name: talos-linux-control
+  namespace: talos-linux
   labels:
-    app: talos-linux-control-home-ops
+    app: talos-linux-control
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: talos-linux-control-home-ops
+      app: talos-linux-control
   template:
     metadata:
       labels:
-        app: talos-linux-control-home-ops
+        app: talos-linux-control
     spec:
       containers:
-        - name: talos-linux-control-home-ops
+        - name: talos-linux-control
           env:
             - name: PLATFORM
               value: container
@@ -47,16 +38,9 @@ spec:
               memory: "2Gi"
               cpu: "1000m"
       volumeMounts:
-        - mountPath: /run
-          name: run
-        - mountPath: /system
-          name: system
-        - mountPath: /tmp
-          name: tmp
+        - name: root
+          mountPath: /
       volumes:
-        - emptyDir: {}
-          name: run
-        - emptyDir: {}
-          name: system
-        - emptyDir: {}
-          name: tmp
+        - name: root
+          persistentVolumeClaim:
+            claimName: talos-linux-pvc
