@@ -1,18 +1,12 @@
+data "kubectl_path_documents" "talos_linux" {
+    pattern = "${path.root}/../../../kubernetes/clusters/bootstrap-cluster/apps/talos-linux/*.yaml"
+}
+
 resource "flux_bootstrap_git" "bootstrap" {
   path = "kubernetes/clusters/bootstrap-cluster"
 }
 
-/*
-resource "kubernetes_manifest" "talos_linux_namespace" {
-  manifest = yamldecode(file("${path.root}/../../../kubernetes/clusters/bootstrap-cluster/apps/talos-linux/namespace.yaml"))
+resource "kubectl_manifest" "talos_linux" {
+  for_each  = data.kubectl_path_documents.talos_linux.manifests
+  yaml_body = each.value
 }
-
-resource "kubernetes_manifest" "talos_linux_pvc" {
-  manifest = yamldecode(file("${path.root}/../../../kubernetes/clusters/bootstrap-cluster/apps/talos-linux/pvc.yaml"))
-  depends_on = [kubernetes_manifest.talos_linux_namespace]
-}
-
-resource "kubernetes_manifest" "talos_linux_deployment" {
-  manifest = yamldecode(file("${path.root}/../../../kubernetes/clusters/bootstrap-cluster/apps/talos-linux/deployment.yaml"))
-  depends_on = [kubernetes_manifest.talos_linux_namespace]
-}*/

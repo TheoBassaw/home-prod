@@ -8,9 +8,9 @@ terraform {
       source  = "fluxcd/flux"
       version = ">= 1.4.0"
     }
-    kubernetes = {
-      source = "hashicorp/kubernetes"
-      version = ">= 2.36.0"
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.7.0"
     }
   }
 
@@ -58,7 +58,7 @@ provider "flux" {
   }
 }
 
-provider "kubernetes" {
+provider "kubectl" {
   cluster_ca_certificate = base64decode(yamldecode(data.oci_objectstorage_object.oke_kubeconfig.content).clusters[0].cluster.certificate-authority-data)
   host                   = yamldecode(data.oci_objectstorage_object.oke_kubeconfig.content).clusters[0].cluster.server
   exec {

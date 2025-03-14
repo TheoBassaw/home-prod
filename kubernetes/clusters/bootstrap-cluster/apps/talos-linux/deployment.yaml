@@ -30,7 +30,6 @@ spec:
               protocol: TCP
           securityContext:
             privileged: true
-            readOnlyRootFilesystem: true
             seccompProfile:
                 type: Unconfined
           resources:
