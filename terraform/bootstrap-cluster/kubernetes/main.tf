@@ -12,6 +12,10 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = ">= 1.7.0"
     }
+    talos = {
+      source  = "siderolabs/talos"
+      version = ">= 0.7.1"
+    }
   }
 
   backend "remote" {
@@ -21,21 +25,6 @@ terraform {
       name = "bootstrap-cluster-kubernetes"
     }
   }
-}
-
-data "oci_objectstorage_namespace" "namespace" {
-  compartment_id = var.compartment_id
-}
-
-data "oci_objectstorage_bucket" "kubeconfigs" {
-  name      = "kube-configs"
-  namespace = data.oci_objectstorage_namespace.namespace.namespace
-}
-
-data "oci_objectstorage_object" "oke_kubeconfig" {
-  bucket    = data.oci_objectstorage_bucket.kubeconfigs.name
-  namespace = data.oci_objectstorage_namespace.namespace.namespace
-  object    = "bootstrap-cluster.yaml"
 }
 
 provider "flux" {
@@ -69,3 +58,7 @@ provider "kubectl" {
 }
 
 provider "oci" {}
+
+resource "flux_bootstrap_git" "bootstrap" {
+  path = "kubernetes/clusters/bootstrap-cluster"
+}

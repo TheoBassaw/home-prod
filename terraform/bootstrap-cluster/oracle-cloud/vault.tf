@@ -6,13 +6,24 @@ resource "oci_kms_vault" "prod_vault" {
 
 resource "oci_kms_key" "vault_key" {
   compartment_id      = var.compartment_id
-  display_name        = "Vault Unseal Key"
+  display_name        = "Vault Key"
   management_endpoint = oci_kms_vault.prod_vault.management_endpoint
   protection_mode     = "HSM"
 
   key_shape {
     algorithm = "AES"
     length    = 32
+  }
+}
+
+resource "oci_vault_secret" "vault_id" {
+  compartment_id = var.compartment_id
+  key_id         = oci_kms_key.vault_key.id
+  vault_id       = oci_kms_vault.prod_vault.id
+  secret_name    = "vault_id"
+  secret_content {
+    content      = base64encode(oci_kms_vault.prod_vault.id)
+    content_type = "BASE64"
   }
 }
 
