@@ -16,6 +16,17 @@ resource "oci_kms_key" "vault_key" {
   }
 }
 
+resource "oci_vault_secret" "cf_token" {
+  compartment_id = var.compartment_id
+  vault_id       = oci_kms_vault.prod_vault.id
+  key_id         = oci_kms_key.vault_key.id
+  secret_name    = "cf-token"
+  secret_content {
+    content_type = "BASE64"
+    content      = base64encode(var.cf_token)
+  }
+}
+
 resource "oci_identity_dynamic_group" "bootstrap_cluster" {
   compartment_id = var.compartment_id
   name           = "bootstrap-cluster"

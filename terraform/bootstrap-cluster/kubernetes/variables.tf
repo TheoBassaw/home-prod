@@ -9,5 +9,6 @@ variable "git_url" {
 }
 
 variable "ssh_private_key" {
-  type = string
+  type      = string
+  sensitive = true
 }

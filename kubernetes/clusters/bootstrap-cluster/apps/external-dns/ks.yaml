@@ -1,11 +1,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: external-secrets-infra
+  name: external-dns-infra
   namespace: flux-system
 spec:
   interval: 10m0s
-  path: ./kubernetes/infrastructure/external-secrets
+  path: ./kubernetes/infrastructure/external-dns
   prune: true
   sourceRef:
     kind: GitRepository
@@ -14,13 +14,14 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: external-secrets
+  name: external-dns
   namespace: flux-system
 spec:
   dependsOn:
-    - name: external-secrets-infra
+    - name: external-dns-infra
+    - name: external-secrets
   interval: 10m0s
-  path: ./kubernetes/clusters/bootstrap-cluster/apps/external-secrets
+  path: ./kubernetes/clusters/bootstrap-cluster/apps/external-dns
   prune: true
   sourceRef:
     kind: GitRepository

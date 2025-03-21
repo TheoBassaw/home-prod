@@ -21,9 +21,11 @@ spec:
         kind: HelmRepository
         name: external-secrets
         namespace: flux-system
-  values:
-    installCRDs: false
-    resources:
-      requests:
-        cpu: 10m
-        memory: 32Mi
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
+  valuesFrom:
+    - kind: ConfigMap
+      name: helm-values
+      valuesKey: helm-values.yaml
