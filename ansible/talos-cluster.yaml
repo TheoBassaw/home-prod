@@ -1,0 +1,7 @@
+- name: Create Talos Linux Cluster
+  become: false
+  hosts: localhost
+  vars_files:
+    vars/home-cluster.yaml
+  roles:
+    - talos-metal

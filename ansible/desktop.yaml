@@ -1,0 +1,36 @@
+- name: Install Desktop packages
+  become: false
+  hosts: localhost
+  roles:
+    - role: geerlingguy.docker
+      become: true
+  tasks:
+    - ansible.builtin.apt:
+        name:
+          - net-tools
+
+    - ansible.builtin.pip:
+        name:
+          - kubernetes
+
+    - community.general.homebrew_tap:
+        name:
+          - fluxcd/tap
+
+    - community.general.homebrew:
+        update_homebrew: true
+        upgrade_all: true
+        name:
+          - kubectl
+          - helm
+          - talosctl
+          - fluxcd/tap/flux
+
+    - ansible.builtin.lineinfile:
+        line: "{{ item }}"
+        path: ~/.profile
+      loop:
+        - source <(kubectl completion bash)
+        - source <(helm completion bash)
+        - source <(flux completion bash)
+        - source <(talosctl completion bash)

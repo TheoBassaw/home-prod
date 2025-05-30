@@ -1,0 +1,31 @@
+name: pxe
+services:
+
+  matchbox:
+    image: quay.io/poseidon/matchbox:v0.11.0-176-gb9e2afdd
+    environment:
+      - TZ=America/New_York
+      - MATCHBOX_ADDRESS=0.0.0.0:8080
+      - MATCHBOX_LOG_LEVEL=debug
+    network_mode: host
+    volumes:
+      - "{{ role_path }}/files/matchbox:/var/lib/matchbox
+    restart: always
+
+  dnsmasq:
+    image: quay.io/poseidon/dnsmasq:v0.5.0-41-g0212fd2
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+    restart: always
+    command: '-d -q
+      --dhcp-range={{ ansible_default_ipv4.network }},proxy,{{ ansible_default_ipv4.netmask }}
+      --enable-tftp
+      --tftp-root=/var/lib/tftpboot
+      --dhcp-userclass=set:ipxe,iPXE
+      --pxe-service=tag:#ipxe,x86PC,"PXE chainload to iPXE",undionly.kpxe
+      --pxe-service=tag:ipxe,x86PC,"iPXE",http://{{ ansible_default_ipv4.address }}:8080/ipxe
+      --pxe-service=tag:#ipxe,X86-64_EFI,"PXE chainload to iPXE UEFI",ipxe.efi
+      --pxe-service=tag:ipxe,X86-64_EFI,"iPXE UEFI",http://{{ ansible_default_ipv4.address }}:8080/ipxe
+      --log-queries
+      --log-dhcp'

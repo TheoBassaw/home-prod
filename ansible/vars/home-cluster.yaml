@@ -1,0 +1,9 @@
+officialExtensions:
+  - siderolabs/drbd
+  - siderolabs/i915
+  - siderolabs/intel-ucode
+  - siderolabs/lldpd
+  - siderolabs/mei
+  - siderolabs/nfsd
+  - siderolabs/nvme-cli
+  - siderolabs/util-linux-tools
