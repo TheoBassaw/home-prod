@@ -1,9 +1,40 @@
-officialExtensions:
+talos_version: 1.10.3
+cluster_name: home-cluster
+endpoint: https://10.20.0.200:6443
+api_server_cert_sans:
+  - home-cluster.paradisenetworkz.com
+
+nodes:
+  - hostname: talos-control-home-1
+    ip_address: 10.20.0.201
+    mac_address: fc:3f:db:07:4c:5f
+    install_disk: /dev/nvme0n1
+    legacy_bios_support: true
+    type: controlplane
+    network_interfaces:
+      - interface: bond0
+        vip: 
+          ip: 10.20.0.200
+        addresses: 
+          - 10.20.0.201/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.20.0.1
+        bond:
+          deviceSelectors:
+            - hardwareAddr: fc:3f:db:07:4c:5f
+          mode: active-backup
+
+official_extensions:
   - siderolabs/drbd
   - siderolabs/i915
   - siderolabs/intel-ucode
-  - siderolabs/lldpd
   - siderolabs/mei
   - siderolabs/nfsd
   - siderolabs/nvme-cli
   - siderolabs/util-linux-tools
+
+cilium_ipv4_native_routing_cidr: 10.0.0.0/8
+cilium_operator_replicas: 1
+cilium_ipam_operator_cluster_pool_ipv4_pod_cidr_list: 
+  - 10.30.0.0/16

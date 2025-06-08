@@ -1,0 +1,21 @@
+machine:
+  type: {{ item.type }}
+  network:
+    hostname: {{ item.hostname }}
+    interfaces: {{ item.network_interfaces }}
+  install:
+    disk: {{ item.install_disk }}
+    image: factory.talos.dev/metal-installer/{{ schematic.json.id }}:v{{ talos_version }}
+    wipe: true
+{% if item.legacy_bios_support is defined and item.legacy_bios_support %}
+    legacyBIOSSupport: true
+{% endif %}
+cluster:
+  network:
+    cni:
+      name: none
+  apiServer:
+    certSANs: {{ api_server_cert_sans }}
+  proxy:
+    disabled: true
+  allowSchedulingOnControlPlanes: {{ allow_scheduling_on_control_planes }}

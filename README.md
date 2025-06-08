@@ -3,9 +3,12 @@
 ### Tools
 - Docker
 - Ansible
+- talosctl
+- helm
+- kubectl
 
 ### Controller Firewall
-Enable these ports on controller:
+Allow these ports on controller:
 - 53 # DNS
 - 67 # DHCP Server
 - 69 # TFTP

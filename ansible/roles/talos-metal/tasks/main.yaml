@@ -1,1 +1,188 @@
-- ansible.builtin.import_tasks: pxe.yaml
+- name: Create bootstrap and config directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ ansible_env.HOME }}/.talos"
+    - "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}"
+    - "{{ ansible_env.HOME }}/.kube"
+    - "{{ ansible_env.HOME }}/pxe-compose"
+    - "{{ ansible_env.HOME }}/matchbox"
+    - "{{ ansible_env.HOME }}/matchbox/assets"
+    - "{{ ansible_env.HOME }}/matchbox/groups"
+    - "{{ ansible_env.HOME }}/matchbox/profiles"
+
+- name: Upload schematic to image factory and download assets
+  block:
+    - ansible.builtin.uri:
+        url: https://factory.talos.dev/schematics
+        method: POST
+        body: "{{ lookup('ansible.builtin.template', 'schematic.yaml.j2') }}"
+        body_format: raw
+        status_code: 201
+      register: schematic
+
+    - ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ item.dest }}"
+        mode: '0644'
+      loop:
+        - url: "https://factory.talos.dev/image/{{ schematic.json.id }}/v{{ talos_version }}/kernel-amd64"
+          dest: "{{ ansible_env.HOME }}/matchbox/assets/vmlinuz"
+        - url: "https://factory.talos.dev/image/{{ schematic.json.id }}/v{{ talos_version }}/initramfs-amd64.xz"
+          dest: "{{ ansible_env.HOME }}/matchbox/assets/initramfs.xz"
+
+- name: Generate talos configurations
+  block:
+    - ansible.builtin.command: "talosctl gen secrets --output-file {{ ansible_env.HOME }}/.talos/{{ cluster_name }}/secrets.yaml"
+      args:
+        creates: "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}/secrets.yaml"
+
+    - ansible.builtin.command:
+        argv:
+          - talosctl
+          - gen
+          - config
+          - "{{ cluster_name }}"
+          - "{{ endpoint }}"
+          - --with-secrets
+          - "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}/secrets.yaml"
+          - --output-types
+          - "{% if item.type == 'controlplane' %}controlplane{% else %}worker{% endif %}"
+          - --output
+          - "{{ ansible_env.HOME }}/matchbox/assets/{{ item.hostname }}.yaml"
+          - --config-patch
+          - "{{ lookup('ansible.builtin.template', 'patch.yaml.j2') }}"
+        creates: "{{ ansible_env.HOME }}/matchbox/assets/{{ item.hostname }}.yaml"
+      loop: "{{ nodes }}"
+
+    - ansible.builtin.command:
+        argv:
+          - talosctl
+          - gen
+          - config
+          - "{{ cluster_name }}"
+          - "{{ endpoint }}"
+          - --with-secrets
+          - "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}/secrets.yaml"
+          - --output-types
+          - talosconfig
+          - --output
+          - "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}-config"
+        creates: "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}-config"
+
+- name: Generate matchbox configurations
+  block:
+    - ansible.builtin.template:
+        src: matchbox-profiles.json.j2
+        dest: "{{ ansible_env.HOME }}/matchbox/profiles/{{ item.hostname }}.json"
+        mode: "0644"
+      loop: "{{ nodes }}"
+
+    - ansible.builtin.template:
+        src: matchbox-groups.json.j2
+        dest: "{{ ansible_env.HOME }}/matchbox/groups/{{ item.hostname }}.json"
+        mode: "0644"
+      loop: "{{ nodes }}"
+
+- name: Start pxe services and wake up nodes
+  block:
+    - ansible.builtin.template:
+        src: docker-compose.yaml.j2
+        dest: "{{ ansible_env.HOME }}/pxe-compose/docker-compose.yaml"
+        mode: "0644"
+
+    - community.docker.docker_compose_v2:
+        project_src: "{{ ansible_env.HOME }}/pxe-compose"
+        wait: true
+
+    - community.general.wakeonlan:
+        mac: "{{ item.mac_address }}"
+      loop: "{{ nodes }}"
+
+- name: Bootstrap controlplane and retrieve kubeconfig
+  block:
+    - ansible.builtin.command:
+        argv:
+          - talosctl
+          - bootstrap
+          - --nodes
+          - "{{ nodes.0.ip_address }}"
+          - --endpoints
+          - "{{ nodes.0.ip_address }}"
+          - --talosconfig
+          - "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}-config"
+      register: result
+      changed_when: false
+      failed_when: "'error executing bootstrap: rpc error: code = Unavailable desc = connection error' in result.stderr"
+      retries: 30
+      delay: 10
+
+    - ansible.builtin.command:
+        argv:
+          - talosctl
+          - kubeconfig
+          - --nodes
+          - "{{ nodes.0.ip_address }}"
+          - --endpoints
+          - "{{ nodes.0.ip_address }}"
+          - --talosconfig
+          - "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}-config"
+      changed_when: false
+
+- name: Deploy cilium and flux
+  block:
+    - kubernetes.core.helm_repository:
+        name: cilium
+        repo_url: https://helm.cilium.io/
+
+    - kubernetes.core.helm:
+        name: cilium
+        chart_ref: cilium/cilium
+        chart_version: 1.17.4
+        release_namespace: kube-system
+        update_repo_cache: true
+        context: "admin@{{ cluster_name }}"
+        kubeconfig: "{{ ansible_env.HOME }}/.kube/config"
+        wait: true
+        values:
+          routingMode: native
+          autoDirectNodeRoutes: true
+          ipv4NativeRoutingCIDR: "{{ cilium_ipv4_native_routing_cidr }}"
+          kubeProxyReplacement: true
+          k8sServiceHost: 127.0.0.1
+          k8sServicePort: 6443
+          ipam:
+            operator:
+              clusterPoolIPv4PodCIDRList: "{{ cilium_ipam_operator_cluster_pool_ipv4_pod_cidr_list }}"
+          bpf:
+            datapathMode: netkit
+            masquerade: true
+          loadBalancer:
+            acceleration: best-effort
+          l7Proxy: true
+          gatewayAPI:
+            enabled: true
+          l2announcements:
+            enabled: true
+          k8sClientRateLimit:
+            qps: 25
+            burst: 50
+          hubble:
+            relay:
+              enabled: true
+            ui:
+              enabled: true
+          operator:
+            replicas: "{{ cilium_operator_replicas }}"
+          securityContext:
+            capabilities:
+              ciliumAgent: [CHOWN, KILL, NET_ADMIN, NET_RAW, IPC_LOCK, SYS_ADMIN, SYS_RESOURCE, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
+              cleanCiliumState: [NET_ADMIN, SYS_ADMIN, SYS_RESOURCE]
+          cgroup:
+            autoMount:
+              enabled: false
+            hostRoot: /sys/fs/cgroup
+      retries: 30
+      delay: 10

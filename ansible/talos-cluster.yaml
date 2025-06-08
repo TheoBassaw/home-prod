@@ -1,7 +1,8 @@
-- name: Create Talos Linux Cluster
+- name: Start pxe server, wake up hosts, gen config and apply it
   become: false
   hosts: localhost
+  connection: local
   vars_files:
-    vars/home-cluster.yaml
+    - ./vars/home-cluster.yaml
   roles:
     - talos-metal

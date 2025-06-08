@@ -1,6 +1,6 @@
 {
-  "id": "default",
-  "name": "default",
+  "id": "{{ item.hostname }}",
+  "name": "{{ item.hostname }}",
   "boot": {
     "kernel": "/assets/vmlinuz",
     "initrd": ["/assets/initramfs.xz"],
@@ -11,7 +11,8 @@
       "pti=on",
       "console=tty0",
       "printk.devkmsg=on",
-      "talos.platform=metal"
+      "talos.platform=metal",
+      "talos.config=http://{{ ansible_default_ipv4.address }}:8080/assets/{{ item.hostname }}.yaml"
     ]
   }
 }
