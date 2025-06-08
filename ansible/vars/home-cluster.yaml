@@ -7,9 +7,8 @@ api_server_cert_sans:
 nodes:
   - hostname: talos-control-home-1
     ip_address: 10.20.0.201
-    mac_address: fc:3f:db:07:4c:5f
+    mac_address: 40:b0:34:f5:ac:a6
     install_disk: /dev/nvme0n1
-    legacy_bios_support: true
     type: controlplane
     network_interfaces:
       - interface: bond0
@@ -22,7 +21,45 @@ nodes:
             gateway: 10.20.0.1
         bond:
           deviceSelectors:
-            - hardwareAddr: fc:3f:db:07:4c:5f
+            - hardwareAddr: 40:b0:34:f5:ac:a6
+          mode: active-backup
+  
+  - hostname: talos-control-home-2
+    ip_address: 10.20.0.202
+    mac_address: 6c:4b:90:55:3e:7d
+    install_disk: /dev/nvme0n1
+    type: controlplane
+    network_interfaces:
+      - interface: bond0
+        vip: 
+          ip: 10.20.0.200
+        addresses: 
+          - 10.20.0.202/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.20.0.1
+        bond:
+          deviceSelectors:
+            - hardwareAddr: 6c:4b:90:55:3e:7d
+          mode: active-backup
+
+  - hostname: talos-control-home-3
+    ip_address: 10.20.0.203
+    mac_address: 6c:4b:90:55:3e:66
+    install_disk: /dev/nvme0n1
+    type: controlplane
+    network_interfaces:
+      - interface: bond0
+        vip: 
+          ip: 10.20.0.200
+        addresses: 
+          - 10.20.0.203/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.20.0.1
+        bond:
+          deviceSelectors:
+            - hardwareAddr: 6c:4b:90:55:3e:66
           mode: active-backup
 
 official_extensions:
