@@ -71,7 +71,5 @@ official_extensions:
   - siderolabs/nvme-cli
   - siderolabs/util-linux-tools
 
-cilium_ipv4_native_routing_cidr: 10.0.0.0/8
-cilium_operator_replicas: 1
 cilium_ipam_operator_cluster_pool_ipv4_pod_cidr_list: 
   - 10.30.0.0/16

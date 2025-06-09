@@ -1,7 +1,7 @@
 name: pxe
 services:
   matchbox:
-    image: quay.io/poseidon/matchbox:v{{ matchbox_version }}
+    image: quay.io/poseidon/matchbox:v{{ matchbox_image_version }}
     environment:
       - TZ=America/New_York
       - MATCHBOX_ADDRESS={{ ansible_default_ipv4.address }}:8080
@@ -12,7 +12,7 @@ services:
     restart: always
 
   dnsmasq:
-    image: quay.io/poseidon/dnsmasq:v{{ poseidon_dnsmasq_version }}
+    image: quay.io/poseidon/dnsmasq:v{{ poseidon_dnsmasq_image_version }}
     network_mode: host
     cap_add:
       - NET_ADMIN

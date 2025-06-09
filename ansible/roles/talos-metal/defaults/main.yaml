@@ -1,5 +1,12 @@
-matchbox_version: 0.11.0-176-gb9e2afdd
-poseidon_dnsmasq_version: 0.5.0-41-g0212fd2
+matchbox_image_version: 0.11.0-176-gb9e2afdd
+poseidon_dnsmasq_image_version: 0.5.0-41-g0212fd2
+
 allow_scheduling_on_control_planes: true
 api_server_cert_sans: []
 official_extensions: []
+
+cilium_chart_version: 1.17.4
+flux_operator_chart_version: 0.22.0
+
+cilium_ipv4_native_routing_cidr: 10.0.0.0/8
+cilium_operator_replicas: 3
