@@ -202,5 +202,5 @@
 
     - kubernetes.core.k8s:
         state: present
-        src: "{{ playbook_dir }}/../kubernetes/clusters/{{ cluster_name }}/flux-system/flux-instance/flux-instance.yaml"
+        src: "{{ playbook_dir }}/../kubernetes/clusters/{{ cluster_name }}/flux-system/flux-instance.yaml"
         wait: true
