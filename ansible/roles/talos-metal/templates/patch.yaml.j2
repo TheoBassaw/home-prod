@@ -7,10 +7,15 @@ machine:
     disk: {{ item.install_disk }}
     image: factory.talos.dev/metal-installer/{{ schematic.json.id }}:v{{ talos_version }}
     wipe: true
+  features:
+    hostDNS:
+      enabled: true
+      forwardKubeDNSToHost: false
 cluster:
   network:
     cni:
       name: none
+    podSubnets: {{ network_podsubnets }}
   apiServer:
     certSANs: {{ api_server_cert_sans }}
   proxy:

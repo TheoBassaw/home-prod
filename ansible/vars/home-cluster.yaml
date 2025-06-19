@@ -1,6 +1,8 @@
 talos_version: 1.10.3
 cluster_name: home-cluster
 endpoint: https://10.20.0.200:6443
+network_podsubnets:
+  - 10.30.0.0/16
 api_server_cert_sans:
   - home-cluster.paradisenetworkz.com
 
@@ -70,6 +72,3 @@ official_extensions:
   - siderolabs/nfsd
   - siderolabs/nvme-cli
   - siderolabs/util-linux-tools
-
-cilium_ipam_operator_cluster_pool_ipv4_pod_cidr_list: 
-  - 10.30.0.0/16
