@@ -34,3 +34,6 @@ spec:
     crds:
       enabled: true
     replicaCount: 3
+    webhook:
+      networkPolicy: 
+        enabled: true
