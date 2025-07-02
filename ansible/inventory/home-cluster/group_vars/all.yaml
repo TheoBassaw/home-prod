@@ -1,0 +1,37 @@
+---
+cluster_name: home-cluster
+endpoint: https://10.20.0.200:6443
+
+schematic:
+  customization:
+    extraKernelArgs: ['talos.platform=metal']
+    systemExtensions:
+      officialExtensions:
+        - siderolabs/drbd
+        - siderolabs/i915
+        - siderolabs/intel-ucode
+        - siderolabs/mei
+        - siderolabs/nfsd
+        - siderolabs/nvme-cli
+        - siderolabs/util-linux-tools
+
+config_patch:
+  machine:
+    features:
+      hostDNS:
+        enabled: true
+        forwardKubeDNSToHost: false
+  cluster:
+    network:
+      cni:
+        name: none
+      dnsDomain: cluster.local
+      podSubnets:
+        - 10.30.0.0/16
+      serviceSubnets:
+        - 10.96.0.0/12
+    apiServer:
+      certSANs:
+        - 10.20.0.200
+        - home-cluster.paradisenetworkz.com
+    allowSchedulingOnControlPlanes: true

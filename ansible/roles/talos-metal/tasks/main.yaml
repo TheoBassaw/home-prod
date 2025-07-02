@@ -1,206 +1,191 @@
-- name: Create bootstrap and config directories
+---
+- name: Make sure directories exist
+  delegate_to: localhost
+  run_once: true
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: '0755'
   loop:
-    - "{{ ansible_env.HOME }}/.talos"
-    - "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}"
-    - "{{ ansible_env.HOME }}/.kube"
-    - "{{ ansible_env.HOME }}/pxe-compose"
-    - "{{ ansible_env.HOME }}/matchbox"
-    - "{{ ansible_env.HOME }}/matchbox/assets"
-    - "{{ ansible_env.HOME }}/matchbox/groups"
-    - "{{ ansible_env.HOME }}/matchbox/profiles"
+    - "~/.talos"
+    - "~/.kube"
+    - "{{ playbook_dir }}/files/{{ cluster_name }}"
+    - "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/assets"
+    - "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/groups"
+    - "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/profiles"
 
-- name: Upload schematic to image factory and download assets
-  block:
-    - ansible.builtin.uri:
-        url: https://factory.talos.dev/schematics
-        method: POST
-        body: "{{ lookup('ansible.builtin.template', 'schematic.yaml.j2') }}"
-        body_format: raw
-        status_code: 201
-      register: schematic
+- name: Upload schematic to image factory
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.uri:
+    url: https://factory.talos.dev/schematics
+    method: POST
+    body: "{{ schematic | to_yaml }}"
+    body_format: raw
+    status_code: 201
+  register: schematic
 
-    - ansible.builtin.get_url:
-        url: "{{ item.url }}"
-        dest: "{{ item.dest }}"
-        mode: '0644'
-      loop:
-        - url: "https://factory.talos.dev/image/{{ schematic.json.id }}/v{{ talos_version }}/kernel-amd64"
-          dest: "{{ ansible_env.HOME }}/matchbox/assets/vmlinuz"
-        - url: "https://factory.talos.dev/image/{{ schematic.json.id }}/v{{ talos_version }}/initramfs-amd64.xz"
-          dest: "{{ ansible_env.HOME }}/matchbox/assets/initramfs.xz"
+- name: Download image factory assets
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    mode: '0644'
+  loop:
+    - url: "https://factory.talos.dev/image/{{ schematic.json.id }}/v{{ talos_version }}/kernel-amd64"
+      dest: "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/assets/vmlinuz"
+    - url: "https://factory.talos.dev/image/{{ schematic.json.id }}/v{{ talos_version }}/initramfs-amd64.xz"
+      dest: "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/assets/initramfs.xz"
 
-- name: Generate talos configurations
-  block:
-    - ansible.builtin.command: "talosctl gen secrets --output-file {{ ansible_env.HOME }}/.talos/{{ cluster_name }}/secrets.yaml"
-      args:
-        creates: "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}/secrets.yaml"
+- name: Generate talos secret bundle
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.command: "talosctl gen secrets --output-file {{ playbook_dir }}/files/{{ cluster_name }}/secrets.yaml"
+  args:
+    creates: "{{ playbook_dir }}/files/{{ cluster_name }}/secrets.yaml"
 
-    - ansible.builtin.command:
-        argv:
-          - talosctl
-          - gen
-          - config
-          - "{{ cluster_name }}"
-          - "{{ endpoint }}"
-          - --with-secrets
-          - "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}/secrets.yaml"
-          - --output-types
-          - "{% if item.type == 'controlplane' %}controlplane{% else %}worker{% endif %}"
-          - --output
-          - "{{ ansible_env.HOME }}/matchbox/assets/{{ item.hostname }}.yaml"
-          - --config-patch
-          - "{{ lookup('ansible.builtin.template', 'patch.yaml.j2') }}"
-        creates: "{{ ansible_env.HOME }}/matchbox/assets/{{ item.hostname }}.yaml"
-      loop: "{{ nodes }}"
+- name: Generate talos machine configs
+  delegate_to: localhost
+  ansible.builtin.command: |
+    talosctl gen config "{{ cluster_name }}" "{{ endpoint }}" \
+    --with-secrets "{{ playbook_dir }}/files/{{ cluster_name }}/secrets.yaml" \
+    --output-types "{% if inventory_hostname in groups['controlplane'] %}controlplane{% else %}worker{% endif %}" \
+    --output "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/assets/{{ inventory_hostname }}.yaml" \
+    --config-patch "{{ config_patch }}"
+    --config-patch "{{ machine_config }}"
+  args:
+    creates: "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/assets/{{ inventory_hostname }}.yaml"
 
-    - ansible.builtin.command:
-        argv:
-          - talosctl
-          - gen
-          - config
-          - "{{ cluster_name }}"
-          - "{{ endpoint }}"
-          - --with-secrets
-          - "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}/secrets.yaml"
-          - --output-types
-          - talosconfig
-          - --output
-          - "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}-config"
-        creates: "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}-config"
 
-- name: Generate matchbox configurations
-  block:
-    - ansible.builtin.template:
-        src: matchbox-profiles.json.j2
-        dest: "{{ ansible_env.HOME }}/matchbox/profiles/{{ item.hostname }}.json"
-        mode: "0644"
-      loop: "{{ nodes }}"
+- name: Generate talconfig
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.command: |
+    talosctl gen config "{{ cluster_name }}" "{{ endpoint }}" \
+    --with-secrets "{{ playbook_dir }}/files/{{ cluster_name }}/secrets.yaml" \
+    --output-types talosconfig --output "~/.talos/{{ cluster_name }}"
+  args:
+    creates: "~/.talos/{{ cluster_name }}"
 
-    - ansible.builtin.template:
-        src: matchbox-groups.json.j2
-        dest: "{{ ansible_env.HOME }}/matchbox/groups/{{ item.hostname }}.json"
-        mode: "0644"
-      loop: "{{ nodes }}"
+- name: Generate matchbox configs
+  delegate_to: localhost
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+  loop:
+    - src: matchbox-profiles.json.j2
+      dest: "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/profiles/{{ inventory_hostname }}.json"
+    - src: matchbox-groups.json.j2
+      dest: "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/groups/{{ inventory_hostname }}.json"
 
-- name: Start pxe services and wake up nodes
-  block:
-    - ansible.builtin.template:
-        src: docker-compose.yaml.j2
-        dest: "{{ ansible_env.HOME }}/pxe-compose/docker-compose.yaml"
-        mode: "0644"
+- name: Start pxe services
+  delegate_to: localhost
+  run_once: true
+  notify: Stop pxe services
+  community.docker.docker_compose_v2:
+    project_name: pxe
+    wait: true
+    definition:
+      services:
+        matchbox:
+          image: quay.io/poseidon/matchbox:v{{ matchbox_image_version }}
+          environment:
+            - TZ=America/New_York
+            - MATCHBOX_ADDRESS={{ ansible_controller_ip }}:8080
+            - MATCHBOX_LOG_LEVEL=debug
+          network_mode: host
+          volumes:
+            - "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox:/var/lib/matchbox"
+          restart: always
 
-    - community.docker.docker_compose_v2:
-        project_src: "{{ ansible_env.HOME }}/pxe-compose"
-        wait: true
+        dnsmasq:
+          image: quay.io/poseidon/dnsmasq:v{{ poseidon_dnsmasq_image_version }}
+          network_mode: host
+          cap_add:
+            - NET_ADMIN
+          restart: always
+          command: '-d -q
+            --dhcp-range={{ ansible_controller_network }},proxy,{{ ansible_controller_netmask }}
+            --enable-tftp
+            --tftp-root=/var/lib/tftpboot
+            --dhcp-userclass=set:ipxe,iPXE
+            --pxe-service=tag:#ipxe,x86PC,"PXE chainload to iPXE",undionly.kpxe
+            --pxe-service=tag:ipxe,x86PC,"iPXE",http://{{ ansible_controller_ip }}:8080/boot.ipxe
+            --pxe-service=tag:#ipxe,X86-64_EFI,"PXE chainload to iPXE UEFI",ipxe.efi
+            --pxe-service=tag:ipxe,X86-64_EFI,"iPXE UEFI",http://{{ ansible_controller_ip }}:8080/boot.ipxe
+            --log-queries
+            --log-dhcp'
 
-    - community.general.wakeonlan:
-        mac: "{{ item.mac_address }}"
-      loop: "{{ nodes }}"
+- name: Wake up nodes
+  delegate_to: localhost
+  community.general.wakeonlan:
+    mac: "{{ mac_address }}"
 
-- name: Bootstrap controlplane and retrieve kubeconfig
-  block:
-    - ansible.builtin.command:
-        argv:
-          - talosctl
-          - bootstrap
-          - --nodes
-          - "{{ nodes.0.ip_address }}"
-          - --endpoints
-          - "{{ nodes.0.ip_address }}"
-          - --talosconfig
-          - "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}-config"
-      register: result
-      changed_when: false
-      failed_when: "'error executing bootstrap: rpc error: code = Unavailable desc = connection error' in result.stderr"
-      retries: 30
-      delay: 10
+- name: Bootstrap controlplane
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.command: |
+    talosctl bootstrap --nodes "{{ ansible_host }}" \
+    --endpoints "{{ ansible_host }}" \
+    --talosconfig "~/.talos/{{ cluster_name }}"
+  register: result
+  changed_when: false
+  failed_when: "'error executing bootstrap: rpc error: code = Unavailable desc = connection error' in result.stderr"
+  retries: 30
+  delay: 10
 
-    - ansible.builtin.command:
-        argv:
-          - talosctl
-          - kubeconfig
-          - --nodes
-          - "{{ nodes.0.ip_address }}"
-          - --endpoints
-          - "{{ nodes.0.ip_address }}"
-          - --talosconfig
-          - "{{ ansible_env.HOME }}/.talos/{{ cluster_name }}-config"
-      changed_when: false
+- name: Retrieve kubeconfig
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.command: |
+    talosctl kubeconfig --nodes "{{ ansible_host }}" \
+    --endpoints "{{ ansible_host }}" \
+    --talosconfig "~/.talos/{{ cluster_name }}"
+  changed_when: false
 
-- name: Deploy cilium and flux
-  block:
-    - kubernetes.core.helm_repository:
-        name: cilium
-        repo_url: https://helm.cilium.io/
+- name: Add cilium helm repo
+  delegate_to: localhost
+  run_once: true
+  kubernetes.core.helm_repository:
+    name: cilium
+    repo_url: https://helm.cilium.io/
 
-    - kubernetes.core.helm:
-        name: cilium
-        chart_ref: cilium/cilium
-        chart_version: "{{ cilium_chart_version }}"
-        release_namespace: kube-system
-        update_repo_cache: true
-        context: "admin@{{ cluster_name }}"
-        kubeconfig: "{{ ansible_env.HOME }}/.kube/config"
-        wait: true
-        values:
-          routingMode: native
-          autoDirectNodeRoutes: true
-          ipv4NativeRoutingCIDR: "{{ cilium_ipv4_native_routing_cidr }}"
-          kubeProxyReplacement: true
-          k8sServiceHost: 127.0.0.1
-          k8sServicePort: 6443
-          enableIPv4BIGTCP: true
-          ipam:
-            mode: kubernetes
-          bpf:
-            datapathMode: netkit
-            masquerade: true
-          loadBalancer:
-            acceleration: best-effort
-            algorithm: maglev
-            mode: dsr
-          l7Proxy: true
-          gatewayAPI:
-            enabled: true
-          l2announcements:
-            enabled: true
-          k8sClientRateLimit:
-            qps: 25
-            burst: 50
-          hubble:
-            relay:
-              enabled: true
-            ui:
-              enabled: true
-          operator:
-            replicas: "{{ cilium_operator_replicas }}"
-          securityContext:
-            capabilities:
-              ciliumAgent: [CHOWN, KILL, NET_ADMIN, NET_RAW, IPC_LOCK, SYS_ADMIN, SYS_RESOURCE, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
-              cleanCiliumState: [NET_ADMIN, SYS_ADMIN, SYS_RESOURCE]
-          cgroup:
-            autoMount:
-              enabled: false
-            hostRoot: /sys/fs/cgroup
-      retries: 30
-      delay: 10
+- name: Apply cilium helm chart
+  delegate_to: localhost
+  run_once: true
+  kubernetes.core.helm:
+    name: cilium
+    chart_ref: cilium/cilium
+    chart_version: "1.17.4"
+    release_namespace: kube-system
+    update_repo_cache: true
+    context: "admin@{{ cluster_name }}"
+    kubeconfig: "~/.kube/config"
+    wait: true
+    values_files:
+      - "{{ playbook_dir }}/../kubernetes/clusters/{{ cluster_name }}/kube-system/cilium/helm-values.yaml"
+  retries: 30
+  delay: 10
 
-    - kubernetes.core.helm:
-        name: flux-operator
-        chart_ref: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator
-        chart_version: "{{ flux_operator_chart_version }}"
-        release_namespace: flux-system
-        create_namespace: true
-        update_repo_cache: true
-        context: "admin@{{ cluster_name }}"
-        kubeconfig: "{{ ansible_env.HOME }}/.kube/config"
-        wait: true
+- name: Apply flux-operator helm chart
+  delegate_to: localhost
+  run_once: true
+  kubernetes.core.helm:
+    name: flux-operator
+    chart_ref: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator
+    chart_version: "0.22.0"
+    release_namespace: flux-system
+    create_namespace: true
+    update_repo_cache: true
+    context: "admin@{{ cluster_name }}"
+    kubeconfig: "~/.kube/config"
+    wait: true
 
-    - kubernetes.core.k8s:
-        state: present
-        src: "{{ playbook_dir }}/../kubernetes/clusters/{{ cluster_name }}/flux-system/flux-instance.yaml"
-        wait: true
+- name: Start flux cluster sync
+  delegate_to: localhost
+  run_once: true
+  kubernetes.core.k8s:
+    src: "{{ playbook_dir }}/../kubernetes/clusters/{{ cluster_name }}/flux-system/flux-instance.yaml"
+    wait: true

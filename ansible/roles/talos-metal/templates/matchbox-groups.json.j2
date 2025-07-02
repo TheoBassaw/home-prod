@@ -1,8 +1,8 @@
 {
-  "id": "{{ item.hostname }}",
-  "name": "{{ item.hostname }}",
-  "profile": "{{ item.hostname }}",
+  "id": "{{ inventory_hostname }}",
+  "name": "{{ inventory_hostname }}",
+  "profile": "{{ inventory_hostname }}",
   "selector": {
-    "mac": "{{ item.mac_address }}"
+    "mac": "{{ mac_address }}"
   }
 }

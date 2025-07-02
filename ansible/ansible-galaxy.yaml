@@ -1,9 +1,0 @@
-- name: Install ansible galaxy collection and roles
-  become: false
-  hosts: localhost
-  tasks:
-    - ansible.builtin.command: "{{ item }}"
-      loop:
-        - ansible-galaxy collection install -r ../requirements.yaml
-        - ansible-galaxy role install -r ../requirements.yaml
-      changed_when: false

@@ -1,0 +1,24 @@
+---
+mac_address: 6c:4b:90:55:3e:7d
+machine_config:
+  machine:
+    type: controlplane
+    network:
+      hostname: talos-control-home-2
+      interfaces:
+        - interface: bond0
+          addresses:
+            - 10.20.0.202/24
+          routes:
+            - network: 0.0.0.0/0
+              gateway: 10.20.0.1
+          bond:
+            deviceSelectors:
+              - permanentAddr: 6c:4b:90:55:3e:7d
+            mode: active-backup
+          vip:
+            ip: 10.20.0.200
+    install:
+      disk: /dev/nvme0n1
+      image: factory.talos.dev/metal-installer/{{ schematic.json.id }}:v{{ talos_version }}
+      wipe: true
