@@ -1,8 +1,0 @@
-controlplane:
-  hosts:
-    talos-control-home-1:
-      ansible_host: 10.20.0.201
-    talos-control-home-2:
-      ansible_host: 10.20.0.202
-    talos-control-home-3:
-      ansible_host: 10.20.0.203

@@ -1,0 +1,9 @@
+---
+- name: Create talos cluster
+  become: false
+  hosts: pxe_server
+  gather_facts: false
+  vars_files:
+    - vars/home-cluster.yaml
+  roles:
+    - talos-metal

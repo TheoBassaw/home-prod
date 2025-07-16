@@ -1,5 +1,5 @@
 ---
-- name: Stop pxe services
+- name: PXE | Stop services
   delegate_to: localhost
   run_once: true
   community.docker.docker_compose_v2:

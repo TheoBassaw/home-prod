@@ -1,8 +1,8 @@
 {
-  "id": "{{ inventory_hostname }}",
-  "name": "{{ inventory_hostname }}",
-  "profile": "{{ inventory_hostname }}",
+  "id": "{{ item.machine_config.machine.network.hostname }}",
+  "name": "{{ item.machine_config.machine.network.hostname }}",
+  "profile": "{{ item.machine_config.machine.network.hostname }}",
   "selector": {
-    "mac": "{{ mac_address }}"
+    "mac": "{{ item.mac_address }}"
   }
 }

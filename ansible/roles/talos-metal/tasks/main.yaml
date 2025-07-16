@@ -1,5 +1,5 @@
 ---
-- name: Make sure directories exist
+- name: Talos Configuration | Make sure directories exist
   delegate_to: localhost
   run_once: true
   ansible.builtin.file:
@@ -7,14 +7,10 @@
     state: directory
     mode: '0755'
   loop:
-    - "~/.talos"
+    - "~/.talos/{{ cluster_name }}"
     - "~/.kube"
-    - "{{ playbook_dir }}/files/{{ cluster_name }}"
-    - "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/assets"
-    - "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/groups"
-    - "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/profiles"
 
-- name: Upload schematic to image factory
+- name: Talos Configuration | Upload schematic to image factory
   delegate_to: localhost
   run_once: true
   ansible.builtin.uri:
@@ -25,8 +21,65 @@
     status_code: 201
   register: schematic
 
-- name: Download image factory assets
+- name: Talos Configuration | Generate secret bundle
   delegate_to: localhost
+  run_once: true
+  ansible.builtin.command: "talosctl gen secrets --output-file ~/.talos/{{ cluster_name }}/secrets.yaml"
+  args:
+    creates: "~/.talos/{{ cluster_name }}/secrets.yaml"
+
+- name: Talos Configuration | Generate machine configs
+  delegate_to: localhost
+  ansible.builtin.command: |
+    talosctl gen config "{{ cluster_name }}" "{{ endpoint }}" \
+    --with-secrets "~/.talos/{{ cluster_name }}/secrets.yaml" \
+    --output-types "{% if item.machine_config.machine.type == 'controlplane' %}controlplane{% else %}worker{% endif %}" \
+    --output "~/.talos/{{ cluster_name }}/{{ item.machine_config.machine.network.hostname }}.yaml" \
+    --config-patch "{{ all_config_patch }}"
+    --config-patch "{{ item.machine_config }}"
+  args:
+    creates: "~/.talos/{{ cluster_name }}/{{ item.machine_config.machine.network.hostname }}.yaml"
+  loop: "{{ nodes }}"
+
+
+- name: Talos Configuration | Generate talconfig
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.command: |
+    talosctl gen config "{{ cluster_name }}" "{{ endpoint }}" \
+    --with-secrets "~/.talos/{{ cluster_name }}/secrets.yaml" \
+    --output-types talosconfig --output "~/.talos/{{ cluster_name }}/{{ cluster_name }}"
+  args:
+    creates: "~/.talos/{{ cluster_name }}/{{ cluster_name }}"
+
+- name: PXE | Make sure directories exist
+  run_once: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "~/matchbox/assets"
+    - "~/matchbox/groups"
+    - "~/matchbox/profiles"
+
+- name: PXE | Generate matchbox profiles
+  run_once: true
+  ansible.builtin.template:
+    src: matchbox-profiles.json.j2
+    dest: "~/matchbox/profiles/{{ item.machine_config.machine.network.hostname }}.json"
+    mode: "0644"
+  loop: "{{ nodes }}"
+
+- name: PXE | Generate matchbox groups
+  run_once: true
+  ansible.builtin.template:
+    src: matchbox-groups.json.j2
+    dest: "~/matchbox/groups/{{ item.machine_config.machine.network.hostname }}.json"
+    mode: "0644"
+  loop: "{{ nodes }}"
+
+- name: PXE | Download image factory assets
   run_once: true
   ansible.builtin.get_url:
     url: "{{ item.url }}"
@@ -34,56 +87,13 @@
     mode: '0644'
   loop:
     - url: "https://factory.talos.dev/image/{{ schematic.json.id }}/v{{ talos_version }}/kernel-amd64"
-      dest: "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/assets/vmlinuz"
+      dest: "~/matchbox/assets/vmlinuz"
     - url: "https://factory.talos.dev/image/{{ schematic.json.id }}/v{{ talos_version }}/initramfs-amd64.xz"
-      dest: "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/assets/initramfs.xz"
+      dest: "~/matchbox/assets/initramfs.xz"
 
-- name: Generate talos secret bundle
-  delegate_to: localhost
+- name: PXE | Start services
   run_once: true
-  ansible.builtin.command: "talosctl gen secrets --output-file {{ playbook_dir }}/files/{{ cluster_name }}/secrets.yaml"
-  args:
-    creates: "{{ playbook_dir }}/files/{{ cluster_name }}/secrets.yaml"
-
-- name: Generate talos machine configs
-  delegate_to: localhost
-  ansible.builtin.command: |
-    talosctl gen config "{{ cluster_name }}" "{{ endpoint }}" \
-    --with-secrets "{{ playbook_dir }}/files/{{ cluster_name }}/secrets.yaml" \
-    --output-types "{% if inventory_hostname in groups['controlplane'] %}controlplane{% else %}worker{% endif %}" \
-    --output "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/assets/{{ inventory_hostname }}.yaml" \
-    --config-patch "{{ config_patch }}"
-    --config-patch "{{ machine_config }}"
-  args:
-    creates: "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/assets/{{ inventory_hostname }}.yaml"
-
-
-- name: Generate talconfig
-  delegate_to: localhost
-  run_once: true
-  ansible.builtin.command: |
-    talosctl gen config "{{ cluster_name }}" "{{ endpoint }}" \
-    --with-secrets "{{ playbook_dir }}/files/{{ cluster_name }}/secrets.yaml" \
-    --output-types talosconfig --output "~/.talos/{{ cluster_name }}"
-  args:
-    creates: "~/.talos/{{ cluster_name }}"
-
-- name: Generate matchbox configs
-  delegate_to: localhost
-  ansible.builtin.template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    mode: "0644"
-  loop:
-    - src: matchbox-profiles.json.j2
-      dest: "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/profiles/{{ inventory_hostname }}.json"
-    - src: matchbox-groups.json.j2
-      dest: "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox/groups/{{ inventory_hostname }}.json"
-
-- name: Start pxe services
-  delegate_to: localhost
-  run_once: true
-  notify: Stop pxe services
+  notify: PXE | Stop services
   community.docker.docker_compose_v2:
     project_name: pxe
     wait: true
@@ -93,9 +103,11 @@
           image: quay.io/poseidon/matchbox:v{{ matchbox_image_version }}
           environment:
             - TZ=America/New_York
-            - MATCHBOX_ADDRESS={{ ansible_controller_ip }}:8080
+            - MATCHBOX_ADDRESS=0.0.0.0:8080
             - MATCHBOX_LOG_LEVEL=debug
-          network_mode: host
+          ports:
+            - 8080:8080
+          privileged: true
           volumes:
             - "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox:/var/lib/matchbox"
           restart: always
@@ -103,6 +115,7 @@
         dnsmasq:
           image: quay.io/poseidon/dnsmasq:v{{ poseidon_dnsmasq_image_version }}
           network_mode: host
+          privileged: true
           cap_add:
             - NET_ADMIN
           restart: always
@@ -118,12 +131,12 @@
             --log-queries
             --log-dhcp'
 
-- name: Wake up nodes
+- name: PXE | Wake up nodes
   delegate_to: localhost
   community.general.wakeonlan:
     mac: "{{ mac_address }}"
 
-- name: Bootstrap controlplane
+- name: Talos Bootstrap | Bootstrap controlplane
   delegate_to: localhost
   run_once: true
   ansible.builtin.command: |
@@ -136,7 +149,7 @@
   retries: 30
   delay: 10
 
-- name: Retrieve kubeconfig
+- name: Talos Bootstrap | Generate kubeconfig
   delegate_to: localhost
   run_once: true
   ansible.builtin.command: |
@@ -145,14 +158,14 @@
     --talosconfig "~/.talos/{{ cluster_name }}"
   changed_when: false
 
-- name: Add cilium helm repo
+- name: Talos Bootstrap | Add cilium helm repo
   delegate_to: localhost
   run_once: true
   kubernetes.core.helm_repository:
     name: cilium
     repo_url: https://helm.cilium.io/
 
-- name: Apply cilium helm chart
+- name: Talos Bootstrap | Apply cilium helm chart
   delegate_to: localhost
   run_once: true
   kubernetes.core.helm:
@@ -169,7 +182,7 @@
   retries: 30
   delay: 10
 
-- name: Apply flux-operator helm chart
+- name: Talos Bootstrap | Apply flux-operator helm chart
   delegate_to: localhost
   run_once: true
   kubernetes.core.helm:
@@ -183,7 +196,7 @@
     kubeconfig: "~/.kube/config"
     wait: true
 
-- name: Start flux cluster sync
+- name: Talos Bootstrap | Start flux cluster sync
   delegate_to: localhost
   run_once: true
   kubernetes.core.k8s:

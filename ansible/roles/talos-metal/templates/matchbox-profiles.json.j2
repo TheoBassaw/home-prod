@@ -1,6 +1,6 @@
 {
-  "id": "{{ inventory_hostname }}",
-  "name": "{{ inventory_hostname }}",
+  "id": "{{ item.machine_config.machine.network.hostname }}",
+  "name": "{{ item.machine_config.machine.network.hostname }}",
   "boot": {
     "kernel": "/assets/vmlinuz",
     "initrd": ["/assets/initramfs.xz"],
@@ -12,7 +12,7 @@
       "console=tty0",
       "printk.devkmsg=on",
       "talos.platform=metal",
-      "talos.config=http://{{ ansible_controller_ip }}:8080/assets/{{ inventory_hostname }}.yaml"
+      "talos.config=http://{{ ansible_host }}:8080/assets/{{ item.machine_config.machine.network.hostname }}.yaml"
     ]
   }
 }
