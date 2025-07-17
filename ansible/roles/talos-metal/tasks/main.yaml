@@ -108,7 +108,7 @@
     update_repo_cache: true
     context: "admin@{{ cluster_name }}"
     kubeconfig: "~/.kube/config"
-    force: true
+    wait: true
     values_files:
       - "{{ playbook_dir }}/../kubernetes/clusters/{{ cluster_name }}/kube-system/cilium/helm-values.yaml"
   retries: 30
