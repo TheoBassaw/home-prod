@@ -20,6 +20,17 @@ all_config_patch:
       hostDNS:
         enabled: true
         forwardKubeDNSToHost: false
+    systemDiskEncryption:
+      ephemeral:
+        provider: luks2
+        keys:
+          - nodeID: {}
+            slot: 0
+      state:
+        provider: luks2
+        keys:
+          - nodeID: {}
+            slot: 0
   cluster:
     network:
       cni:

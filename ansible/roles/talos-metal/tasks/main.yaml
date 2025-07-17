@@ -41,23 +41,57 @@
     --output-types talosconfig --output "~/.talos/{{ cluster_name }}/{{ cluster_name }}"
   args:
     creates: "~/.talos/{{ cluster_name }}/{{ cluster_name }}"
+  changed_when: false
+
+- name: Talos Configuration | Apply machine config
+  block:
+    - name: Talos Configuration | Apply machine config (insecure)
+      ansible.builtin.command: |
+        talosctl apply-config --nodes "{{ item.host }}" -i \
+        -f "~/.talos/{{ cluster_name }}/{{ item.machine_config.machine.network.hostname }}.yaml"
+      loop: "{{ nodes }}"
+      changed_when: false
+  rescue:
+    - name: Talos Configuration | Apply machine config (tls)
+      ansible.builtin.command: |
+        talosctl apply-config --nodes "{{ item.host }}" --endpoints "{{ item.host }}" \
+        -f "~/.talos/{{ cluster_name }}/{{ item.machine_config.machine.network.hostname }}.yaml" \
+        --talosconfig "~/.talos/{{ cluster_name }}/{{ cluster_name }}"
+      loop: "{{ nodes }}"
+      changed_when: false
+
+- name: Talos Bootstrap | Wait for bootstrap node to be ready
+  until: health is success
+  delay: 10
+  retries: 30
+  register: health
+  changed_when: false
+  ansible.builtin.command: |
+    talosctl health --nodes "{{ nodes.0.host }}" \
+    --endpoints "{{ nodes.0.host }}" \
+    --talosconfig "~/.talos/{{ cluster_name }}/{{ cluster_name }}"
+
 
 - name: Talos Bootstrap | Bootstrap controlplane
   ansible.builtin.command: |
-    talosctl bootstrap --nodes "{{ ansible_host }}" \
-    --endpoints "{{ ansible_host }}" \
-    --talosconfig "~/.talos/{{ cluster_name }}"
+    talosctl bootstrap --nodes "{{ nodes.0.host }}" \
+    --endpoints "{{ nodes.0.host }}" \
+    --talosconfig "~/.talos/{{ cluster_name }}/{{ cluster_name }}"
   register: result
-  changed_when: false
-  failed_when: "'error executing bootstrap: rpc error: code = Unavailable desc = connection error' in result.stderr"
+  failed_when:
+    - result.rc == 1
+    - result.stderr_lines[1] | regex_search("AlreadyExists") == ""
+  changed_when:
+    - result.rc == 0
+    - result.stderr_lines[1] | regex_search("AlreadyExists") == ""
   retries: 30
   delay: 10
 
 - name: Talos Bootstrap | Generate kubeconfig
   ansible.builtin.command: |
-    talosctl kubeconfig --nodes "{{ ansible_host }}" \
-    --endpoints "{{ ansible_host }}" \
-    --talosconfig "~/.talos/{{ cluster_name }}"
+    talosctl kubeconfig --nodes "{{ nodes.0.host }}" \
+    --endpoints "{{ nodes.0.host }}" \
+    --talosconfig "~/.talos/{{ cluster_name }}/{{ cluster_name }}"
   changed_when: false
 
 - name: Talos Bootstrap | Add cilium helm repo
@@ -74,7 +108,7 @@
     update_repo_cache: true
     context: "admin@{{ cluster_name }}"
     kubeconfig: "~/.kube/config"
-    wait: true
+    force: true
     values_files:
       - "{{ playbook_dir }}/../kubernetes/clusters/{{ cluster_name }}/kube-system/cilium/helm-values.yaml"
   retries: 30
