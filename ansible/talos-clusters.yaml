@@ -1,8 +1,8 @@
 ---
-- name: Create talos cluster
+- name: Create home cluster
   become: false
-  hosts: pxe_server
-  gather_facts: false
+  hosts: localhost
+  tags: home-cluster
   vars_files:
     - vars/home-cluster.yaml
   roles:

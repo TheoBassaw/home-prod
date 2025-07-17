@@ -1,7 +1,5 @@
 ---
 - name: Talos Configuration | Make sure directories exist
-  delegate_to: localhost
-  run_once: true
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -11,8 +9,6 @@
     - "~/.kube"
 
 - name: Talos Configuration | Upload schematic to image factory
-  delegate_to: localhost
-  run_once: true
   ansible.builtin.uri:
     url: https://factory.talos.dev/schematics
     method: POST
@@ -22,14 +18,11 @@
   register: schematic
 
 - name: Talos Configuration | Generate secret bundle
-  delegate_to: localhost
-  run_once: true
   ansible.builtin.command: "talosctl gen secrets --output-file ~/.talos/{{ cluster_name }}/secrets.yaml"
   args:
     creates: "~/.talos/{{ cluster_name }}/secrets.yaml"
 
 - name: Talos Configuration | Generate machine configs
-  delegate_to: localhost
   ansible.builtin.command: |
     talosctl gen config "{{ cluster_name }}" "{{ endpoint }}" \
     --with-secrets "~/.talos/{{ cluster_name }}/secrets.yaml" \
@@ -41,10 +34,7 @@
     creates: "~/.talos/{{ cluster_name }}/{{ item.machine_config.machine.network.hostname }}.yaml"
   loop: "{{ nodes }}"
 
-
 - name: Talos Configuration | Generate talconfig
-  delegate_to: localhost
-  run_once: true
   ansible.builtin.command: |
     talosctl gen config "{{ cluster_name }}" "{{ endpoint }}" \
     --with-secrets "~/.talos/{{ cluster_name }}/secrets.yaml" \
@@ -52,93 +42,7 @@
   args:
     creates: "~/.talos/{{ cluster_name }}/{{ cluster_name }}"
 
-- name: PXE | Make sure directories exist
-  run_once: true
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    mode: '0755'
-  loop:
-    - "~/matchbox/assets"
-    - "~/matchbox/groups"
-    - "~/matchbox/profiles"
-
-- name: PXE | Generate matchbox profiles
-  run_once: true
-  ansible.builtin.template:
-    src: matchbox-profiles.json.j2
-    dest: "~/matchbox/profiles/{{ item.machine_config.machine.network.hostname }}.json"
-    mode: "0644"
-  loop: "{{ nodes }}"
-
-- name: PXE | Generate matchbox groups
-  run_once: true
-  ansible.builtin.template:
-    src: matchbox-groups.json.j2
-    dest: "~/matchbox/groups/{{ item.machine_config.machine.network.hostname }}.json"
-    mode: "0644"
-  loop: "{{ nodes }}"
-
-- name: PXE | Download image factory assets
-  run_once: true
-  ansible.builtin.get_url:
-    url: "{{ item.url }}"
-    dest: "{{ item.dest }}"
-    mode: '0644'
-  loop:
-    - url: "https://factory.talos.dev/image/{{ schematic.json.id }}/v{{ talos_version }}/kernel-amd64"
-      dest: "~/matchbox/assets/vmlinuz"
-    - url: "https://factory.talos.dev/image/{{ schematic.json.id }}/v{{ talos_version }}/initramfs-amd64.xz"
-      dest: "~/matchbox/assets/initramfs.xz"
-
-- name: PXE | Start services
-  run_once: true
-  notify: PXE | Stop services
-  community.docker.docker_compose_v2:
-    project_name: pxe
-    wait: true
-    definition:
-      services:
-        matchbox:
-          image: quay.io/poseidon/matchbox:v{{ matchbox_image_version }}
-          environment:
-            - TZ=America/New_York
-            - MATCHBOX_ADDRESS=0.0.0.0:8080
-            - MATCHBOX_LOG_LEVEL=debug
-          ports:
-            - 8080:8080
-          privileged: true
-          volumes:
-            - "{{ playbook_dir }}/files/{{ cluster_name }}/matchbox:/var/lib/matchbox"
-          restart: always
-
-        dnsmasq:
-          image: quay.io/poseidon/dnsmasq:v{{ poseidon_dnsmasq_image_version }}
-          network_mode: host
-          privileged: true
-          cap_add:
-            - NET_ADMIN
-          restart: always
-          command: '-d -q
-            --dhcp-range={{ ansible_controller_network }},proxy,{{ ansible_controller_netmask }}
-            --enable-tftp
-            --tftp-root=/var/lib/tftpboot
-            --dhcp-userclass=set:ipxe,iPXE
-            --pxe-service=tag:#ipxe,x86PC,"PXE chainload to iPXE",undionly.kpxe
-            --pxe-service=tag:ipxe,x86PC,"iPXE",http://{{ ansible_controller_ip }}:8080/boot.ipxe
-            --pxe-service=tag:#ipxe,X86-64_EFI,"PXE chainload to iPXE UEFI",ipxe.efi
-            --pxe-service=tag:ipxe,X86-64_EFI,"iPXE UEFI",http://{{ ansible_controller_ip }}:8080/boot.ipxe
-            --log-queries
-            --log-dhcp'
-
-- name: PXE | Wake up nodes
-  delegate_to: localhost
-  community.general.wakeonlan:
-    mac: "{{ mac_address }}"
-
 - name: Talos Bootstrap | Bootstrap controlplane
-  delegate_to: localhost
-  run_once: true
   ansible.builtin.command: |
     talosctl bootstrap --nodes "{{ ansible_host }}" \
     --endpoints "{{ ansible_host }}" \
@@ -150,8 +54,6 @@
   delay: 10
 
 - name: Talos Bootstrap | Generate kubeconfig
-  delegate_to: localhost
-  run_once: true
   ansible.builtin.command: |
     talosctl kubeconfig --nodes "{{ ansible_host }}" \
     --endpoints "{{ ansible_host }}" \
@@ -159,15 +61,11 @@
   changed_when: false
 
 - name: Talos Bootstrap | Add cilium helm repo
-  delegate_to: localhost
-  run_once: true
   kubernetes.core.helm_repository:
     name: cilium
     repo_url: https://helm.cilium.io/
 
 - name: Talos Bootstrap | Apply cilium helm chart
-  delegate_to: localhost
-  run_once: true
   kubernetes.core.helm:
     name: cilium
     chart_ref: cilium/cilium
@@ -183,8 +81,6 @@
   delay: 10
 
 - name: Talos Bootstrap | Apply flux-operator helm chart
-  delegate_to: localhost
-  run_once: true
   kubernetes.core.helm:
     name: flux-operator
     chart_ref: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator
@@ -197,8 +93,6 @@
     wait: true
 
 - name: Talos Bootstrap | Start flux cluster sync
-  delegate_to: localhost
-  run_once: true
   kubernetes.core.k8s:
     src: "{{ playbook_dir }}/../kubernetes/clusters/{{ cluster_name }}/flux-system/flux-instance.yaml"
     wait: true
