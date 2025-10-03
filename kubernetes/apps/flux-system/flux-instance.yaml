@@ -22,5 +22,5 @@ spec:
     kind: GitRepository
     url: https://github.com/TheoBassaw/home-prod.git
     ref: refs/heads/main
-    path: kubernetes/clusters/home-cluster
+    path: kubernetes/apps
     interval: 1h
