@@ -22,7 +22,6 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: metrics-server
-  releaseName: metrics-server
   install:
     remediation:
       retries: -1

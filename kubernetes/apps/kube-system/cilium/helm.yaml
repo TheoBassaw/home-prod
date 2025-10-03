@@ -22,7 +22,6 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: cilium
-  releaseName: cilium
   install:
     remediation:
       retries: -1
