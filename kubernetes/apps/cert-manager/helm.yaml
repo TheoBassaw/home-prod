@@ -18,7 +18,7 @@ spec:
   chart:
     spec:
       chart: cert-manager
-      version: "1.18.0"
+      version: "1.18.2"
       sourceRef:
         kind: HelmRepository
         name: jetstack
@@ -36,4 +36,4 @@ spec:
     replicaCount: 3
     webhook:
       networkPolicy: 
-        enabled: false
+        enabled: true
