@@ -31,4 +31,7 @@ spec:
       retries: 3
   values:
     replicas: 3
+    args:
+      - --kubelet-insecure-tls
+      - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
     
