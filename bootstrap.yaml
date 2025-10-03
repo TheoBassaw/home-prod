@@ -4,3 +4,10 @@
   hosts: localhost
   tags: home-cluster
   tasks:
+    - name: Creating Talos Cluster
+      community.general.terraform:
+        project_path: "{{ playbook_dir }}/terraform/talos/cluster"
+
+    - name: Applying initial helm and manifests
+      community.general.terraform:
+        project_path: "{{ playbook_dir }}/terraform/talos/helm"
