@@ -6,7 +6,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1h
-  path: kubernetes/clusters/home-cluster/flux-system
+  path: kubernetes/apps/flux-system
   prune: true
   retryInterval: 2m
   sourceRef:
