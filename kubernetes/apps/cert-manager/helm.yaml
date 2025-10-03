@@ -36,4 +36,4 @@ spec:
     replicaCount: 3
     webhook:
       networkPolicy: 
-        enabled: true
+        enabled: false
