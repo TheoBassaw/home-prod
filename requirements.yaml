@@ -1,5 +1,7 @@
+---
 collections:
   - community.general
+  - community.libvirt
   - ansible.utils
   - kubernetes.core
   - oracle.oci

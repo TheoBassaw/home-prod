@@ -1,0 +1,31 @@
+---
+machine:
+  features:
+    hostDNS:
+      enabled: true
+      forwardKubeDNSToHost: false
+  systemDiskEncryption:
+    ephemeral:
+      provider: luks2
+      keys:
+        - nodeID: {}
+          slot: 0
+    state:
+      provider: luks2
+      keys:
+        - nodeID: {}
+          slot: 0
+cluster:
+  network:
+    cni:
+      name: none
+    dnsDomain: cluster.local
+    podSubnets:
+      - 10.30.0.0/16
+    serviceSubnets:
+      - 10.96.0.0/12
+  apiServer:
+    certSANs:
+      - 10.20.0.200
+      - home-cluster.paradisenetworkz.com
+  allowSchedulingOnControlPlanes: true

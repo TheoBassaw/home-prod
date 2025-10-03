@@ -1,0 +1,17 @@
+---
+machine:
+  network:
+    hostname: talos-control-home-3
+    interfaces:
+      - interface: eth0
+        addresses:
+          - 10.20.0.203/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 10.20.0.1
+        vip:
+          ip: 10.20.0.200
+  install:
+    disk: /dev/nvme0n1
+    image: factory.talos.dev/metal-installer/{{ schematic.json.id }}:v{{ talos_version }}
+    wipe: true

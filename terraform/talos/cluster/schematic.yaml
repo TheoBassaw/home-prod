@@ -1,0 +1,12 @@
+---
+customization:
+  extraKernelArgs: ['talos.platform=metal']
+  systemExtensions:
+    officialExtensions:
+      - siderolabs/drbd
+      - siderolabs/i915
+      - siderolabs/intel-ucode
+      - siderolabs/mei
+      - siderolabs/nfsd
+      - siderolabs/nvme-cli
+      - siderolabs/util-linux-tools

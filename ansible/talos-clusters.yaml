@@ -1,9 +1,0 @@
----
-- name: Create home cluster
-  become: false
-  hosts: localhost
-  tags: home-cluster
-  vars_files:
-    - vars/home-cluster.yaml
-  roles:
-    - talos-metal
