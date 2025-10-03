@@ -17,7 +17,7 @@ spec:
   interval: 1h
   chart:
     spec:
-      chart: cilium
+      chart: metrics-server
       version: '3.13.0'
       sourceRef:
         kind: HelmRepository
