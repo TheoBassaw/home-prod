@@ -45,6 +45,10 @@ resource "helm_release" "cilium" {
   namespace  = "kube-system"
   values     = [file("${path.root}/../../../kubernetes/apps/kube-system/cilium/helm-values.yaml")]
   atomic     = true
+
+  lifecycle {
+    ignore_changes = [version]
+  }
 }
 
 resource "helm_release" "flux_operator" {
@@ -55,6 +59,7 @@ resource "helm_release" "flux_operator" {
   namespace        = "flux-system"
   create_namespace = true
   depends_on       = [helm_release.cilium]
+
 }
 
 resource "kubernetes_manifest" "flux_instance" {

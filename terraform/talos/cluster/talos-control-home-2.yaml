@@ -15,3 +15,19 @@ machine:
   install:
     disk: /dev/nvme0n1
     wipe: true
+---
+apiVersion: v1alpha1
+kind: RawVolumeConfig
+name: piraeus-ssd-1
+provisioning:
+  diskSelector:
+    match: disk.wwid == "nvme.1987-3230313032323531323032333233-5043496520535344-00000001"
+  minSize: 2.5GiB
+  grow: true
+encryption:
+  provider: luks2
+  keys:
+    - slot: 0
+      nodeID: {}
+  cipher: aes-xts-plain64
+  blockSize: 4096
