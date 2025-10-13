@@ -6,7 +6,7 @@ metadata:
   namespace: node-feature-discovery
 spec:
   interval: 10m
-  url: oci://registry.k8s.io/nfd/charts/node-feature-discovery
+  url: oci://registry.k8s.io/nfd/charts/
   ref:
     tag: 0.18.1
 ---
@@ -20,7 +20,7 @@ spec:
   interval: 1h
   chartRef:
     kind: OCIRepository
-    name: nfd
+    name: node-feature-discovery
     namespace: node-feature-discovery
   install:
     remediation:
