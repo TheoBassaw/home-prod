@@ -6,9 +6,9 @@ metadata:
   namespace: node-feature-discovery
 spec:
   interval: 10m
-  url: oci://registry.k8s.io/nfd/charts/
+  url: oci://registry.k8s.io/nfd/charts/node-feature-discovery
   ref:
-    tag: 0.18
+    tag: 0.18.1
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
