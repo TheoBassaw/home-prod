@@ -29,3 +29,7 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
+  values:
+    master:
+      replicaCount: 3
+      
