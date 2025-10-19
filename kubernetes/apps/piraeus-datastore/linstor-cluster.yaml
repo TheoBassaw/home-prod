@@ -3,6 +3,7 @@ apiVersion: piraeus.io/v1
 kind: LinstorCluster
 metadata:
   name: linstor-cluster
+  namespace: piraeus-datastore
 spec:
   tolerations:
     - key: node-role.kubernetes.io/control-plane
