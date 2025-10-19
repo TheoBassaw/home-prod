@@ -1,0 +1,17 @@
+---
+apiVersion: piraeus.io/v1
+kind: LinstorCluster
+metadata:
+  name: linstor-cluster
+spec:
+  properties:
+    - name: DrbdOptions/Net/tls
+      value: "yes"
+  apiTLS:
+    certManager:
+      name: linstor-api-ca
+      kind: Issuer
+  internalTLS:
+    certManager:
+      name: linstor-internal-ca
+      kind: Issuer

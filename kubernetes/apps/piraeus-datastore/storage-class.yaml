@@ -1,0 +1,8 @@
+---
+#apiVersion: storage.k8s.io/v1
+#kind: StorageClass
+#metadata:
+#  name: replication-3
+#provisioner: linstor.csi.linbit.com
+#parameters:
+#  property.linstor.csi.linbit.com/DrbdOptions/Net/tls: "yes"
