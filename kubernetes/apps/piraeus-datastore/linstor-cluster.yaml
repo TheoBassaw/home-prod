@@ -4,6 +4,10 @@ kind: LinstorCluster
 metadata:
   name: linstor-cluster
 spec:
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      effect: NoSchedule
+      operator: Exists
   properties:
     - name: DrbdOptions/Net/tls
       value: "yes"
