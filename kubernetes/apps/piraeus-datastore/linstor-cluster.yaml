@@ -8,6 +8,8 @@ spec:
     - key: node-role.kubernetes.io/control-plane
       effect: NoSchedule
       operator: Exists
+  highAvailabilityController:
+    enabled: true
   properties:
     - name: DrbdOptions/Net/tls
       value: "yes"
