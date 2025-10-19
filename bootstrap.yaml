@@ -9,4 +9,4 @@
 
     - name: Applying initial helm and manifests
       community.general.terraform:
-        project_path: "{{ playbook_dir }}/terraform/talos/helm"
+        project_path: "{{ playbook_dir }}/terraform/talos/manifests"
