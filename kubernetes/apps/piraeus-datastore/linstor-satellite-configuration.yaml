@@ -11,7 +11,7 @@ spec:
         thinPool: thin
       source:
         hostDevices:
-          - /dev/disk/by-partlabel/r-piraeus-ssd-1
+          - /dev/nvme1n1
   internalTLS:
     tlsHandshakeDaemon: true
     certManager:
