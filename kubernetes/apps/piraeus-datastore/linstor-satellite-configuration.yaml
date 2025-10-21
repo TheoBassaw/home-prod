@@ -1,11 +1,11 @@
----
-apiVersion: piraeus.io/v1
-kind: LinstorSatelliteConfiguration
-metadata:
-  name: linstor-satellite-configuration
-spec:
-  internalTLS:
-    tlsHandshakeDaemon: true
-    certManager:
-      name: linstor-internal-ca
-      kind: Issuer
+#---
+#apiVersion: piraeus.io/v1
+#kind: LinstorSatelliteConfiguration
+#metadata:
+#  name: linstor-satellite-configuration
+#spec:
+#  internalTLS:
+#    tlsHandshakeDaemon: true
+#    certManager:
+#      name: linstor-internal-ca
+#      kind: Issuer
