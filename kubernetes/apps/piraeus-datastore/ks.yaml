@@ -11,7 +11,9 @@ spec:
   retryInterval: 2m
   dependsOn:
     - name: spegel
+      namespace: spegel
     - name: cert-manager
+      namespace: cert-manager
   sourceRef:
     kind: GitRepository
     name: flux-system
