@@ -9,6 +9,8 @@ spec:
   path: kubernetes/apps/piraeus-datastore
   prune: true
   retryInterval: 2m
+  dependsOn:
+    - name: spegel
   sourceRef:
     kind: GitRepository
     name: flux-system

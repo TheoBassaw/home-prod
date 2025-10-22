@@ -9,6 +9,8 @@ spec:
   path: kubernetes/apps/cert-manager
   prune: true
   retryInterval: 2m
+  dependsOn:
+    - name: spegel
   sourceRef:
     kind: GitRepository
     name: flux-system
