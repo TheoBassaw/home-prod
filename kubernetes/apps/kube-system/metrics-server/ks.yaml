@@ -9,6 +9,7 @@ spec:
   path: kubernetes/apps/kube-system/metrics-server
   prune: true
   retryInterval: 2m
+  wait: true
   dependsOn:
     - name: spegel
       namespace: spegel

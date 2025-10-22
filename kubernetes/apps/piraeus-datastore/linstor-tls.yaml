@@ -5,7 +5,7 @@ metadata:
   name: ca-bootstrapper
   namespace: piraeus-datastore
 spec:
-  selfSigned: { }
+  selfSigned: {}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate

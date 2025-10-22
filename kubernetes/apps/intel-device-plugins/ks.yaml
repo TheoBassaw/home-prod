@@ -9,6 +9,7 @@ spec:
   path: kubernetes/apps/intel-device-plugins
   prune: true
   retryInterval: 2m
+  wait: true
   dependsOn:
     - name: spegel
       namespace: spegel

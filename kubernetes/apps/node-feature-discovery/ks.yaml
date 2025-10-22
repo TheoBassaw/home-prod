@@ -9,6 +9,7 @@ spec:
   path: kubernetes/apps/node-feature-discovery
   prune: true
   retryInterval: 2m
+  wait: true
   dependsOn:
     - name: spegel
       namespace: spegel
