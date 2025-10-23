@@ -2,20 +2,19 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: spegel
-  namespace: spegel
+  name: node-feature-discovery
+  namespace: node-feature-discovery
 spec:
   interval: 1h
-  path: kubernetes/apps/spegel
+  path: kubernetes/cluster-apps/node-feature-discovery
   prune: true
   retryInterval: 2m
+  wait: true
+  dependsOn:
+    - name: spegel
+      namespace: spegel
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  healthChecks:
-    - apiVersion: helm.toolkit.fluxcd.io/v2
-      kind: HelmRelease
-      name: spegel
-      namespace: spegel
   timeout: 10m
