@@ -6,7 +6,7 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: kubernetes/apps/kube-system/cilium
+  path: ./kube-system/cilium
   prune: true
   retryInterval: 2m
   sourceRef:

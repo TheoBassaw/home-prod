@@ -6,7 +6,7 @@ metadata:
   namespace: spegel
 spec:
   interval: 1h
-  path: kubernetes/apps/spegel
+  path: ./spegel
   prune: true
   retryInterval: 2m
   wait: true
