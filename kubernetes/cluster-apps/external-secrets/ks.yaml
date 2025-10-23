@@ -6,7 +6,7 @@ metadata:
   namespace: external-secrets
 spec:
   interval: 1h
-  path: kubernetes/cluster-apps/external-secrets
+  path: kubernetes/cluster-apps/external-secrets/app
   prune: true
   retryInterval: 2m
   wait: true
