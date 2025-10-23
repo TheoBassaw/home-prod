@@ -6,7 +6,7 @@ metadata:
   namespace: node-feature-discovery
 spec:
   interval: 1h
-  path: ./node-feature-discovery
+  path: ./kubernetes/node-feature-discovery
   prune: true
   retryInterval: 2m
   wait: true

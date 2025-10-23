@@ -6,7 +6,7 @@ metadata:
   namespace: cert-manager
 spec:
   interval: 1h
-  path: ./cert-manager
+  path: ./kubernetes/cert-manager
   prune: true
   retryInterval: 2m
   wait: true
