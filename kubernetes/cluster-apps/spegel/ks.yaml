@@ -9,6 +9,7 @@ spec:
   path: kubernetes/cluster-apps/spegel/app
   prune: true
   retryInterval: 2m
+  wait: true
   sourceRef:
     kind: GitRepository
     name: flux-system
