@@ -43,7 +43,7 @@ resource "helm_release" "cilium" {
   chart      = "cilium"
   version    = "1.18.2"
   namespace  = "kube-system"
-  values     = [file("${path.root}/../../../kubernetes/apps/kube-system/cilium/helm-values.yaml")]
+  values     = [file("${path.root}/../../../kubernetes/kube-system/cilium/helm-values.yaml")]
   atomic     = true
 
   lifecycle {
@@ -63,6 +63,6 @@ resource "helm_release" "flux_operator" {
 }
 
 resource "kubernetes_manifest" "flux_instance" {
-  manifest   = yamldecode(file("${path.root}/../../../kubernetes/apps/flux-system/flux-instance.yaml"))
+  manifest   = yamldecode(file("${path.root}/../../../kubernetes/flux-system/flux-instance.yaml"))
   depends_on = [helm_release.flux_operator]
 }
