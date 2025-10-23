@@ -2,19 +2,17 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: piraeus-datastore
-  namespace: piraeus-datastore
+  name: metrics-server
+  namespace: kube-system
 spec:
   interval: 1h
-  path: kubernetes/cluster-apps/piraeus-datastore/app
+  path: kubernetes/apps/kube-system/metrics-server
   prune: true
   retryInterval: 2m
   wait: true
   dependsOn:
     - name: spegel
       namespace: spegel
-    - name: cert-manager
-      namespace: cert-manager
   sourceRef:
     kind: GitRepository
     name: flux-system
