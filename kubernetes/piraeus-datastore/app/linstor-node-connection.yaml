@@ -6,6 +6,6 @@ metadata:
 spec:
   properties:
     - name: DrbdOptions/Net/protocol
-      value: A
+      value: C
     - name: DrbdOptions/Net/tls
       value: "yes"
