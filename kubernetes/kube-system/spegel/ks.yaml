@@ -2,17 +2,14 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: node-feature-discovery
-  namespace: node-feature-discovery
+  name: spegel
+  namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/node-feature-discovery
+  path: ./kubernetes/kube-system/spegel
   prune: true
   retryInterval: 2m
   wait: true
-  dependsOn:
-    - name: spegel
-      namespace: spegel
   sourceRef:
     kind: GitRepository
     name: flux-system

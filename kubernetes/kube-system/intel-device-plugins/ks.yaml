@@ -2,14 +2,17 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: spegel
-  namespace: spegel
+  name: intel-device-plugins
+  namespace: intel-device-plugins
 spec:
   interval: 1h
-  path: ./kubernetes/spegel
+  path: ./kubernetes/kube-system/intel-device-plugins
   prune: true
   retryInterval: 2m
   wait: true
+  dependsOn:
+    - name: spegel
+      namespace: kube-system
   sourceRef:
     kind: GitRepository
     name: flux-system
