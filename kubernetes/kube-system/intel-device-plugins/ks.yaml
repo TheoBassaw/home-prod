@@ -3,7 +3,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: intel-device-plugins
-  namespace: intel-device-plugins
+  namespace: kube-system
 spec:
   interval: 1h
   path: ./kubernetes/kube-system/intel-device-plugins
