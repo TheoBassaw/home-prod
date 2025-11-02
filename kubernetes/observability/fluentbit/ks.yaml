@@ -3,7 +3,7 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: fluentbit
-  namespace: observability
+  namespace: fluentbit
 spec:
   interval: 1h
   path: ./kubernetes/observability/fluentbit
