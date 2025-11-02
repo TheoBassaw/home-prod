@@ -41,3 +41,5 @@ terraform.rc
 .vscode
 .venv
 .ansible
+
+.DS_Store
