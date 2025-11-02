@@ -12,7 +12,7 @@ spec:
   wait: true
   dependsOn:
     - name: spegel
-      namespace: kube-system
+      namespace: spegel
   sourceRef:
     kind: GitRepository
     name: flux-system

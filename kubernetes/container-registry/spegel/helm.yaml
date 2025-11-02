@@ -3,7 +3,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
   name: spegel
-  namespace: kube-system
+  namespace: spegel
 spec:
   interval: 10m
   url: oci://ghcr.io/spegel-org/helm-charts/spegel
@@ -15,13 +15,13 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: spegel
-  namespace: kube-system
+  namespace: spegel
 spec:
   interval: 1h
   chartRef:
     kind: OCIRepository
     name: spegel
-    namespace: kube-system
+    namespace: spegel
   install:
     remediation:
       retries: -1
