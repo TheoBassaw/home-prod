@@ -1,17 +1,11 @@
 terraform {
-  backend "s3" {
-    bucket                      = "terraform"
-    key                         = "talos/cluster.tfstate"
-    region                      = "auto"
-    skip_credentials_validation = true
-    skip_metadata_api_check     = true
-    skip_region_validation      = true
-    skip_requesting_account_id  = true
-    skip_s3_checksum            = true
-    use_path_style              = true
-    endpoints = { 
-      s3 = "https://9f2db25dca87fbbfa880e006c9667d83.r2.cloudflarestorage.com/" 
-    }
+  backend "http" {
+    address        = "https://gitlab.com/api/v4/projects/76268419/terraform/state/kubernetes-talos"
+    lock_address   = "https://gitlab.com/api/v4/projects/76268419/terraform/state/kubernetes-talos/lock"
+    unlock_address = "https://gitlab.com/api/v4/projects/76268419/terraform/state/kubernetes-talos/lock"
+    lock_method    = "POST"
+    unlock_method  = "DELETE"
+    retry_wait_min = 5
   }
   required_providers {
     talos = {

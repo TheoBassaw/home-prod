@@ -2,17 +2,14 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cert-manager
-  namespace: cert-manager
+  name: spegel
+  namespace: spegel
 spec:
   interval: 1h
-  path: ./kubernetes/security/cert-manager
+  path: ./kubernetes/spegel
   prune: true
   retryInterval: 2m
   wait: true
-  dependsOn:
-    - name: spegel
-      namespace: spegel
   sourceRef:
     kind: GitRepository
     name: flux-system

@@ -6,7 +6,7 @@ metadata:
   namespace: fluentbit
 spec:
   interval: 1h
-  path: ./kubernetes/observability/fluentbit
+  path: ./kubernetes/fluentbit
   prune: true
   retryInterval: 2m
   wait: true

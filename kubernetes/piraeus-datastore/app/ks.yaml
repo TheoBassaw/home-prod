@@ -6,7 +6,7 @@ metadata:
   namespace: piraeus-datastore
 spec:
   interval: 1h
-  path: ./kubernetes/storage/piraeus-datastore/app
+  path: ./kubernetes/piraeus-datastore/app
   prune: true
   retryInterval: 2m
   wait: true
