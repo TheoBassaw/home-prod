@@ -1,0 +1,27 @@
+---
+apiVersion: v1alpha1
+kind: ExtensionServiceConfig
+name: bird2
+configFiles:
+  - mountPath: /usr/local/etc/bird.conf
+    content: |
+      log stderr all;
+      debug protocols all;
+
+      router id from "dummy0";
+
+      protocol device {
+        scan time 10;
+      }
+
+      protocol direct {
+        interface "dummy0";
+        interface "dummy1";
+        interface "cilium_host";
+      }
+
+      protocol ospf v2 ospf_main {
+        area 0 {
+          interface 10.20.30.0/24, 10.20.40.0/24;
+        };
+      }
