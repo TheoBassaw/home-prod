@@ -1,0 +1,74 @@
+---
+cluster:
+  clusterName: home-prod
+  controlPlane:
+    endpoint: https://10.20.100.200
+  network:
+    cni:
+      name: none
+    podSubnets:
+      - 10.30.0.0/16
+    serviceSubnets:
+      - 10.96.0.0/12
+  apiServer:
+    certSANs:
+      - home-cluster.paradisenetworkz.com
+  allowSchedulingOnControlPlanes: true
+machine:
+  features:
+    hostDNS:
+      enabled: true
+      forwardKubeDNSToHost: false
+  files:
+    - path: /etc/cri/conf.d/20-customization.part
+      op: create
+      content: |
+        [plugins."io.containerd.cri.v1.images"]
+          discard_unpacked_layers = false
+  sysctls:
+    net.ipv4.ip_forward: 1
+---
+apiVersion: v1alpha1
+kind: VolumeConfig
+name: STATE
+encryption:
+  provider: luks2
+  keys:
+    - tpm: {}
+      slot: 0
+---
+apiVersion: v1alpha1
+kind: VolumeConfig
+name: EPHEMERAL
+encryption:
+  provider: luks2
+  keys:
+    - tpm: {}
+      slot: 0
+---
+apiVersion: v1alpha1
+kind: ExtensionServiceConfig
+name: bird2
+configFiles:
+  - mountPath: /usr/local/etc/bird.conf
+    content: |
+      log stderr all;
+      debug protocols all;
+
+      router id from "dummy0";
+
+      protocol device {
+        scan time 10;
+      }
+
+      protocol direct {
+        interface "dummy0";
+        interface "dummy1";
+        interface "cilium_host";
+      }
+
+      protocol ospf v2 ospf_main {
+        area 0 {
+          interface 10.20.30.0/24, 10.20.40.0/24;
+        };
+      }
