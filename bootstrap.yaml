@@ -1,6 +1,0 @@
----
-- name: Create Home Cluster
-  become: false
-  hosts: localhost
-  tasks:
-  

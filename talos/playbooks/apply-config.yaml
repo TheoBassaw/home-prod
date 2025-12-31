@@ -1,0 +1,12 @@
+---
+- name: Create Home K8S Cluster
+  become: false
+  hosts: localhost
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Generate cluster configs
+      ansible.builtin.command: |
+        talosctl apply-config --talosconfig=./clusterconfig/talosconfig --nodes=10.20.30.2 \
+          --file=./clusterconfig/home-k8s-talos-control-1.home.paradisenetworkz.com.yaml;
+      changed_when: false

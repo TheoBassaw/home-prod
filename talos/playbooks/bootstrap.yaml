@@ -1,0 +1,10 @@
+---
+- name: Create Home K8S Cluster
+  become: false
+  hosts: localhost
+  gather_facts: false
+  run_once: true
+  tasks:
+    - name: Generate cluster configs
+      ansible.builtin.command: talhelper genconfig
+      changed_when: false

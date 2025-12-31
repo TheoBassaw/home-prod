@@ -1,5 +1,5 @@
 ---
-clusterName: home-prod
+clusterName: home-k8s
 endpoint: https://10.20.100.200:6443
 talosVersion: v1.12.0
 allowSchedulingOnControlPlanes: true
@@ -10,9 +10,48 @@ clusterSvcNets:
 cniConfig:
   name: none
 additionalApiServerCertSans:
-  - home-cluster.paradisenetworkz.com
+  - kube-api.home.paradisenetworkz.com
 controlPlane:
-  talosImageURL: factory.talos.dev/metal-installer-secureboot/59762d6112a8f357442daf12c730f242217af688e5ea2c667d8c7013faffead7
+  schematic:
+    customization:
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/bird2
+          - siderolabs/i915
+          - siderolabs/intel-ucode
+          - siderolabs/lldpd
+          - siderolabs/mei
+          - siderolabs/nut-client
+  machineSpec:
+    secureboot: true
+    useUKI: true
+    mode: metal
+    arch: amd64
+  extensionServices:
+    - name: bird2
+      configFiles:
+        - mountPath: /usr/local/etc/bird.conf
+          content: |
+            log stderr all;
+            debug protocols all;
+
+            router id from "dummy0";
+
+            protocol device {
+              scan time 10;
+            }
+
+            protocol direct {
+              interface "dummy0";
+              interface "dummy1";
+              interface "cilium_host";
+            }
+
+            protocol ospf v2 ospf_main {
+              area 0 {
+                interface 10.20.30.0/24, 10.20.40.0/24;
+              };
+            }
 patches:
   - |-
     machine:
@@ -40,7 +79,7 @@ patches:
       sysctls:
         net.ipv4.ip_forward: 1
 nodes:
-  - hostname: talos-control-home-1
+  - hostname: talos-control-1.home.paradisenetworkz.com
     ipAddress: 10.20.30.2
     controlPlane: true
     installDisk: /dev/nvme0n1
@@ -71,7 +110,7 @@ nodes:
             nodeIP:
               validSubnets:
                 - 10.20.100.2/32
-  - hostname: talos-control-home-2
+  - hostname: talos-control-2.home.paradisenetworkz.com
     ipAddress: 10.20.30.3
     controlPlane: true
     installDisk: /dev/nvme0n1
@@ -102,7 +141,7 @@ nodes:
             nodeIP:
               validSubnets:
                 - 10.20.100.3/32
-  - hostname: talos-control-home-3
+  - hostname: talos-control-3.home.paradisenetworkz.com
     ipAddress: 10.20.30.4
     controlPlane: true
     installDisk: /dev/nvme0n1
