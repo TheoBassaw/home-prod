@@ -1,0 +1,60 @@
+---
+- name: Create Home K8S Cluster
+  become: false
+  hosts: localhost
+  tasks:
+    - name: Apply-Config | Generate cluster configs
+      ansible.builtin.command: talhelper genconfig
+      changed_when: false
+
+    - name: Apply-Config | Set facts
+      ansible.builtin.set_fact:
+        cluster_name: "{{ (lookup('ansible.builtin.file', 'talconfig.yaml') | ansible.builtin.from_yaml).clusterName }}"
+        nodes: "{{ (lookup('ansible.builtin.file', 'talconfig.yaml') | ansible.builtin.from_yaml).nodes }}"
+
+    - name: Apply-Config | Check if Maintenance Mode
+      ansible.builtin.command: talosctl -n {{ item.ipAddress }} get nodes -i
+      changed_when: false
+      failed_when: false
+      loop: "{{ nodes }}"
+      register: maintenance
+
+    - name: Apply-Config | Apply cluster configs (insecure)
+      ansible.builtin.command: |
+        talosctl apply-config -i --nodes={{ item.0.ipAddress }} --file=clusterconfig/{{ cluster_name }}-{{ item.0.hostname }}.yaml
+      changed_when: false
+      loop: "{{ nodes | zip(maintenance.results) | list }}"
+      when: item.1.rc == 0
+
+    - name: Apply-Config | Apply cluster configs
+      ansible.builtin.command: |
+        talosctl apply-config --talosconfig=clusterconfig/talosconfig --nodes={{ item.0.ipAddress }} \
+          --file=clusterconfig/{{ cluster_name }}-{{ item.0.hostname }}.yaml
+      changed_when: false
+      loop: "{{ nodes | zip(maintenance.results) | list }}"
+      when: item.1.rc == 1
+
+    - name: Bootstrap | Bootstrap talos controlplane
+      until: bootstrap is success
+      delay: 30
+      retries: 30
+      register: bootstrap
+      ansible.builtin.command: talosctl --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }} bootstrap
+      changed_when:
+        - bootstrap.rc == 0
+        - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") == ""
+      failed_when:
+        - bootstrap.rc == 1
+        - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") == ""
+
+    - name: Bootstrap | Wait for the node to be ready
+      ansible.builtin.command: talosctl --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }} health
+      changed_when: false
+      until: health is success
+      delay: 30
+      retries: 30
+      register: health
+
+    - name: Bootstrap | Get kubeconfig
+      ansible.builtin.command: talosctl --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }} kubeconfig
+      changed_when: false
