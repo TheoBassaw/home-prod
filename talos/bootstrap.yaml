@@ -46,10 +46,10 @@
       ansible.builtin.command: talosctl --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }} bootstrap
       changed_when:
         - bootstrap.rc == 0
-        - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") == ""
+        - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") is none
       failed_when:
         - bootstrap.rc == 1
-        - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") == ""
+        - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") is none
 
     - name: Bootstrap | Get kubeconfig
       ansible.builtin.command: talosctl --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }} kubeconfig
