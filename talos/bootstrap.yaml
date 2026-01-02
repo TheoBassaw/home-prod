@@ -24,7 +24,9 @@
         talosctl apply-config -i --nodes={{ item.0.ipAddress }} --file=clusterconfig/{{ cluster_name }}-{{ item.0.hostname }}.yaml
       changed_when: false
       loop: "{{ nodes | zip(maintenance.results) | list }}"
-      when: item.1.rc == 0
+      when:
+        - item.1.rc == 1
+        - item.1.stderr_lines[0] | regex_search("not registered") is not none
 
     - name: Apply-Config | Apply cluster configs
       ansible.builtin.command: |
@@ -32,7 +34,9 @@
           --file=clusterconfig/{{ cluster_name }}-{{ item.0.hostname }}.yaml
       changed_when: false
       loop: "{{ nodes | zip(maintenance.results) | list }}"
-      when: item.1.rc == 1
+      when:
+        - item.1.rc == 1
+        - item.1.stderr_lines[0] | regex_search("certificate required") is not none
 
     - name: Bootstrap | Bootstrap talos controlplane
       until: bootstrap is success
@@ -47,14 +51,25 @@
         - bootstrap.rc == 1
         - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") == ""
 
-    - name: Bootstrap | Wait for the node to be ready
-      ansible.builtin.command: talosctl --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }} health
-      changed_when: false
-      until: health is success
-      delay: 30
-      retries: 30
-      register: health
-
     - name: Bootstrap | Get kubeconfig
       ansible.builtin.command: talosctl --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }} kubeconfig
       changed_when: false
+
+    - name: Bootstrap | Add cilium helm repo
+      kubernetes.core.helm_repository:
+        name: cilium
+        repo_url: https://helm.cilium.io/
+
+    - name: Bootstrap | Apply cilium helm chart
+      kubernetes.core.helm:
+        name: cilium
+        chart_ref: cilium/cilium
+        chart_version: 1.18.5
+        release_namespace: kube-system
+        update_repo_cache: true
+        context: "admin@{{ cluster_name }}"
+        kubeconfig: "{{ ansible_env.HOME }}/.kube/config"
+        wait: true
+        values_files: ../kubernetes/kube-system/cilium/helm-values.yaml
+      retries: 30
+      delay: 10
