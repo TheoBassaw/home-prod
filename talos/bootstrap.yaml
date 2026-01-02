@@ -72,4 +72,3 @@
         wait: true
         values_files: ../kubernetes/kube-system/cilium/helm-values.yaml
       retries: 30
-      delay: 10
