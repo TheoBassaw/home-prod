@@ -10,4 +10,4 @@ spec:
     - name: DrbdOptions/Net/tls
       value: "yes"
     - name: DrbdOptions/Net/max-buffers
-      value: 36864
+      value: "36864"
