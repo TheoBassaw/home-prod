@@ -67,8 +67,6 @@
         chart_version: 1.18.5
         release_namespace: kube-system
         update_repo_cache: true
-        context: "admin@{{ cluster_name }}"
-        kubeconfig: "{{ ansible_env.HOME }}/.kube/config"
         wait: true
         values_files: ../kubernetes/kube-system/cilium/helm-values.yaml
       retries: 30
@@ -81,8 +79,6 @@
         release_namespace: flux-system
         create_namespace: true
         update_repo_cache: true
-        context: "admin@{{ cluster_name }}"
-        kubeconfig: "{{ ansible_env.HOME }}/.kube/config"
         wait: true
 
     - name: Bootstrap | Apply flux seed manifest

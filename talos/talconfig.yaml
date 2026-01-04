@@ -16,11 +16,13 @@ controlPlane:
     customization:
       systemExtensions:
         officialExtensions:
+          - siderolabs/drbd
           - siderolabs/i915
           - siderolabs/intel-ucode
           - siderolabs/lldpd
           - siderolabs/mei
           - siderolabs/nut-client
+          - siderolabs/xe
   machineSpec:
     secureboot: true
     useUKI: true
@@ -50,8 +52,13 @@ patches:
           content: |
             [plugins."io.containerd.cri.v1.images"]
               discard_unpacked_layers = false
-      sysctls:
-        net.ipv4.ip_forward: 1
+      kernel:
+        modules:
+          - name: drbd
+            parameters:
+              - usermode_helper=disabled
+          - name: drbd_transport_tcp
+          - name: dm-thin-pool
 nodes:
   - hostname: talos-control-1.home.paradisenetworkz.com
     ipAddress: 10.20.0.240
