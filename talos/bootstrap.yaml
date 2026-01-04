@@ -88,5 +88,5 @@
     - name: Bootstrap | Apply flux seed manifest
       kubernetes.core.k8s:
         state: present
-        src: flux-seed.yaml"
+        src: flux-seed.yaml
         wait: true
