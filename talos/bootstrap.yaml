@@ -72,3 +72,21 @@
         wait: true
         values_files: ../kubernetes/kube-system/cilium/helm-values.yaml
       retries: 30
+
+    - name: Bootstrap | Apply flux operator helm chart
+      kubernetes.core.helm:
+        name: flux-operator
+        chart_ref: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator
+        chart_version: 0.38.1
+        release_namespace: flux-system
+        create_namespace: true
+        update_repo_cache: true
+        context: "admin@{{ cluster_name }}"
+        kubeconfig: "{{ ansible_env.HOME }}/.kube/config"
+        wait: true
+
+    - name: Bootstrap | Apply flux seed manifest
+      kubernetes.core.k8s:
+        state: present
+        src: flux-seed.yaml"
+        wait: true
