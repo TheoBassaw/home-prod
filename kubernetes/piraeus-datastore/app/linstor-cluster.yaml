@@ -12,8 +12,12 @@ spec:
   highAvailabilityController:
     enabled: true
   properties:
+    - name: DrbdOptions/Net/protocol
+      value: C
     - name: DrbdOptions/Net/tls
       value: "yes"
+    - name: DrbdOptions/Net/max-buffers
+      value: "36864"
   apiTLS:
     certManager:
       name: linstor-api-ca
