@@ -6,7 +6,7 @@ metadata:
 spec:
   #volumeMode: Filesystem
   volumeMode: Block
-  storageClassName: linstor-replica-2
+  storageClassName: linstor-replica-1
   #storageClassName: local-path
   accessModes:
     - ReadWriteOnce
