@@ -1,0 +1,39 @@
+---
+- name: Apply Talos Config
+  become: false
+  hosts: localhost
+  tasks:
+    - name: Apply-Config | Generate cluster configs
+      ansible.builtin.command: talhelper genconfig
+      changed_when: false
+
+    - name: Apply-Config | Set facts
+      ansible.builtin.set_fact:
+        cluster_name: "{{ (lookup('ansible.builtin.file', 'talconfig.yaml') | ansible.builtin.from_yaml).clusterName }}"
+        nodes: "{{ (lookup('ansible.builtin.file', 'talconfig.yaml') | ansible.builtin.from_yaml).nodes }}"
+
+    - name: Apply-Config | Check if Maintenance Mode
+      ansible.builtin.command: talosctl get nodes -i -n {{ item.ipAddress }}
+      changed_when: false
+      failed_when: false
+      loop: "{{ nodes }}"
+      register: maintenance
+
+    - name: Apply-Config | Apply cluster configs (insecure)
+      ansible.builtin.command: |
+        talosctl apply-config -i --nodes={{ item.0.ipAddress }} --file=clusterconfig/{{ cluster_name }}-{{ item.0.hostname }}.yaml
+      changed_when: false
+      loop: "{{ nodes | zip(maintenance.results) | list }}"
+      when:
+        - item.1.rc == 1
+        - item.1.stderr_lines[0] | regex_search("not registered") is not none
+
+    - name: Apply-Config | Apply cluster configs
+      ansible.builtin.command: |
+        talosctl apply-config --talosconfig=clusterconfig/talosconfig --nodes={{ item.0.ipAddress }} \
+          --file=clusterconfig/{{ cluster_name }}-{{ item.0.hostname }}.yaml
+      changed_when: false
+      loop: "{{ nodes | zip(maintenance.results) | list }}"
+      when:
+        - item.1.rc == 1
+        - item.1.stderr_lines[0] | regex_search("certificate required") is not none

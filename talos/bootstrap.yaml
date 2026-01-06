@@ -1,49 +1,17 @@
 ---
-- name: Create Home K8S Cluster
+- name: Apply Talos Config
+  ansible.builtin.import_playbook: apply-config.yaml
+
+- name: Bootstrap Talos Cluster
   become: false
   hosts: localhost
   tasks:
-    - name: Apply-Config | Generate cluster configs
-      ansible.builtin.command: talhelper genconfig
-      changed_when: false
-
-    - name: Apply-Config | Set facts
-      ansible.builtin.set_fact:
-        cluster_name: "{{ (lookup('ansible.builtin.file', 'talconfig.yaml') | ansible.builtin.from_yaml).clusterName }}"
-        nodes: "{{ (lookup('ansible.builtin.file', 'talconfig.yaml') | ansible.builtin.from_yaml).nodes }}"
-
-    - name: Apply-Config | Check if Maintenance Mode
-      ansible.builtin.command: talosctl -n {{ item.ipAddress }} get nodes -i
-      changed_when: false
-      failed_when: false
-      loop: "{{ nodes }}"
-      register: maintenance
-
-    - name: Apply-Config | Apply cluster configs (insecure)
-      ansible.builtin.command: |
-        talosctl apply-config -i --nodes={{ item.0.ipAddress }} --file=clusterconfig/{{ cluster_name }}-{{ item.0.hostname }}.yaml
-      changed_when: false
-      loop: "{{ nodes | zip(maintenance.results) | list }}"
-      when:
-        - item.1.rc == 1
-        - item.1.stderr_lines[0] | regex_search("not registered") is not none
-
-    - name: Apply-Config | Apply cluster configs
-      ansible.builtin.command: |
-        talosctl apply-config --talosconfig=clusterconfig/talosconfig --nodes={{ item.0.ipAddress }} \
-          --file=clusterconfig/{{ cluster_name }}-{{ item.0.hostname }}.yaml
-      changed_when: false
-      loop: "{{ nodes | zip(maintenance.results) | list }}"
-      when:
-        - item.1.rc == 1
-        - item.1.stderr_lines[0] | regex_search("certificate required") is not none
-
     - name: Bootstrap | Bootstrap talos controlplane
       until: bootstrap is success
       delay: 30
       retries: 30
       register: bootstrap
-      ansible.builtin.command: talosctl --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }} bootstrap
+      ansible.builtin.command: talosctl bootstrap --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }}
       changed_when:
         - bootstrap.rc == 0
         - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") is none
@@ -52,7 +20,7 @@
         - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") is none
 
     - name: Bootstrap | Get kubeconfig
-      ansible.builtin.command: talosctl --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }} kubeconfig
+      ansible.builtin.command: talosctl kubeconfig --force --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }}
       changed_when: false
 
     - name: Bootstrap | Add cilium helm repo
@@ -60,29 +28,32 @@
         name: cilium
         repo_url: https://helm.cilium.io/
 
-    - name: Bootstrap | Apply cilium helm chart
-      kubernetes.core.helm:
+    - name: Bootstrap | Generate cilium manifests
+      kubernetes.core.helm_template:
         name: cilium
         chart_ref: cilium/cilium
         chart_version: 1.18.5
         release_namespace: kube-system
         update_repo_cache: true
-        wait: true
         values_files: ../kubernetes/kube-system/cilium/helm-values.yaml
-      retries: 30
+      register: cilium_manifests
 
-    - name: Bootstrap | Apply flux operator helm chart
-      kubernetes.core.helm:
+    - name: Bootstrap | Generate flux operator manifest
+      kubernetes.core.helm_template:
         name: flux-operator
         chart_ref: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator
         chart_version: 0.38.1
         release_namespace: flux-system
-        create_namespace: true
         update_repo_cache: true
-        wait: true
+      register: flux_operator_manifests
 
     - name: Bootstrap | Apply flux seed manifest
       kubernetes.core.k8s:
         state: present
-        src: flux-seed.yaml
+        definition: "{{ item }}"
         wait: true
+      loop:
+        - "{{ cilium_manifests.stdout }}"
+        - "{{ flux_operator_manifests.stdout }}"
+        - "{{ lookup('file', 'flux-seed.yaml') | from_yaml }}"
+      retries: 30
