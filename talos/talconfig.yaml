@@ -1,6 +1,6 @@
 ---
 clusterName: home-k8s
-endpoint: https://10.20.100.1:6443
+endpoint: https://10.20.0.200:6443
 talosVersion: v1.12.0
 allowSchedulingOnControlPlanes: true
 clusterPodNets:
@@ -17,11 +17,11 @@ controlPlane:
       systemExtensions:
         officialExtensions:
           - siderolabs/drbd
+          - siderolabs/zfs
           - siderolabs/i915
           - siderolabs/intel-ucode
           - siderolabs/lldpd
           - siderolabs/mei
-          - siderolabs/nut-client
           - siderolabs/xe
   machineSpec:
     secureboot: true
@@ -59,15 +59,16 @@ patches:
               - usermode_helper=disabled
           - name: drbd_transport_tcp
           - name: dm-thin-pool
+          - name: zfs
 nodes:
   - hostname: talos-control-1.home.paradisenetworkz.com
-    ipAddress: 10.20.0.240
+    ipAddress: 10.20.0.12
     controlPlane: true
     installDisk: /dev/nvme0n1
     networkInterfaces:
       - interface: bond0
         addresses:
-          - 10.20.0.240/24
+          - 10.20.0.12/24
         routes:
           - network: 0.0.0.0/0
             gateway: 10.20.0.1
@@ -76,18 +77,16 @@ nodes:
             - hardwareAddr: "6c:4b:90:21:be:a5"
             - hardwareAddr: "b4:96:91:70:63:3c"
           mode: active-backup
-      - interface: dummy0
-        dummy: true
-        addresses:
-          - 10.20.100.1/32
+        vip:
+          ip: 10.20.0.200
   - hostname: talos-control-2.home.paradisenetworkz.com
-    ipAddress: 10.20.0.241
+    ipAddress: 10.20.0.30
     controlPlane: true
     installDisk: /dev/nvme0n1
     networkInterfaces:
       - interface: bond0
         addresses:
-          - 10.20.0.241/24
+          - 10.20.0.30/24
         routes:
           - network: 0.0.0.0/0
             gateway: 10.20.0.1
@@ -96,18 +95,16 @@ nodes:
             - hardwareAddr: "6c:4b:90:55:3e:7d"
             - hardwareAddr: "b4:96:91:73:53:78"
           mode: active-backup
-      - interface: dummy0
-        dummy: true
-        addresses:
-          - 10.20.100.1/32
+        vip:
+          ip: 10.20.0.200
   - hostname: talos-control-3.home.paradisenetworkz.com
-    ipAddress: 10.20.0.242
+    ipAddress: 10.20.0.15
     controlPlane: true
     installDisk: /dev/nvme0n1
     networkInterfaces:
       - interface: bond0
         addresses:
-          - 10.20.0.242/24
+          - 10.20.0.15/24
         routes:
           - network: 0.0.0.0/0
             gateway: 10.20.0.1
@@ -116,7 +113,5 @@ nodes:
             - hardwareAddr: "6c:4b:90:55:3e:66"
             - hardwareAddr: "b4:96:91:70:63:b0"
           mode: active-backup
-      - interface: dummy0
-        dummy: true
-        addresses:
-          - 10.20.100.1/32
+        vip:
+          ip: 10.20.0.200
