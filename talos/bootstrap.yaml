@@ -23,36 +23,30 @@
       ansible.builtin.command: talosctl kubeconfig --force --talosconfig={{ playbook_dir }}/clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }}
       changed_when: false
 
-    - name: Bootstrap | Add cilium helm repo
-      kubernetes.core.helm_repository:
+    - name: Bootstrap | Generate cilium manifests
+      kubernetes.core.helm_template:
         name: cilium
-        repo_url: https://helm.cilium.io/
-
-    - name: Bootstrap | Apply cilium
-      kubernetes.core.helm:
-        name: cilium
-        chart_ref: cilium/cilium
+        chart_ref: oci://ghcr.io/home-operations/charts-mirror/cilium
         chart_version: 1.18.5
         release_namespace: kube-system
-        update_repo_cache: true
-        wait: true
-        values_files: "{{ playbook_dir }}../kubernetes/kube-system/cilium/helm-values.yaml"
-      retries: 30
-      delay: 30
+        values_files: "{{ playbook_dir }}/../kubernetes/kube-system/cilium/helm-values.yaml"
+      register: cilium_manifests
 
-    - name: Bootstrap | Apply flux operator
-      kubernetes.core.helm:
+    - name: Bootstrap | Generate flux operator manifest
+      kubernetes.core.helm_template:
         name: flux-operator
         chart_ref: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator
         chart_version: 0.38.1
         release_namespace: flux-system
-        create_namespace: true
-        update_repo_cache: true
-        wait: true
-      retries: 30
-      delay: 30
+      register: flux_operator_manifests
 
-    - name: Bootstrap | Apply flux seed repo
+    - name: Bootstrap | Apply Manifests
       kubernetes.core.k8s:
         state: present
-        src: "{{ playbook_dir }}/flux-seed.yaml"
+        definition: "{{ item }}"
+        wait: true
+      loop:
+        - "{{ cilium_manifests.stdout | from_yaml_all }}"
+        - "{{ lookup('file', '../kubernetes/flux-system/namespace.yaml') | from_yaml_all }}"
+        - "{{ flux_operator_manifests.stdout | from_yaml_all }}"
+        - "{{ lookup('file', 'flux-seed.yaml') | from_yaml_all }}"
