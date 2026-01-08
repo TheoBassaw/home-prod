@@ -7,11 +7,13 @@ metadata:
 spec:
   storagePools:
     - name: zfs-flash-pool
-      zfsThinPool:
-        zPool: flash-pool
+      zfsThinPool: {}
       source:
         hostDevices:
           - /dev/nvme1n1
+      properties:
+        - name: StorDriver/ZfscreateOptions
+          value: '-f'
   internalTLS:
     tlsHandshakeDaemon: true
     certManager:
