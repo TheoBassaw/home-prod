@@ -21,7 +21,7 @@
 
     - name: Apply-Config | Apply cluster configs (insecure)
       ansible.builtin.command: |
-        talosctl apply-config -i --nodes={{ item.0.ipAddress }} --file=clusterconfig/{{ cluster_name }}-{{ item.0.hostname }}.yaml
+        talosctl apply-config -i --nodes={{ item.0.ipAddress }} --file={{ playbook_dir }}/clusterconfig/{{ cluster_name }}-{{ item.0.hostname }}.yaml
       changed_when: false
       loop: "{{ nodes | zip(maintenance.results) | list }}"
       when:
@@ -30,7 +30,7 @@
 
     - name: Apply-Config | Apply cluster configs
       ansible.builtin.command: |
-        talosctl apply-config --talosconfig=clusterconfig/talosconfig --nodes={{ item.0.ipAddress }} \
+        talosctl apply-config --talosconfig={{ playbook_dir }}/clusterconfig/talosconfig --nodes={{ item.0.ipAddress }} \
           --file=clusterconfig/{{ cluster_name }}-{{ item.0.hostname }}.yaml
       changed_when: false
       loop: "{{ nodes | zip(maintenance.results) | list }}"
