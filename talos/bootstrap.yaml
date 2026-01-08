@@ -36,6 +36,7 @@
         release_namespace: kube-system
         update_repo_cache: true
         values_files: ../kubernetes/kube-system/cilium/helm-values.yaml
+        include_crds: true
       register: cilium_manifests
 
     - name: Bootstrap | Generate flux operator manifest
@@ -47,13 +48,12 @@
         update_repo_cache: true
       register: flux_operator_manifests
 
-    - name: Bootstrap | Apply flux seed manifest
+    - name: Bootstrap | Apply Manifests
       kubernetes.core.k8s:
         state: present
         definition: "{{ item }}"
-        wait: true
       loop:
-        - "{{ cilium_manifests.stdout }}"
-        - "{{ flux_operator_manifests.stdout }}"
-        - "{{ lookup('file', 'flux-seed.yaml') | from_yaml }}"
+        - "{{ cilium_manifests.stdout | from_yaml_all }}"
+        - "{{ flux_operator_manifests.stdout | from_yaml_all }}"
+        - "{{ lookup('file', 'flux-seed.yaml') | from_yaml_all }}"
       retries: 30
