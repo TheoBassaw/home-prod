@@ -56,4 +56,5 @@
         - "{{ cilium_manifests.stdout | from_yaml_all }}"
         - "{{ flux_operator_manifests.stdout | from_yaml_all }}"
         - "{{ lookup('file', 'flux-seed.yaml') | from_yaml_all }}"
+      delay: 30
       retries: 30
