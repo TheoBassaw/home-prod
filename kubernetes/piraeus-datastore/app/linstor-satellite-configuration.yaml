@@ -6,10 +6,9 @@ metadata:
   namespace: piraeus-datastore
 spec:
   storagePools:
-    - name: vg1-thin
-      lvmThinPool:
-        volumeGroup: vg1
-        thinPool: thin
+    - name: zfs-flash-pool
+      zfsThinPool:
+        zPool: flash-pool
       source:
         hostDevices:
           - /dev/nvme1n1
