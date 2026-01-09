@@ -1,0 +1,41 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: GitRepository
+metadata:
+  name: piraeus-operator
+  namespace: piraeus-datastore
+spec:
+  interval: 10m
+  url: https://github.com/piraeusdatastore/piraeus-operator
+  ref:
+    branch: v2
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: piraeus-operator
+  namespace: piraeus-datastore
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: ./charts/piraeus
+      sourceRef:
+        kind: GitRepository
+        name: piraeus-operator
+        namespace: piraeus-datastore
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    installCRDs: true
+    replicaCount: 3
+    leaderElect: true
+    tls:
+      autogenerate: true
+      renew: true

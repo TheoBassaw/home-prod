@@ -42,10 +42,10 @@
 
     - name: Bootstrap | Apply Manifests
       kubernetes.core.k8s:
-        state: absent
+        state: present
         definition: "{{ item }}"
         wait: true
-        wait_timeout: 1200
+        continue_on_error: true
       loop:
         - "{{ cilium_manifests.stdout | from_yaml_all }}"
         - "{{ lookup('file', '../kubernetes/flux-system/namespace.yaml') | from_yaml_all }}"
