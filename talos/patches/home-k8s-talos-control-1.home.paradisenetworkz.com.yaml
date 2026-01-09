@@ -1,0 +1,16 @@
+apiVersion: v1alpha1
+kind: RawVolumeConfig
+name: piraeus-data-1
+provisioning:
+  diskSelector:
+    match: disk.wwid == "nvme.c0a9-323331334536433137344536-4354353030503353534438-00000001"
+  grow: true
+  minSize: 500GB
+
+encryption:
+  provider: luks2
+  keys:
+    - slot: 0
+      tpm:
+        checkSecurebootStatusOnEnroll: true
+      lockToState: true
