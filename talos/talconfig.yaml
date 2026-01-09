@@ -20,7 +20,6 @@ controlPlane:
           - siderolabs/zfs
           - siderolabs/i915
           - siderolabs/intel-ucode
-          - siderolabs/lldpd
           - siderolabs/mei
           - siderolabs/xe
   machineSpec:
@@ -28,16 +27,6 @@ controlPlane:
     useUKI: true
     mode: metal
     arch: amd64
-  extensionServices:
-    - name: lldpd
-      configFiles:
-        - mountPath: /usr/local/etc/lldpd/lldpd.conf
-          content: |
-            configure lldp portidsubtype ifname
-            unconfigure lldp management-addresses-advertisements
-            unconfigure lldp capabilities-advertisements
-            configure system description "Talos Node"
-
 patches:
   - |-
     machine:
@@ -45,17 +34,6 @@ patches:
         hostDNS:
           enabled: true
           forwardKubeDNSToHost: false
-      systemDiskEncryption:
-        ephemeral:
-          provider: luks2
-          keys:
-            - tpm: {}
-              slot: 0
-        state:
-          provider: luks2
-          keys:
-            - tpm: {}
-              slot: 0
       files:
         - path: /etc/cri/conf.d/20-customization.part
           op: create
@@ -74,54 +52,12 @@ nodes:
   - hostname: talos-control-1.home.paradisenetworkz.com
     ipAddress: 10.20.0.12
     controlPlane: true
-    installDisk: /dev/nvme0n1
-    networkInterfaces:
-      - interface: bond0
-        addresses:
-          - 10.20.0.12/24
-        routes:
-          - network: 0.0.0.0/0
-            gateway: 10.20.0.1
-        bond:
-          deviceSelectors:
-            - hardwareAddr: "6c:4b:90:21:be:a5"
-            - hardwareAddr: "b4:96:91:70:63:3c"
-          mode: active-backup
-        vip:
-          ip: 10.20.0.200
+    installDisk: /dev/disk/by-id/nvme-nvme.c0a9-323331334536433137344536-4354353030503353534438-00000001
   - hostname: talos-control-2.home.paradisenetworkz.com
     ipAddress: 10.20.0.30
     controlPlane: true
-    installDisk: /dev/nvme0n1
-    networkInterfaces:
-      - interface: bond0
-        addresses:
-          - 10.20.0.30/24
-        routes:
-          - network: 0.0.0.0/0
-            gateway: 10.20.0.1
-        bond:
-          deviceSelectors:
-            - hardwareAddr: "6c:4b:90:55:3e:7d"
-            - hardwareAddr: "b4:96:91:73:53:78"
-          mode: active-backup
-        vip:
-          ip: 10.20.0.200
+    installDisk: /dev/disk/by-id/nvme-nvme.1d79-47363933393432363834-5453313238474d544531313053-00000001
   - hostname: talos-control-3.home.paradisenetworkz.com
     ipAddress: 10.20.0.15
     controlPlane: true
-    installDisk: /dev/nvme0n1
-    networkInterfaces:
-      - interface: bond0
-        addresses:
-          - 10.20.0.15/24
-        routes:
-          - network: 0.0.0.0/0
-            gateway: 10.20.0.1
-        bond:
-          deviceSelectors:
-            - hardwareAddr: "6c:4b:90:55:3e:66"
-            - hardwareAddr: "b4:96:91:70:63:b0"
-          mode: active-backup
-        vip:
-          ip: 10.20.0.200
+    installDisk: /dev/disk/by-id/nvme-eui.ace42e8170470927
