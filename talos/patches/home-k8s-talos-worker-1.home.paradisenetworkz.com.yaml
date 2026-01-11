@@ -1,0 +1,93 @@
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: eth0
+selector:
+  match: mac(link.permanent_addr) == "98:6e:e8:23:bc:43"
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: eth1
+selector:
+  match: mac(link.permanent_addr) == "98:6e:e8:23:bc:44"
+---
+apiVersion: v1alpha1
+kind: BondConfig
+name: bond0
+links:
+  - eth0
+  - eth1
+bondMode: active-backup
+addresses:
+  - address: 10.20.0.42/24
+routes:
+  - gateway: 10.20.0.1
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+auto: "off"
+hostname: talos-worker-1.home.paradisenetworkz.com
+---
+apiVersion: v1alpha1
+kind: RawVolumeConfig
+name: piraeus-rust-1
+provisioning:
+  diskSelector:
+    match: disk.wwid == "naa.5000c500b217a70b"
+  grow: true
+  minSize: 500GB
+encryption:
+  provider: luks2
+  keys:
+    - slot: 0
+      tpm:
+        checkSecurebootStatusOnEnroll: true
+      lockToState: true
+---
+apiVersion: v1alpha1
+kind: RawVolumeConfig
+name: piraeus-rust-2
+provisioning:
+  diskSelector:
+    match: disk.wwid == "naa.5000c500b698ac1b"
+  grow: true
+  minSize: 500GB
+encryption:
+  provider: luks2
+  keys:
+    - slot: 0
+      tpm:
+        checkSecurebootStatusOnEnroll: true
+      lockToState: true
+---
+apiVersion: v1alpha1
+kind: RawVolumeConfig
+name: piraeus-rust-3
+provisioning:
+  diskSelector:
+    match: disk.wwid == "naa.5000c500b217a897"
+  grow: true
+  minSize: 500GB
+encryption:
+  provider: luks2
+  keys:
+    - slot: 0
+      tpm:
+        checkSecurebootStatusOnEnroll: true
+      lockToState: true
+---
+apiVersion: v1alpha1
+kind: RawVolumeConfig
+name: piraeus-rust-4
+provisioning:
+  diskSelector:
+    match: disk.wwid == "naa.5000c500b6a82f65"
+  grow: true
+  minSize: 500GB
+encryption:
+  provider: luks2
+  keys:
+    - slot: 0
+      tpm:
+        checkSecurebootStatusOnEnroll: true
+      lockToState: true

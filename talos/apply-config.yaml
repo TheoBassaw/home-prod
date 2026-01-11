@@ -34,7 +34,7 @@
     - name: Apply-Config | Apply cluster configs
       ansible.builtin.command: |
         talosctl apply-config --talosconfig={{ playbook_dir }}/clusterconfig/talosconfig --nodes={{ item.0.ipAddress }} \
-          --file=clusterconfig/{{ cluster_name }}-{{ item.0.hostname }}.yaml \
+          --file={{ playbook_dir }}/clusterconfig/{{ cluster_name }}-{{ item.0.hostname }}.yaml \
           --config-patch=@{{ playbook_dir }}/patches/{{ cluster_name }}-{{ item.0.hostname }}.yaml \
           --config-patch=@{{ playbook_dir }}/patches/all.yaml
       changed_when: false

@@ -14,6 +14,8 @@ additionalApiServerCertSans:
 controlPlane:
   schematic:
     customization:
+      extraKernelArgs:
+        - -talos.halt_if_installed
       systemExtensions:
         officialExtensions:
           - siderolabs/drbd
@@ -25,6 +27,24 @@ controlPlane:
   machineSpec:
     secureboot: true
     useUKI: true
+    mode: metal
+    arch: amd64
+worker:
+  schematic:
+    customization:
+      extraKernelArgs:
+        - -talos.halt_if_installed
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/drbd
+          - siderolabs/zfs
+          - siderolabs/i915
+          - siderolabs/intel-ucode
+          - siderolabs/mei
+          - siderolabs/xe
+  machineSpec:
+    secureboot: true
+    useUKI: false
     mode: metal
     arch: amd64
 patches:
@@ -61,3 +81,7 @@ nodes:
     ipAddress: 10.20.0.15
     controlPlane: true
     installDisk: /dev/disk/by-id/nvme-eui.ace42e8170470927
+  - hostname: talos-worker-1.home.paradisenetworkz.com
+    ipAddress: 10.20.0.42
+    controlPlane: false
+    installDisk: /dev/disk/by-id/nvme-eui.ace42e8170470a42
