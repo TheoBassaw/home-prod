@@ -51,6 +51,7 @@ spec:
   storagePools:
     - name: flash-pool
       lvmThinPool:
+        volumeGroup: vg1
       source:
         hostDevices:
           - /dev/disk/by-id/dm-name-luks2-r-piraeus-data-1
@@ -68,7 +69,8 @@ spec:
             operator: DoesNotExist
   storagePools:
     - name: rust-pool
-      lvmThinPool: {}
+      lvmThinPool:
+        volumeGroup: vg2
       source:
         hostDevices:
           - /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-1
