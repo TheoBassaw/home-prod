@@ -49,10 +49,8 @@ spec:
           - key: node-role.kubernetes.io/control-plane
             operator: Exists
   storagePools:
-    - name: vg1-thin
+    - name: flash-pool
       lvmThinPool:
-        volumeGroup: vg1
-        thinPool: thin
       source:
         hostDevices:
           - /dev/disk/by-id/dm-name-luks2-r-piraeus-data-1
@@ -69,7 +67,7 @@ spec:
           - key: node-role.kubernetes.io/control-plane
             operator: DoesNotExist
   storagePools:
-    - name: vg2-thin
+    - name: rust-pool
       lvmThinPool: {}
       source:
         hostDevices:
