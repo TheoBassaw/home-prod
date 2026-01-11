@@ -14,8 +14,6 @@ additionalApiServerCertSans:
 controlPlane:
   schematic:
     customization:
-      extraKernelArgs:
-        - -talos.halt_if_installed
       systemExtensions:
         officialExtensions:
           - siderolabs/drbd
@@ -31,8 +29,6 @@ controlPlane:
 worker:
   schematic:
     customization:
-      extraKernelArgs:
-        - -talos.halt_if_installed
       systemExtensions:
         officialExtensions:
           - siderolabs/drbd

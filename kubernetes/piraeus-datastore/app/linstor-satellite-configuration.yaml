@@ -70,9 +70,7 @@ spec:
             operator: DoesNotExist
   storagePools:
     - name: vg2-thin
-      lvmThinPool:
-        volumeGroup: vg2
-        thinPool: thin
+      lvmThinPool: {}
       source:
         hostDevices:
           - /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-1
