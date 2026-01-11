@@ -11,6 +11,12 @@ spec:
       operator: Exists
   highAvailabilityController:
     enabled: true
+  csiController:
+    enabled: true
+    replicas: 3
+  affinityController:
+    enabled: true
+    replicas: 3
   properties:
     - name: DrbdOptions/Net/protocol
       value: C
@@ -32,7 +38,6 @@ spec:
       value: "325521"
     - name: DrbdOptions/PeerDevice/c-plan-ahead
       value: "10"
-
   apiTLS:
     certManager:
       name: linstor-api-ca
