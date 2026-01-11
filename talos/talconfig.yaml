@@ -19,7 +19,6 @@ controlPlane:
       systemExtensions:
         officialExtensions:
           - siderolabs/drbd
-          - siderolabs/zfs
           - siderolabs/i915
           - siderolabs/intel-ucode
           - siderolabs/mei
@@ -37,7 +36,6 @@ worker:
       systemExtensions:
         officialExtensions:
           - siderolabs/drbd
-          - siderolabs/zfs
           - siderolabs/i915
           - siderolabs/intel-ucode
           - siderolabs/mei
@@ -67,7 +65,6 @@ patches:
               - usermode_helper=disabled
           - name: drbd_transport_tcp
           - name: dm-thin-pool
-          - name: zfs
 nodes:
   - hostname: talos-control-1.home.paradisenetworkz.com
     ipAddress: 10.20.0.12

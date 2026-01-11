@@ -49,8 +49,10 @@ spec:
           - key: node-role.kubernetes.io/control-plane
             operator: Exists
   storagePools:
-    - name: zfs-flash-pool
-      zfsThinPool: {}
+    - name: flash-pool
+      lvmThinPool:
+        volumeGroup: vg1
+        thinPool: thin
       source:
         hostDevices:
           - /dev/disk/by-id/dm-name-luks2-r-piraeus-data-1
@@ -67,14 +69,13 @@ spec:
           - key: node-role.kubernetes.io/control-plane
             operator: DoesNotExist
   storagePools:
-    - name: zfs-rust-pool
-      zfsThinPool: {}
+    - name: rust-pool
+      lvmThinPool:
+        volumeGroup: vg2
+        thinPool: thin
       source:
         hostDevices:
           - /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-1
           - /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-2
           - /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-3
           - /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-4
-      properties:
-        - name: StorDriver/ZfscreateOptions
-          value: 'mirror /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-1 /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-2 mirror /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-3 /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-4'
