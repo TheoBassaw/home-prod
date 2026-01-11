@@ -5,10 +5,6 @@ metadata:
   name: linstor-cluster
   namespace: piraeus-datastore
 spec:
-  tolerations:
-    - key: node-role.kubernetes.io/control-plane
-      effect: NoSchedule
-      operator: Exists
   highAvailabilityController:
     enabled: true
   csiController:
