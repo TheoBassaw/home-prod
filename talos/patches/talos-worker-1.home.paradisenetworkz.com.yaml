@@ -1,4 +1,11 @@
 ---
+machine:
+  type: worker
+  install:
+    disk: /dev/disk/by-id/nvme-eui.ace42e8170470a42
+    wipe: false
+    grubUseUKICmdline: true
+---
 apiVersion: v1alpha1
 kind: LinkAliasConfig
 name: eth0

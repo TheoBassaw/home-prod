@@ -11,7 +11,7 @@
       delay: 30
       retries: 30
       register: bootstrap
-      ansible.builtin.command: talosctl bootstrap --talosconfig={{ playbook_dir }}/clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }}
+      ansible.builtin.command: talosctl bootstrap --talosconfig={{ clusterconfig/talosconfig --nodes={{ nodes.0.ip_address }}
       changed_when:
         - bootstrap.rc == 0
         - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") is none
@@ -20,7 +20,7 @@
         - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") is none
 
     - name: Bootstrap | Get kubeconfig
-      ansible.builtin.command: talosctl kubeconfig --force --talosconfig={{ playbook_dir }}/clusterconfig/talosconfig --nodes={{ nodes.0.ipAddress }}
+      ansible.builtin.command: talosctl kubeconfig --force --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ip_address }}
       changed_when: false
 
 - name: Apply K8S Manifests

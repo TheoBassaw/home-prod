@@ -1,15 +1,22 @@
 ---
+machine:
+  type: controlplane
+  install:
+    disk: /dev/disk/by-id/nvme-eui.ace42e8170470927
+    wipe: false
+    grubUseUKICmdline: true
+---
 apiVersion: v1alpha1
 kind: LinkAliasConfig
 name: eth0
 selector:
-  match: mac(link.permanent_addr) == "6c:4b:90:21:be:a5"
+  match: mac(link.permanent_addr) == "6c:4b:90:55:3e:66"
 ---
 apiVersion: v1alpha1
 kind: LinkAliasConfig
 name: eth1
 selector:
-  match: mac(link.permanent_addr) == "b4:96:91:70:63:3c"
+  match: mac(link.permanent_addr) == "b4:96:91:70:63:b0"
 ---
 apiVersion: v1alpha1
 kind: BondConfig
@@ -19,7 +26,7 @@ links:
   - eth1
 bondMode: active-backup
 addresses:
-  - address: 10.20.0.12/24
+  - address: 10.20.0.15/24
 routes:
   - gateway: 10.20.0.1
 ---
@@ -31,16 +38,16 @@ link: bond0
 apiVersion: v1alpha1
 kind: HostnameConfig
 auto: "off"
-hostname: talos-control-1.home.paradisenetworkz.com
+hostname: talos-control-3.home.paradisenetworkz.com
 ---
 apiVersion: v1alpha1
 kind: RawVolumeConfig
 name: piraeus-data-1
 provisioning:
   diskSelector:
-    match: disk.wwid == "nvme.1987-3438373930343539353132313637-53616272656e742053422d524f434b45542d4e564d65342d315442-00000001"
+    match: disk.wwid == "nvme.1987-3232303431393531323030303331-5043496520535344-00000001"
   grow: true
-  minSize: 1.0TB
+  minSize: 500GB
 encryption:
   provider: luks2
   keys:
