@@ -31,6 +31,12 @@
           release_namespace: "{{ lookup('file', '../kubernetes/cert-manager/app/kustomization.yaml') | from_yaml | json_query('namespace') }}"
           values: "{{ lookup('file', '../kubernetes/cert-manager/app/helmrelease.yaml') | from_yaml | json_query('spec.values') }}"
 
+        - name: "{{ lookup('file', '../kubernetes/piraeus-datastore/app/ocirepository.yaml') | from_yaml | json_query('metadata.name') }}"
+          chart_ref: "{{ lookup('file', '../kubernetes/piraeus-datastore/app/ocirepository.yaml') | from_yaml | json_query('spec.url') }}"
+          chart_version: "{{ lookup('file', '../kubernetes/piraeus-datastore/app/ocirepository.yaml') | from_yaml | json_query('spec.ref.tag') }}"
+          release_namespace: "{{ lookup('file', '../kubernetes/piraeus-datastore/app/kustomization.yaml') | from_yaml | json_query('namespace') }}"
+          values: "{{ lookup('file', '../kubernetes/piraeus-datastore/app/helmrelease.yaml') | from_yaml | json_query('spec.values') }}"
+
         - name: "{{ lookup('file', '../kubernetes/flux-system/app/ocirepository.yaml') | from_yaml | json_query('metadata.name') }}"
           chart_ref: "{{ lookup('file', '../kubernetes/flux-system/app/ocirepository.yaml') | from_yaml | json_query('spec.url') }}"
           chart_version: "{{ lookup('file', '../kubernetes/flux-system/app/ocirepository.yaml') | from_yaml | json_query('spec.ref.tag') }}"
@@ -49,8 +55,10 @@
         - "{{ manifests.results.1.stdout | from_yaml_all }}"
         - "{{ lookup('file', '../kubernetes/cert-manager/app/namespace.yaml') | from_yaml }}"
         - "{{ manifests.results.2.stdout | from_yaml_all }}"
-        - "{{ lookup('file', '../kubernetes/flux-system/app/namespace.yaml') | from_yaml }}"
+        - "{{ lookup('file', '../kubernetes/piraeus-datastore/app/namespace.yaml') | from_yaml }}"
         - "{{ manifests.results.3.stdout | from_yaml_all }}"
+        - "{{ lookup('file', '../kubernetes/flux-system/app/namespace.yaml') | from_yaml }}"
+        - "{{ manifests.results.4.stdout | from_yaml_all }}"
         - apiVersion: fluxcd.controlplane.io/v1
           kind: FluxInstance
           metadata:

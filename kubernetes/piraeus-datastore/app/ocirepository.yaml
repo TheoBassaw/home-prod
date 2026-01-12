@@ -8,4 +8,4 @@ spec:
   interval: 10m
   url: oci://ghcr.io/piraeusdatastore/piraeus-operator/piraeus
   ref:
-    tag: v2.10.3
+    tag: 2.10.3
