@@ -51,3 +51,28 @@
         - "{{ manifests.results.2.stdout | from_yaml_all }}"
         - "{{ lookup('file', '../kubernetes/flux-system/app/namespace.yaml') | from_yaml }}"
         - "{{ manifests.results.3.stdout | from_yaml_all }}"
+        - apiVersion: fluxcd.controlplane.io/v1
+          kind: FluxInstance
+          metadata:
+            name: flux
+            namespace: flux-system
+          spec:
+            distribution:
+              version: 2.x
+              registry: ghcr.io/fluxcd
+            components:
+              - source-controller
+              - kustomize-controller
+              - helm-controller
+              - notification-controller
+            cluster:
+              type: kubernetes
+              multitenant: false
+              networkPolicy: true
+              domain: cluster.local
+            sync:
+              kind: GitRepository
+              url: https://github.com/TheoBassaw/home-prod.git
+              ref: refs/heads/main
+              path: kubernetes
+              interval: 1h
