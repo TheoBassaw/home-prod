@@ -6,13 +6,10 @@ metadata:
   namespace: cert-manager
 spec:
   interval: 1h
-  path: ./kubernetes/cert-manager
+  path: ./kubernetes/cert-manager/app
   prune: true
   retryInterval: 2m
   wait: true
-  dependsOn:
-    - name: spegel
-      namespace: spegel
   sourceRef:
     kind: GitRepository
     name: flux-system

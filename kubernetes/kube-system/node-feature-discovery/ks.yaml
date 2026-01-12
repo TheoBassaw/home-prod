@@ -10,9 +10,6 @@ spec:
   prune: true
   retryInterval: 2m
   wait: true
-  dependsOn:
-    - name: spegel
-      namespace: spegel
   sourceRef:
     kind: GitRepository
     name: flux-system

@@ -22,13 +22,6 @@ spec:
     kind: OCIRepository
     name: node-feature-discovery
     namespace: kube-system
-  install:
-    remediation:
-      retries: -1
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
   values:
     master:
       replicaCount: 3

@@ -10,9 +10,6 @@ spec:
   prune: true
   retryInterval: 2m
   wait: true
-  dependsOn:
-    - name: helm
-      namespace: piraeus-datastore
   sourceRef:
     kind: GitRepository
     name: flux-system

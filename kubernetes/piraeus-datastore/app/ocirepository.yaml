@@ -1,0 +1,11 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: piraeus-operator
+spec:
+  interval: 10m
+  url: oci://ghcr.io/piraeusdatastore/piraeus-operator/piraeus
+  ref:
+    tag: v2.10.3
