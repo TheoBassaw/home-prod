@@ -1,4 +1,35 @@
 ---
+machine:
+  features:
+    hostDNS:
+      enabled: true
+      forwardKubeDNSToHost: false
+  files:
+    - path: /etc/cri/conf.d/20-customization.part
+      op: create
+      content: |
+        [plugins."io.containerd.cri.v1.images"]
+          discard_unpacked_layers = false
+  kernel:
+    modules:
+      - name: drbd
+        parameters:
+          - usermode_helper=disabled
+      - name: drbd_transport_tcp
+      - name: dm-thin-pool
+cluster:
+  network:
+    cni:
+      name: none
+    podSubnets:
+      - 10.30.0.0/16
+    serviceSubnets:
+      - 10.96.0.0/12
+  apiServer:
+    certSANs:
+      - kube-api.home.paradisenetworkz.com
+  allowSchedulingOnControlPlanes: true
+---
 apiVersion: v1alpha1
 kind: VolumeConfig
 name: STATE

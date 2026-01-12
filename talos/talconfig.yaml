@@ -2,15 +2,6 @@
 clusterName: home-k8s
 endpoint: https://10.20.0.200:6443
 talosVersion: v1.12.0
-allowSchedulingOnControlPlanes: true
-clusterPodNets:
-  - 10.30.0.0/16
-clusterSvcNets:
-  - 10.96.0.0/12
-cniConfig:
-  name: none
-additionalApiServerCertSans:
-  - kube-api.home.paradisenetworkz.com
 controlPlane:
   schematic:
     customization:
@@ -41,26 +32,6 @@ worker:
     useUKI: false
     mode: metal
     arch: amd64
-patches:
-  - |-
-    machine:
-      features:
-        hostDNS:
-          enabled: true
-          forwardKubeDNSToHost: false
-      files:
-        - path: /etc/cri/conf.d/20-customization.part
-          op: create
-          content: |
-            [plugins."io.containerd.cri.v1.images"]
-              discard_unpacked_layers = false
-      kernel:
-        modules:
-          - name: drbd
-            parameters:
-              - usermode_helper=disabled
-          - name: drbd_transport_tcp
-          - name: dm-thin-pool
 nodes:
   - hostname: talos-control-1.home.paradisenetworkz.com
     ipAddress: 10.20.0.12
