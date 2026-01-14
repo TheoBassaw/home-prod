@@ -36,7 +36,6 @@ encryption:
     - slot: 0
       tpm:
         checkSecurebootStatusOnEnroll: true
-      lockToState: true
 ---
 apiVersion: v1alpha1
 kind: RawVolumeConfig
@@ -52,7 +51,6 @@ encryption:
     - slot: 0
       tpm:
         checkSecurebootStatusOnEnroll: true
-      lockToState: true
 ---
 apiVersion: v1alpha1
 kind: RawVolumeConfig
@@ -68,4 +66,3 @@ encryption:
     - slot: 0
       tpm:
         checkSecurebootStatusOnEnroll: true
-      lockToState: true

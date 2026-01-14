@@ -41,4 +41,3 @@ encryption:
     - slot: 0
       tpm:
         checkSecurebootStatusOnEnroll: true
-      lockToState: true
