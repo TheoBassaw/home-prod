@@ -78,4 +78,3 @@ spec:
           - /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-1
           - /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-2
           - /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-3
-          - /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-4
