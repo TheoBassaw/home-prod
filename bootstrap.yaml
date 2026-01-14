@@ -5,13 +5,15 @@
 - name: Bootstrap Talos Cluster
   become: false
   hosts: localhost
+  vars_files:
+    - talos/cluster.yaml
   tasks:
     - name: Bootstrap | Bootstrap talos controlplane
       until: bootstrap is success
       delay: 30
       retries: 30
       register: bootstrap
-      ansible.builtin.command: talosctl bootstrap --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ip_address }}
+      ansible.builtin.command: talosctl bootstrap --talosconfig=talos/clusterconfig/talosconfig --nodes={{ nodes.0.ip_address }}
       changed_when:
         - bootstrap.rc == 0
         - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") is none
@@ -20,8 +22,8 @@
         - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") is none
 
     - name: Bootstrap | Get kubeconfig
-      ansible.builtin.command: talosctl kubeconfig --force --talosconfig=clusterconfig/talosconfig --nodes={{ nodes.0.ip_address }}
+      ansible.builtin.command: talosctl kubeconfig --force --talosconfig=talos/clusterconfig/talosconfig --nodes={{ nodes.0.ip_address }}
       changed_when: false
 
-- name: Apply K8S Manifests
+- name: Apply Helm Charts & Manifests
   ansible.builtin.import_playbook: apply-manifests.yaml

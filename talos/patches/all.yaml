@@ -1,5 +1,8 @@
 ---
 machine:
+  install:
+    wipe: true
+    grubUseUKICmdline: true
   features:
     hostDNS:
       enabled: true

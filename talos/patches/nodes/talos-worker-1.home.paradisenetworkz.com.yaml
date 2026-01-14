@@ -1,10 +1,7 @@
 ---
 machine:
-  type: worker
   install:
     disk: /dev/disk/by-id/nvme-eui.ace42e8170470a42
-    wipe: false
-    grubUseUKICmdline: true
 ---
 apiVersion: v1alpha1
 kind: LinkAliasConfig
@@ -13,18 +10,8 @@ selector:
   match: mac(link.permanent_addr) == "98:6e:e8:23:bc:43"
 ---
 apiVersion: v1alpha1
-kind: LinkAliasConfig
-name: eth1
-selector:
-  match: mac(link.permanent_addr) == "98:6e:e8:23:bc:44"
----
-apiVersion: v1alpha1
-kind: BondConfig
-name: bond0
-links:
-  - eth0
-  - eth1
-bondMode: active-backup
+kind: LinkConfig
+name: eth0
 addresses:
   - address: 10.20.0.42/24
 routes:

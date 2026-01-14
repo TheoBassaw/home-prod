@@ -2,37 +2,21 @@
 - name: Apply Talos Config
   become: false
   hosts: localhost
-  vars:
-    cluster_name: home-k8s
-    endpoint: https://10.20.0.200:6443
-    talos_version: v1.12.0
-    image_url: factory.talos.dev/metal-installer-secureboot
-    nodes:
-      - hostname: talos-control-1.home.paradisenetworkz.com
-        ip_address: 10.20.0.12
-        type: controlplane
-      - hostname: talos-control-2.home.paradisenetworkz.com
-        ip_address: 10.20.0.30
-        type: controlplane
-      - hostname: talos-control-3.home.paradisenetworkz.com
-        ip_address: 10.20.0.15
-        type: controlplane
-      - hostname: talos-worker-1.home.paradisenetworkz.com
-        ip_address: 10.20.0.42
-        type: worker
+  vars_files:
+    - talos/cluster.yaml
   tasks:
     - name: Apply-Config | Retrieve schematic id
       ansible.builtin.uri:
         url: https://factory.talos.dev/schematics
         method: POST
-        body: "{{ lookup('ansible.builtin.file', 'patches/schematic.yaml') }}"
+        body: "{{ lookup('ansible.builtin.file', 'talos/schematic.yaml') }}"
         body_format: raw
         status_code: 201
       register: schematic
 
     - name: Apply-Config | Generate .gitignore
       ansible.builtin.lineinfile:
-        path: clusterconfig/.gitignore
+        path: talos/clusterconfig/.gitignore
         line: "{{ item }}"
         create: true
         mode: '0600'
@@ -45,8 +29,8 @@
 
     - name: Apply-Config | Decrypt secrets bundle
       ansible.builtin.copy:
-        content: "{{ lookup('community.sops.sops', 'patches/secrets.sops.yaml') }}"
-        dest: clusterconfig/secrets.yaml
+        content: "{{ lookup('community.sops.sops', 'talos/patches/secrets.sops.yaml') }}"
+        dest: talos/clusterconfig/secrets.yaml
         mode: '0600'
 
     - name: Apply-Config | Generate machine config
@@ -55,30 +39,30 @@
       loop: "{{ nodes }}"
       ansible.builtin.command: |
         talosctl gen config --force {{ cluster_name }} {{ endpoint }} --talos-version {{ talos_version }} \
-          --install-image {{ image_url }}/{{ schematic.json.id }} --with-secrets clusterconfig/secrets.yaml \
-          --config-patch @patches/all.yaml --config-patch @patches/{{ item.hostname }}.yaml
-          --output clusterconfig/{{ item.hostname }}.yaml --output-types {{ item.type }}
+          --install-image factory.talos.dev/metal-installer-secureboot/{{ schematic.json.id }} \
+          --with-secrets talos/clusterconfig/secrets.yaml --config-patch @talos/patches/all.yaml \
+          --config-patch @talos/patches/{{ item.hostname }}.yaml --output talos/clusterconfig/{{ item.hostname }}.yaml --output-types {{ item.type }}
 
     - name: Apply-Config | Generate talosconfig
       changed_when: false
       failed_when: false
       ansible.builtin.command: |
-        talosctl gen config --force {{ cluster_name }} {{ endpoint }} --with-secrets clusterconfig/secrets.yaml \
-          --output clusterconfig/talosconfig --output-types talosconfig
+        talosctl gen config --force {{ cluster_name }} {{ endpoint }} --with-secrets talos/clusterconfig/secrets.yaml \
+          --output talos/clusterconfig/talosconfig --output-types talosconfig
 
     - name: Apply-Config | Set talosconfig endpoints
       changed_when: false
       failed_when: false
       ansible.builtin.command: |
         talosctl config endpoint {{ nodes | selectattr('type', 'equalto', 'controlplane') | map(attribute='ip_address') | list | join(' ') }}
-          --context {{ cluster_name }} --talosconfig=clusterconfig/talosconfig
+          --context {{ cluster_name }} --talosconfig=talos/clusterconfig/talosconfig
 
     - name: Apply-Config | Set talosconfig nodes
       changed_when: false
       failed_when: false
       ansible.builtin.command: |
         talosctl config node {{ nodes | map(attribute='ip_address') | list | join(' ') }}
-          --context {{ cluster_name }} --talosconfig=clusterconfig/talosconfig
+          --context {{ cluster_name }} --talosconfig=talos/clusterconfig/talosconfig
 
     - name: Apply-Config | Check if Maintenance Mode
       ansible.builtin.command: talosctl get nodes -i -n {{ item.ip_address }}
@@ -89,7 +73,7 @@
 
     - name: Apply-Config | Apply cluster configs (insecure)
       ansible.builtin.command: |
-        talosctl apply-config -i -n {{ item.item.ip_address }} -f clusterconfig/{{ item.item.hostname }}.yaml
+        talosctl apply-config -i -n {{ item.item.ip_address }} -f talos/clusterconfig/{{ item.item.hostname }}.yaml
       changed_when: false
       loop: "{{ maintenance.results }}"
       when:
@@ -98,7 +82,7 @@
 
     - name: Apply-Config | Apply cluster configs
       ansible.builtin.command: |
-        talosctl apply-config --talosconfig=clusterconfig/talosconfig -n {{ item.item.ip_address }} -f clusterconfig/{{ item.item.hostname }}.yaml
+        talosctl apply-config --talosconfig=talos/clusterconfig/talosconfig -n {{ item.item.ip_address }} -f talos/clusterconfig/{{ item.item.hostname }}.yaml
       changed_when: false
       loop: "{{ maintenance.results }}"
       when:

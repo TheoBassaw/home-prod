@@ -1,10 +1,7 @@
 ---
 machine:
-  type: controlplane
   install:
     disk: /dev/disk/by-id/nvme-nvme.1d79-47363933393432363834-5453313238474d544531313053-00000001
-    wipe: false
-    grubUseUKICmdline: true
 ---
 apiVersion: v1alpha1
 kind: LinkAliasConfig
@@ -13,18 +10,8 @@ selector:
   match: mac(link.permanent_addr) == "6c:4b:90:55:3e:7d"
 ---
 apiVersion: v1alpha1
-kind: LinkAliasConfig
-name: eth1
-selector:
-  match: mac(link.permanent_addr) == "b4:96:91:73:53:78"
----
-apiVersion: v1alpha1
-kind: BondConfig
-name: bond0
-links:
-  - eth0
-  - eth1
-bondMode: active-backup
+kind: LinkConfig
+name: eth0
 addresses:
   - address: 10.20.0.30/24
 routes:
@@ -33,7 +20,7 @@ routes:
 apiVersion: v1alpha1
 kind: Layer2VIPConfig
 name: 10.20.0.200
-link: bond0
+link: eth0
 ---
 apiVersion: v1alpha1
 kind: HostnameConfig
