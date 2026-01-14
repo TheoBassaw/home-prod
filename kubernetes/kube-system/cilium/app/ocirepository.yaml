@@ -6,6 +6,6 @@ metadata:
   name: cilium
 spec:
   interval: 10m
-  url: oci://ghcr.io/home-operations/charts-mirror/cilium
+  url: oci://quay.io/cilium/charts/cilium
   ref:
     tag: 1.18.5
