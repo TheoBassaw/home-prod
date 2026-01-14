@@ -43,7 +43,7 @@ kind: RawVolumeConfig
 name: piraeus-rust-2
 provisioning:
   diskSelector:
-    match: disk.wwid == "naa.5000c500b698ac1b"
+    match: disk.wwid == "naa.5000c500b217a897"
   grow: true
   minSize: 500GB
 encryption:
@@ -59,23 +59,7 @@ kind: RawVolumeConfig
 name: piraeus-rust-3
 provisioning:
   diskSelector:
-    match: disk.wwid == "naa.5000c500b217a897"
-  grow: true
-  minSize: 500GB
-encryption:
-  provider: luks2
-  keys:
-    - slot: 0
-      tpm:
-        checkSecurebootStatusOnEnroll: true
-      lockToState: true
----
-apiVersion: v1alpha1
-kind: RawVolumeConfig
-name: piraeus-rust-4
-provisioning:
-  diskSelector:
-    match: disk.wwid == "naa.5000c500b6a82f65"
+    match: disk.wwid == "naa.5000c5009e16594b"
   grow: true
   minSize: 500GB
 encryption:
