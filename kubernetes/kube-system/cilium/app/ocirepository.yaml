@@ -8,4 +8,4 @@ spec:
   interval: 10m
   url: oci://quay.io/cilium/charts/cilium
   ref:
-    tag: 1.18.5
+    tag: 1.18.6
