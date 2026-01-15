@@ -6,12 +6,12 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/kube-system/metrics-server
+  path: ./kubernetes/kube-system/metrics-server/app
   prune: true
   retryInterval: 2m
-  wait: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
   timeout: 10m
+  wait: false

@@ -9,9 +9,9 @@ spec:
   path: ./kubernetes/piraeus-datastore/app
   prune: true
   retryInterval: 2m
-  wait: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
   timeout: 10m
+  wait: true

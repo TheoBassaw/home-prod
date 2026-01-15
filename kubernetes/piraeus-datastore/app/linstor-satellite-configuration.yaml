@@ -6,10 +6,10 @@ metadata:
   namespace: piraeus-datastore
 spec:
   internalTLS:
-    tlsHandshakeDaemon: true
     certManager:
       name: linstor-internal-ca
       kind: Issuer
+    tlsHandshakeDaemon: true
   podTemplate:
     spec:
       initContainers:

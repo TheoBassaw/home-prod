@@ -6,11 +6,11 @@ metadata:
   name: piraeus-operator
   namespace: piraeus-datastore
 spec:
-  interval: 1h
   chartRef:
     kind: OCIRepository
     name: piraeus-operator
+  interval: 1h
   values:
     installCRDs: true
-    replicaCount: 3
     leaderElect: true
+    replicaCount: 3

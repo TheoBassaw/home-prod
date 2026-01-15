@@ -6,10 +6,10 @@ metadata:
   name: cilium
   namespace: kube-system
 spec:
-  interval: 1h
   chartRef:
     kind: OCIRepository
     name: cilium
+  interval: 1h
   values:
     routingMode: native
     autoDirectNodeRoutes: true

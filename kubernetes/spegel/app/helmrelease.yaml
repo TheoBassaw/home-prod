@@ -6,12 +6,10 @@ metadata:
   name: spegel
   namespace: spegel
 spec:
-  interval: 1h
   chartRef:
     kind: OCIRepository
     name: spegel
-    namespace: spegel
+  interval: 1h
   values:
     spegel:
       containerdRegistryConfigPath: /etc/cri/conf.d/hosts
-    namespaceOverride: spegel

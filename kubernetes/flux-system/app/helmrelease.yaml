@@ -6,11 +6,11 @@ metadata:
   name: flux-operator
   namespace: flux-system
 spec:
-  interval: 1h
   chartRef:
     kind: OCIRepository
     name: flux-operator
     namespace: flux-system
+  interval: 1h
   values:
     installCRDs: true
 

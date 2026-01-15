@@ -4,8 +4,9 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
   name: cilium
+  namespace: kube-system
 spec:
   interval: 10m
-  url: oci://quay.io/cilium/charts/cilium
   ref:
     tag: 1.18.6
+  url: oci://quay.io/cilium/charts/cilium

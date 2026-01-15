@@ -3,9 +3,9 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: piraeus-operator
+  name: external-secrets
 spec:
   interval: 10m
+  url: oci://ghcr.io/external-secrets/charts/external-secrets
   ref:
-    tag: 2.10.3
-  url: oci://ghcr.io/piraeusdatastore/piraeus-operator/piraeus
+    tag: 1.2.1

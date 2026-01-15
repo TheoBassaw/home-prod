@@ -3,9 +3,10 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: piraeus-operator
+  name: fluent-bit
+  namespace: observability
 spec:
   interval: 10m
   ref:
-    tag: 2.10.3
-  url: oci://ghcr.io/piraeusdatastore/piraeus-operator/piraeus
+    tag: 0.54.1
+  url: oci://ghcr.io/home-operations/charts-mirror/fluent-bit
