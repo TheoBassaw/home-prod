@@ -79,7 +79,6 @@
         talosctl apply-config -i -n {{ item.ip_address }} -f clusterconfig/{{ item.hostname }}.yaml
       changed_when:
         - apply.rc == 0
-        - apply.stderr_lines[0] | regex_search("certificate required") is none
       failed_when:
         - apply.rc == 1
         - apply.stderr_lines[0] | regex_search("certificate required") is none
