@@ -14,6 +14,7 @@
         chart_version: "{{ lookup('file', 'apps/' + item.namespace + '/' + item.name + '/app/ocirepository.yaml') | from_yaml | json_query('spec.ref.tag') }}"
         values: "{{ lookup('file', 'apps/' + item.namespace + '/' + item.name + '/app/helmrelease.yaml') | from_yaml | json_query('spec.values') }}"
         create_namespace: true
+        wait: true
       loop:
         - name: cilium
           namespace: kube-system
