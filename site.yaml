@@ -1,0 +1,5 @@
+- name: Talos Bootstrap
+  ansible.builtin.import_playbook: talos/talos-playbook.yaml
+
+- name: Kubernetes Bootstrap
+  ansible.builtin.import_playbook: kubernetes/k8s-playbook.yaml

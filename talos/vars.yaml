@@ -1,0 +1,27 @@
+cluster_name: home-k8s
+endpoint: https://10.20.0.200:6443
+talos_version: v1.12.0
+nodes:
+  - hostname: talos-control-1.home.paradisenetworkz.com
+    ip_address: 10.20.0.12
+    type: controlplane
+  - hostname: talos-control-2.home.paradisenetworkz.com
+    ip_address: 10.20.0.30
+    type: controlplane
+  - hostname: talos-control-3.home.paradisenetworkz.com
+    ip_address: 10.20.0.15
+    type: controlplane
+  - hostname: talos-worker-1.home.paradisenetworkz.com
+    ip_address: 10.20.0.42
+    type: worker
+schematic:
+  customization:
+    systemExtensions:
+      officialExtensions:
+        - siderolabs/drbd
+        - siderolabs/i915
+        - siderolabs/intel-ucode
+        - siderolabs/mei
+        - siderolabs/xe
+    secureboot:
+      includeWellKnownCertificates: true

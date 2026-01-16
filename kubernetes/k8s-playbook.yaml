@@ -1,11 +1,12 @@
 ---
-- name: Apply helm charts
+- name: Apply-Helm
   become: false
   hosts: localhost
   tags:
     - helm
+    - bootstrap
   tasks:
-    - name: Apply helm charts
+    - name: Apply-Helm | Apply helm charts
       kubernetes.core.helm:
         name: "{{ item.name }}"
         release_namespace: "{{ item.namespace }}"
@@ -25,13 +26,14 @@
         - name: flux-operator
           namespace: flux-system
 
-- name: Apply flux seed repo
+- name: Apply-Flux
   become: false
   hosts: localhost
   tags:
     - flux
+    - bootstrap
   tasks:
-    - name: Apply flux seed repo
+    - name: Apply-Flux | Apply seed repo
       kubernetes.core.k8s:
         state: present
         wait: true
