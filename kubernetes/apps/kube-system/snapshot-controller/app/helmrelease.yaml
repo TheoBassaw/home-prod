@@ -13,8 +13,8 @@ spec:
   values:
     controller:
       replicaCount: 3
-      #serviceMonitor:
-      #  create: true
+      serviceMonitor:
+        create: false
     webhook:
       replicaCount: 3
 
