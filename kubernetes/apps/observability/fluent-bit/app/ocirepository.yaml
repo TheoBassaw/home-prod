@@ -6,7 +6,7 @@ metadata:
   name: fluent-bit
   namespace: observability
 spec:
-  interval: 10m
+  interval: 15m
   ref:
     tag: 0.54.1
   url: oci://ghcr.io/home-operations/charts-mirror/fluent-bit
