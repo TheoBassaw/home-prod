@@ -1,0 +1,44 @@
+---
+apiVersion: piraeus.io/v1
+kind: LinstorCluster
+metadata:
+  name: linstor-cluster
+  namespace: storage
+spec:
+  affinityController:
+    enabled: true
+    replicas: 3
+  apiTLS:
+    certManager:
+      name: linstor-api-ca
+      kind: Issuer
+  csiController:
+    enabled: true
+    replicas: 3
+  highAvailabilityController:
+    enabled: true
+  internalTLS:
+    certManager:
+      name: linstor-internal-ca
+      kind: Issuer
+  properties:
+    - name: DrbdOptions/Net/protocol
+      value: C
+    - name: DrbdOptions/Net/tls
+      value: "yes"
+    - name: DrbdOptions/Net/max-buffers
+      value: "36864"
+    - name: DrbdOptions/Net/rcvbuf-size
+      value: "10485760"
+    - name: DrbdOptions/Net/sndbuf-size
+      value: "10485760"
+    - name: DrbdOptions/PeerDevice/c-fill-target
+      value: "2048"
+    - name: DrbdOptions/PeerDevice/c-max-rate
+      value: "976563"
+    - name: DrbdOptions/PeerDevice/c-min-rate
+      value: "325521"
+    - name: DrbdOptions/PeerDevice/resync-rate
+      value: "325521"
+    - name: DrbdOptions/PeerDevice/c-plan-ahead
+      value: "10"

@@ -19,11 +19,11 @@
         - name: cilium
           namespace: kube-system
         - name: spegel
-          namespace: spegel
+          namespace: kube-system
         - name: cert-manager
-          namespace: cert-manager
+          namespace: security
         - name: piraeus-operator
-          namespace: piraeus-datastore
+          namespace: storage
         - name: flux-operator
           namespace: flux-system
 
