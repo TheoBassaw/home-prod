@@ -18,3 +18,8 @@ spec:
     replicaCount: 3
     networkPolicy:
       enabled: true
+    config:
+      issuer: http://my-issuer-url.com
+      storage:
+        type: memory
+      enablePasswordDB: true
