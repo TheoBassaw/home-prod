@@ -7,7 +7,7 @@ allowVolumeExpansion: true
 parameters:
   linstor.csi.linbit.com/allowRemoteVolumeAccess: "false"
   linstor.csi.linbit.com/placementCount: "1"
-  linstor.csi.linbit.com/storagePool: vg1-thin
+  linstor.csi.linbit.com/storagePool: flash-pool
 provisioner: linstor.csi.linbit.com
 volumeBindingMode: WaitForFirstConsumer
 ---
@@ -19,30 +19,18 @@ allowVolumeExpansion: true
 parameters:
   linstor.csi.linbit.com/allowRemoteVolumeAccess: "false"
   linstor.csi.linbit.com/placementCount: "3"
-  linstor.csi.linbit.com/storagePool: vg1-thin
+  linstor.csi.linbit.com/storagePool: flash-pool
 provisioner: linstor.csi.linbit.com
 volumeBindingMode: WaitForFirstConsumer
 ---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: test-3-flash
-allowVolumeExpansion: true
-parameters:
-  linstor.csi.linbit.com/allowRemoteVolumeAccess: "false"
-  linstor.csi.linbit.com/placementCount: "3"
-  linstor.csi.linbit.com/storagePool: vg1-thin
-provisioner: linstor.csi.linbit.com
-volumeBindingMode: WaitForFirstConsumer
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: test-2-flash
+  name: replica-2-flash
 allowVolumeExpansion: true
 parameters:
   linstor.csi.linbit.com/allowRemoteVolumeAccess: "false"
   linstor.csi.linbit.com/placementCount: "2"
-  linstor.csi.linbit.com/storagePool: vg1-thin
+  linstor.csi.linbit.com/storagePool: flash-pool
 provisioner: linstor.csi.linbit.com
 volumeBindingMode: WaitForFirstConsumer

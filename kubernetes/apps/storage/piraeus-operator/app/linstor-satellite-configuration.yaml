@@ -56,25 +56,3 @@ spec:
       source:
         hostDevices:
           - /dev/disk/by-id/dm-name-luks2-r-piraeus-data-1
----
-apiVersion: piraeus.io/v1
-kind: LinstorSatelliteConfiguration
-metadata:
-  name: linstor-satellite-configuration-rust
-  namespace: storage
-spec:
-  nodeAffinity:
-    nodeSelectorTerms:
-      - matchExpressions:
-          - key: node-role.kubernetes.io/control-plane
-            operator: DoesNotExist
-  storagePools:
-    - name: rust-pool
-      lvmThinPool:
-        volumeGroup: vg2
-        thinPool: thin
-      source:
-        hostDevices:
-          - /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-1
-          - /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-2
-          - /dev/disk/by-id/dm-name-luks2-r-piraeus-rust-3
