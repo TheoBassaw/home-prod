@@ -27,4 +27,6 @@ spec:
     - name: DrbdOptions/Net/tls
       value: "yes"
     - name: DrbdOptions/Net/max-buffers
-      value: "36864"
+      value: "10000"
+    - name: DrbdOptions/PeerDevice/c-max-rate
+      value: "81920"
