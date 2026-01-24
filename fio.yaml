@@ -6,7 +6,7 @@ metadata:
 spec:
   #volumeMode: Filesystem
   volumeMode: Block
-  storageClassName: replica-3-flash
+  storageClassName: replica-2-flash
   #storageClassName: local-path
   accessModes:
     - ReadWriteOnce

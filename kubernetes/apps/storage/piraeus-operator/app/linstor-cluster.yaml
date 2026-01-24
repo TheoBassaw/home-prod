@@ -28,7 +28,3 @@ spec:
       value: "yes"
     - name: DrbdOptions/Net/max-buffers
       value: "36864"
-    - name: DrbdOptions/Net/rcvbuf-size
-      value: "10485760"
-    - name: DrbdOptions/Net/sndbuf-size
-      value: "10485760"
