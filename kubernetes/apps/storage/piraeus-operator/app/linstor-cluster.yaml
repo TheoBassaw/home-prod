@@ -23,7 +23,7 @@ spec:
       kind: Issuer
   properties:
     - name: DrbdOptions/Net/protocol
-      value: C
+      value: B
     - name: DrbdOptions/Net/tls
       value: "yes"
     - name: DrbdOptions/Net/max-buffers
