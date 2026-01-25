@@ -42,5 +42,5 @@
       kubernetes.core.k8s:
         state: present
         wait: true
-        context: "{{ cluster_name }}"
+        context: "admin@{{ cluster_name }}"
         definition: "{{ lookup('file', cluster_name + '/apps/flux-system/flux-operator/app/flux-instance.yaml') | from_yaml }}"
