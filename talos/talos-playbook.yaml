@@ -13,7 +13,7 @@
         body: "{{ schematic | to_yaml }}"
         body_format: raw
         status_code: 201
-      register: schematic
+      register: schematic_result
 
     - name: Gen-Config | Generate .gitignore
       ansible.builtin.lineinfile:
@@ -38,7 +38,7 @@
         executable: /bin/bash
       ansible.builtin.shell: |
         talosctl gen config --force {{ cluster_name }} {{ endpoint }} --talos-version {{ talos_version }} \
-          --install-image factory.talos.dev/metal-installer-secureboot/{{ schematic.json.id }} \
+          --install-image factory.talos.dev/metal-installer-secureboot/{{ schematic_result.json.id }} \
           --with-secrets <(echo '{{ secrets }}') --config-patch @{{ cluster_name }}/all.yaml --output-types {{ item.type }} \
           --config-patch @{{ cluster_name }}/nodes/{{ item.hostname }}.yaml --output {{ cluster_name }}/clusterconfig/{{ item.hostname }}.yaml
 
