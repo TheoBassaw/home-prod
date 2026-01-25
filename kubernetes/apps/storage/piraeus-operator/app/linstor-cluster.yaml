@@ -23,10 +23,10 @@ spec:
       kind: Issuer
   properties:
     - name: DrbdOptions/Net/protocol
-      value: B
+      value: A
     - name: DrbdOptions/Net/tls
       value: "yes"
     - name: DrbdOptions/Net/max-buffers
-      value: "10000"
+      value: "32000"
     - name: DrbdOptions/PeerDevice/c-max-rate
       value: "81920"
