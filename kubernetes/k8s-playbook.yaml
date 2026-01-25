@@ -10,11 +10,15 @@
       kubernetes.core.helm:
         name: "{{ item.name }}"
         release_namespace: "{{ item.namespace }}"
-        chart_ref: "{{ lookup('file', 'apps/' + item.namespace + '/' + item.name + '/app/ocirepository.yaml') | from_yaml | json_query('spec.url') }}"
-        chart_version: "{{ lookup('file', 'apps/' + item.namespace + '/' + item.name + '/app/ocirepository.yaml') | from_yaml | json_query('spec.ref.tag') }}"
-        values: "{{ lookup('file', 'apps/' + item.namespace + '/' + item.name + '/app/helmrelease.yaml') | from_yaml | json_query('spec.values') }}"
+        chart_ref: |
+          "{{ lookup('file', cluster_name + 'apps/' + item.namespace + '/' + item.name + '/app/ocirepository.yaml') | from_yaml | json_query('spec.url') }}"
+        chart_version: |
+          "{{ lookup('file', cluster_name + 'apps/' + item.namespace + '/' + item.name + '/app/ocirepository.yaml') | from_yaml | json_query('spec.ref.tag') }}"
+        values: |
+          "{{ lookup('file', cluster_name + 'apps/' + item.namespace + '/' + item.name + '/app/helmrelease.yaml') | from_yaml | json_query('spec.values') }}"
         create_namespace: true
         wait: true
+        context: "{{ cluster_name }}"
       loop:
         - name: cilium
           namespace: kube-system
@@ -23,7 +27,7 @@
         - name: cert-manager
           namespace: security
         - name: piraeus-operator
-          namespace: storage
+          namespace: piraeus-datastore
         - name: flux-operator
           namespace: flux-system
 
@@ -34,8 +38,9 @@
     - flux
     - bootstrap
   tasks:
-    - name: Apply-Flux | Apply seed repo
+    - name: Apply-Flux | Apply flux-instance
       kubernetes.core.k8s:
         state: present
         wait: true
-        definition: "{{ lookup('file', 'flux.yaml') | from_yaml }}"
+        context: "{{ cluster_name }}"
+        definition: "{{ lookup('file', cluster_name + '/apps/flux-system/flux-operator/app/flux-instance.yaml') | from_yaml }}"
