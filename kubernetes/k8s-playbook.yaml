@@ -11,11 +11,11 @@
         name: "{{ item.name }}"
         release_namespace: "{{ item.namespace }}"
         chart_ref: |
-          "{{ lookup('file', cluster_name + 'apps/' + item.namespace + '/' + item.name + '/app/ocirepository.yaml') | from_yaml | json_query('spec.url') }}"
+          {{ lookup('file', cluster_name + '/apps/' + item.namespace + '/' + item.name + '/app/ocirepository.yaml') | from_yaml | json_query('spec.url') }}
         chart_version: |
-          "{{ lookup('file', cluster_name + 'apps/' + item.namespace + '/' + item.name + '/app/ocirepository.yaml') | from_yaml | json_query('spec.ref.tag') }}"
+          {{ lookup('file', cluster_name + '/apps/' + item.namespace + '/' + item.name + '/app/ocirepository.yaml') | from_yaml | json_query('spec.ref.tag') }}
         values: |
-          "{{ lookup('file', cluster_name + 'apps/' + item.namespace + '/' + item.name + '/app/helmrelease.yaml') | from_yaml | json_query('spec.values') }}"
+          {{ lookup('file', cluster_name + '/apps/' + item.namespace + '/' + item.name + '/app/helmrelease.yaml') | from_yaml | json_query('spec.values') }}
         create_namespace: true
         wait: true
         context: "{{ cluster_name }}"
