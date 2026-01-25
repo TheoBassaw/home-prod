@@ -18,7 +18,7 @@
           {{ lookup('file', cluster_name + '/apps/' + item.namespace + '/' + item.name + '/app/helmrelease.yaml') | from_yaml | json_query('spec.values') }}
         create_namespace: true
         wait: true
-        context: "{{ cluster_name }}"
+        context: "admin@{{ cluster_name }}"
       loop:
         - name: cilium
           namespace: kube-system
