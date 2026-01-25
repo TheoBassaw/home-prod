@@ -11,9 +11,9 @@ nodes:
   - hostname: talos-control-3.home.paradisenetworkz.com
     ip_address: 10.20.0.15
     type: controlplane
-  - hostname: talos-worker-1.home.paradisenetworkz.com
-    ip_address: 10.20.0.42
-    type: worker
+#  - hostname: talos-worker-1.home.paradisenetworkz.com
+#    ip_address: 10.20.0.42
+#    type: worker
 schematic:
   customization:
     systemExtensions:
