@@ -1,5 +1,8 @@
-- name: Talos Bootstrap
-  ansible.builtin.import_playbook: talos/talos-playbook.yaml
-
-- name: Kubernetes Bootstrap
-  ansible.builtin.import_playbook: kubernetes/k8s-playbook.yaml
+- name: CLuster Bootstrap (home-k8s)
+  hosts: localhost
+  vars_files:
+    - vars/home-k8s.yaml
+  roles:
+    - talos-gen-config
+    - talos-bootstrap
+    - kubernetes-bootstrap

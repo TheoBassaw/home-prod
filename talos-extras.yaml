@@ -1,0 +1,12 @@
+- name: Talos Apply Configs
+  become: false
+  hosts: localhost
+  tags:
+    - apply-config
+  tasks:
+    - name: Apply-Config | Apply cluster configs
+      ansible.builtin.command: |
+        talosctl apply-config --talosconfig=talos/{{ cluster_name }}/clusterconfig/talosconfig -n {{ item.ip_address }}
+          -f talos/{{ cluster_name }}/clusterconfig/{{ item.hostname }}.yaml
+      changed_when: false
+      loop: "{{ nodes }}"

@@ -1,0 +1,34 @@
+- name: Apply-Helm | Apply helm charts
+  kubernetes.core.helm:
+    name: "{{ item.name }}"
+    release_namespace: "{{ item.namespace }}"
+    chart_ref: |
+      {{ lookup('file', 'kubernetes/' + cluster_name + '/apps/' + item.namespace + '/' + item.name + '/app/ocirepository.yaml')
+        | from_yaml | json_query('spec.url') }}
+    chart_version: |
+      {{ lookup('file', 'kubernetes/' + cluster_name + '/apps/' + item.namespace + '/' + item.name + '/app/ocirepository.yaml')
+        | from_yaml | json_query('spec.ref.tag') }}
+    values: |
+      {{ lookup('file', 'kubernetes/' + cluster_name + '/apps/' + item.namespace + '/' + item.name + '/app/helmrelease.yaml')
+        | from_yaml | json_query('spec.values') }}
+    create_namespace: true
+    wait: true
+    context: "admin@{{ cluster_name }}"
+  loop:
+    - name: cilium
+      namespace: kube-system
+    - name: spegel
+      namespace: kube-system
+    - name: cert-manager
+      namespace: security
+    - name: piraeus-operator
+      namespace: piraeus-datastore
+    - name: flux-operator
+      namespace: flux-system
+
+- name: Apply-Flux | Apply flux-instance
+  kubernetes.core.k8s:
+    state: present
+    wait: true
+    context: "admin@{{ cluster_name }}"
+    definition: "{{ lookup('file', 'kubernetes/' + cluster_name + '/apps/flux-system/flux-operator/app/flux-instance.yaml') | from_yaml }}"
