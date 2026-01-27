@@ -1,7 +1,7 @@
 - name: Bootstrap | Apply cluster configs (insecure)
   register: apply
   ansible.builtin.command: |
-    talosctl apply-config -i -n {{ item.ip_address }} -f {{ cluster_name }}/clusterconfig/{{ item.hostname }}.yaml
+    talosctl apply-config -i -n {{ item.ip_address }} -f talos/{{ cluster_name }}/clusterconfig/{{ item.hostname }}.yaml
   changed_when:
     - apply.rc == 0
   failed_when:
@@ -14,7 +14,7 @@
   delay: 30
   retries: 30
   register: bootstrap
-  ansible.builtin.command: talosctl bootstrap --talosconfig={{ cluster_name }}/clusterconfig/talosconfig --nodes={{ nodes.0.ip_address }}
+  ansible.builtin.command: talosctl bootstrap --talosconfig=talos/{{ cluster_name }}/clusterconfig/talosconfig --nodes={{ nodes.0.ip_address }}
   changed_when:
     - bootstrap.rc == 0
     - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") is none
@@ -23,5 +23,5 @@
     - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") is none
 
 - name: Bootstrap | Get kubeconfig
-  ansible.builtin.command: talosctl kubeconfig --force --talosconfig={{ cluster_name }}/clusterconfig/talosconfig --nodes={{ nodes.0.ip_address }}
+  ansible.builtin.command: talosctl kubeconfig --force --talosconfig=talos/{{ cluster_name }}/clusterconfig/talosconfig --nodes={{ nodes.0.ip_address }}
   changed_when: false
