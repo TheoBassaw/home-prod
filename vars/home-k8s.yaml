@@ -11,4 +11,3 @@ nodes:
   - hostname: talos-control-3.home.paradisenetworkz.com
     ip_address: 10.20.0.15
     type: controlplane
-

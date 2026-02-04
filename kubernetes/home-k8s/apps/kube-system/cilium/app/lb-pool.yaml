@@ -1,0 +1,9 @@
+---
+apiVersion: "cilium.io/v2"
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: "blue-pool"
+spec:
+  blocks:
+    - start: 10.20.0.210
+      stop: 10.20.0.239
