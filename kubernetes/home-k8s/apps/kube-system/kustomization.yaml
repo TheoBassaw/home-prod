@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: kube-system
 resources:
   - ./cilium/ks.yaml
+  - ./gateway-api/ks.yaml
   - ./spegel/ks.yaml
   - ./descheduler/ks.yaml
   - ./snapshot-controller/ks.yaml
