@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tetragon
+  namespace: kube-system
+spec:
+  chart:
+    spec:
+      chart: tetragon
+      version: 1.6.0
+      sourceRef:
+        kind: HelmRepository
+        name: cilium
+  interval: 1h
+  values:
+    tetragonOperator:
+      replicas: 3
