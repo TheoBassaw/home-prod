@@ -11,6 +11,7 @@ spec:
     name: cilium
   interval: 1h
   values:
+    rollOutCiliumPods: true
     routingMode: native
     autoDirectNodeRoutes: true
     ipv4NativeRoutingCIDR: 10.0.0.0/8
@@ -18,18 +19,32 @@ spec:
     k8sServiceHost: 127.0.0.1
     k8sServicePort: 7445
     enableIPv4BIGTCP: true
+    bpfClockProbe: true
+    bandwidthManager:
+      enabled: true
+      bbr: true
+    socketLB:
+      enabled: true
+    endpointRoutes:
+      enabled: true
+    envoy:
+      enabled: false
+    pmtuDiscovery:
+      enabled: true
     ipam:
       mode: kubernetes
     bpf:
       datapathMode: netkit
       masquerade: true
+      preallocateMaps: true
+      distributedLRU:
+        enabled: true
+      mapDynamicSizeRatio: 0.08
     loadBalancer:
       acceleration: best-effort
       algorithm: maglev
       mode: dsr
     l7Proxy: true
-    gatewayAPI:
-      enabled: true
     l2announcements:
       enabled: true
     k8sClientRateLimit:
@@ -39,11 +54,14 @@ spec:
       relay:
         enabled: true
         replicas: 3
+        rollOutPods: true
       ui:
         enabled: true
         replicas: 3
+        rollOutPods: true
     operator:
       replicas: 3
+      rollOutPods: true
     securityContext:
       capabilities:
         ciliumAgent: [CHOWN, KILL, NET_ADMIN, NET_RAW, IPC_LOCK, SYS_ADMIN, SYS_RESOURCE, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
