@@ -23,6 +23,8 @@
       namespace: security
     - name: piraeus-operator
       namespace: piraeus-datastore
+    - name: envoy-gateway
+      namespace: network
     - name: flux-operator
       namespace: flux-system
 

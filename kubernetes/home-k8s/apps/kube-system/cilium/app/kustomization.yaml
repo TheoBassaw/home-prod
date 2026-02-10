@@ -5,3 +5,5 @@ namespace: kube-system
 resources:
   - ./ocirepository.yaml
   - ./helmrelease.yaml
+  - ./cilium-l2.yaml
+  - ./lb-pool.yaml
