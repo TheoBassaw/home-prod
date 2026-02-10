@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: envoy-gateway
+  namespace: network
+spec:
+  interval: 15m
+  ref:
+    tag: v1.6.2
+  url: oci://mirror.gcr.io/envoyproxy/gateway-helm

@@ -26,13 +26,6 @@
     - name: flux-operator
       namespace: flux-system
 
-- name: Apply-Manifest | Apply gateway-api crds
-  kubernetes.core.k8s:
-    state: present
-    wait: true
-    context: "admin@{{ cluster_name }}"
-    definition: "{{ lookup('file', 'kubernetes/' + cluster_name + '/apps/kube-system/gateway-api/app/flux-instance.yaml') | from_yaml }}"
-
 - name: Apply-Flux | Apply flux-instance
   kubernetes.core.k8s:
     state: present
