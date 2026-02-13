@@ -1,0 +1,7 @@
+clusterName: home-k8s-nas
+clusterEndpoint: https://10.20.0.201:6443
+kubernetesVersion: 1.35.0
+nodes:
+  - host: talos-nas-control-1.home.paradisenetworkz.com
+    ip: 10.20.0.42
+    role: control-plane

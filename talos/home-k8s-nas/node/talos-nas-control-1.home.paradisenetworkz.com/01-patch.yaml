@@ -18,9 +18,9 @@ routes:
   - gateway: 10.20.0.1
 ---
 apiVersion: v1alpha1
-kind: HostnameConfig
-auto: "off"
-hostname: talos-worker-1.home.paradisenetworkz.com
+kind: Layer2VIPConfig
+name: 10.20.0.201
+link: eth0
 ---
 apiVersion: v1alpha1
 kind: RawVolumeConfig
@@ -34,8 +34,7 @@ encryption:
   provider: luks2
   keys:
     - slot: 0
-      tpm:
-        checkSecurebootStatusOnEnroll: true
+      tpm: {}
 ---
 apiVersion: v1alpha1
 kind: RawVolumeConfig
@@ -49,8 +48,7 @@ encryption:
   provider: luks2
   keys:
     - slot: 0
-      tpm:
-        checkSecurebootStatusOnEnroll: true
+      tpm: {}
 ---
 apiVersion: v1alpha1
 kind: RawVolumeConfig
@@ -64,5 +62,4 @@ encryption:
   provider: luks2
   keys:
     - slot: 0
-      tpm:
-        checkSecurebootStatusOnEnroll: true
+      tpm: {}

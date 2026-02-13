@@ -5,6 +5,7 @@
 - talosctl
 - kubectl
 - helm
+- topf
 
 ### Inspiration & Ideas
 - https://github.com/khuedoan/homelab

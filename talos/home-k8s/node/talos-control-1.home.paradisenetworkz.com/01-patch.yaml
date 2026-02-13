@@ -2,13 +2,6 @@
 machine:
   install:
     disk: /dev/disk/by-id/nvme-nvme.c0a9-323331334536433137344536-4354353030503353534438-00000001
-  features:
-    kubernetesTalosAPIAccess:
-      allowedKubernetesNamespaces:
-        - security-system
-      allowedRoles:
-        - os:admin
-      enabled: true
 ---
 apiVersion: v1alpha1
 kind: LinkAliasConfig
@@ -28,11 +21,6 @@ apiVersion: v1alpha1
 kind: Layer2VIPConfig
 name: 10.20.0.200
 link: eth0
----
-apiVersion: v1alpha1
-kind: HostnameConfig
-auto: "off"
-hostname: talos-control-1.home.paradisenetworkz.com
 ---
 apiVersion: v1alpha1
 kind: RawVolumeConfig

@@ -1,0 +1,14 @@
+---
+machine:
+  features:
+    kubernetesTalosAPIAccess:
+      allowedKubernetesNamespaces:
+        - security-system
+      allowedRoles:
+        - os:admin
+      enabled: true
+cluster:
+  apiServer:
+    certSANs:
+      - kube-api-nas.home.paradisenetworkz.com
+  allowSchedulingOnControlPlanes: true

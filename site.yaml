@@ -1,8 +1,7 @@
-- name: CLuster Bootstrap (home-k8s)
+- name: Cluster Bootstrap (home-k8s)
   hosts: localhost
-  vars_files:
-    - vars/home-k8s.yaml
+  vars:
+    cluster_name: home-k8s
   roles:
-    - talos-gen-config
     - talos-bootstrap
-    - kubernetes-bootstrap
+    # - kubernetes-bootstrap

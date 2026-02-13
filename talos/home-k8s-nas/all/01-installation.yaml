@@ -28,10 +28,6 @@ cluster:
       - 10.30.0.0/16
     serviceSubnets:
       - 10.96.0.0/12
-  apiServer:
-    certSANs:
-      - kube-api.home.paradisenetworkz.com
-  allowSchedulingOnControlPlanes: true
 ---
 apiVersion: v1alpha1
 kind: VolumeConfig

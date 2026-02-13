@@ -2,3 +2,5 @@
 .venv
 .ansible
 .DS_Store
+talosconfig
+kubeconfig

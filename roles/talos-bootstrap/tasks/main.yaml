@@ -1,27 +1,35 @@
-- name: Bootstrap | Apply cluster configs (insecure)
-  register: apply
-  ansible.builtin.command: |
-    talosctl apply-config -i -n {{ item.ip_address }} -f talos/{{ cluster_name }}/clusterconfig/{{ item.hostname }}.yaml
-  changed_when:
-    - apply.rc == 0
-  failed_when:
-    - apply.rc == 1
-    - apply.stderr_lines[0] | regex_search("certificate required") is none
-  loop: "{{ nodes }}"
+- name: Bootstrap | Generate & Store Talosconfig
+  block:
+    - name: Bootstrap | Generate Talosconfig
+      ansible.builtin.command: topf talosconfig
+      args:
+        chdir: "talos/{{ cluster_name }}"
+      changed_when: false
+      register: talosconfig
 
-- name: Bootstrap | Bootstrap talos controlplane
-  until: bootstrap is success
-  delay: 30
-  retries: 30
-  register: bootstrap
-  ansible.builtin.command: talosctl bootstrap --talosconfig=talos/{{ cluster_name }}/clusterconfig/talosconfig --nodes={{ nodes.0.ip_address }}
-  changed_when:
-    - bootstrap.rc == 0
-    - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") is none
-  failed_when:
-    - bootstrap.rc == 1
-    - bootstrap.stderr_lines[1] | regex_search("AlreadyExists") is none
+    - name: Bootstrap | Store Talosconfig
+      ansible.builtin.copy:
+        content: "{{ talosconfig.stdout }}"
+        dest: "talos/{{ cluster_name }}/talosconfig"
+        mode: "0644"
 
-- name: Bootstrap | Get kubeconfig
-  ansible.builtin.command: talosctl kubeconfig --force --talosconfig=talos/{{ cluster_name }}/clusterconfig/talosconfig --nodes={{ nodes.0.ip_address }}
+- name: Bootstrap | Apply Cluster Configs
+  ansible.builtin.command: topf apply --confirm=false --auto-bootstrap=true --allow-not-ready=true
+  args:
+    chdir: "talos/{{ cluster_name }}"
   changed_when: false
+
+- name: Bootstrap | Generate & Store Kubeconfig
+  block:
+    - name: Bootstrap | Generate Kubeconfig
+      ansible.builtin.command: topf kubeconfig --validity=8760h
+      args:
+        chdir: "talos/{{ cluster_name }}"
+      changed_when: false
+      register: kubeconfig
+
+    - name: Bootstrap | Store Kubeconfig
+      ansible.builtin.copy:
+        content: "{{ kubeconfig.stdout }}"
+        dest: "talos/{{ cluster_name }}/kubeconfig"
+        mode: "0644"
