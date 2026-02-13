@@ -1,0 +1,46 @@
+---
+apiVersion: piraeus.io/v1
+kind: LinstorSatelliteConfiguration
+metadata:
+  name: linstor-satellite-configuration
+  namespace: storage-system
+spec:
+  internalTLS:
+    certManager:
+      name: linstor-internal-ca
+      kind: Issuer
+    tlsHandshakeDaemon: true
+  storagePools:
+    - name: vg1-thin
+      lvmThinPool:
+        volumeGroup: vg1
+        thinPool: thin
+      source:
+        hostDevices:
+          - /dev/disk/by-id/dm-name-luks2-r-piraeus-data-1
+  podTemplate:
+    spec:
+      initContainers:
+        - name: drbd-shutdown-guard
+          $patch: delete
+        - name: drbd-module-loader
+          $patch: delete
+      volumes:
+        - name: run-systemd-system
+          $patch: delete
+        - name: run-drbd-shutdown-guard
+          $patch: delete
+        - name: systemd-bus-socket
+          $patch: delete
+        - name: lib-modules
+          $patch: delete
+        - name: usr-src
+          $patch: delete
+        - name: etc-lvm-backup
+          hostPath:
+            path: /var/etc/lvm/backup
+            type: DirectoryOrCreate
+        - name: etc-lvm-archive
+          hostPath:
+            path: /var/etc/lvm/archive
+            type: DirectoryOrCreate

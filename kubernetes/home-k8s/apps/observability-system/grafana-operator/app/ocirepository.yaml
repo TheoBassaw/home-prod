@@ -1,0 +1,12 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: grafana-operator
+  namespace: observability-system
+spec:
+  interval: 15m
+  ref:
+    tag: 5.21.4
+  url: oci://ghcr.io/grafana/helm-charts/grafana-operator

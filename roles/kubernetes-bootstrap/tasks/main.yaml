@@ -17,14 +17,16 @@
   loop:
     - name: cilium
       namespace: kube-system
-    - name: spegel
-      namespace: kube-system
     - name: cert-manager
-      namespace: security
+      namespace: network-system
     - name: piraeus-operator
-      namespace: piraeus-datastore
+      namespace: storage-system
     - name: envoy-gateway
-      namespace: network
+      namespace: network-system
+    - name: grafana-operator
+      namespace: observability-system
+    - name: victoria-metrics-k8s-stack
+      namespace: observability-system
     - name: flux-operator
       namespace: flux-system
 
