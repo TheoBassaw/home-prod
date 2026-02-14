@@ -7,7 +7,6 @@ resources:
   - ./cilium/ks.yaml
   - ./spegel/ks.yaml
   - ./descheduler/ks.yaml
-  - ./snapshot-controller/ks.yaml
   - ./intel-gpu-resource-driver/ks.yaml
   - ./metrics-server/ks.yaml
   - ./reloader/ks.yaml

@@ -62,10 +62,10 @@
       namespace: observability-system
       disable_hook: true
       wait: false
-    - name: grafana-operator
-      namespace: observability-system
-      disable_hook: true
-      wait: false
+    # - name: grafana-operator
+    #   namespace: observability-system
+    #   disable_hook: true
+    #   wait: false
     - name: cilium
       namespace: kube-system
     - name: cert-manager
