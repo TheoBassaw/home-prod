@@ -23,6 +23,11 @@ name: 10.20.0.200
 link: eth0
 ---
 apiVersion: v1alpha1
+kind: HostnameConfig
+auto: "off"
+hostname: talos-control-1.home.paradisenetworkz.com
+---
+apiVersion: v1alpha1
 kind: RawVolumeConfig
 name: piraeus-data-1
 provisioning:

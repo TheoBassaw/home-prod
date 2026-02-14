@@ -3,16 +3,16 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: volsync
+  name: volsync-helm
   namespace: storage-system
 spec:
   dependsOn:
-    - name: piraeus-operator
+    - name: piraeus-operator-app
       namespace: storage-system
-    - name: snapshot-controller
+    - name: snapshot-controller-helm
       namespace: storage-system
   interval: 1h
-  path: ./kubernetes/home-k8s/apps/storage-system/volsync/app
+  path: ./kubernetes/home-k8s/apps/storage-system/volsync/helm
   prune: true
   sourceRef:
     kind: GitRepository

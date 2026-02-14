@@ -3,5 +3,4 @@
   vars:
     cluster_name: home-k8s
   roles:
-    - talos-bootstrap
-    # - kubernetes-bootstrap
+    - cluster-bootstrap

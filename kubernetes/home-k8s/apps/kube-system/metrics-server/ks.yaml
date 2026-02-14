@@ -2,11 +2,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: metrics-server
+  name: metrics-server-helm
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/home-k8s/apps/kube-system/metrics-server/app
+  path: ./kubernetes/home-k8s/apps/kube-system/metrics-server/helm
   prune: true
   sourceRef:
     kind: GitRepository

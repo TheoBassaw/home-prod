@@ -1,0 +1,72 @@
+- name: Bootstrap | Generate & Store Talosconfig
+  block:
+    - name: Bootstrap | Generate Talosconfig
+      ansible.builtin.command: topf talosconfig
+      args:
+        chdir: "talos/{{ cluster_name }}"
+      changed_when: false
+      register: talosconfig
+
+    - name: Bootstrap | Store Talosconfig
+      ansible.builtin.copy:
+        content: "{{ talosconfig.stdout }}"
+        dest: "talos/{{ cluster_name }}/talosconfig"
+        mode: "0644"
+
+- name: Bootstrap | Apply Cluster Configs
+  ansible.builtin.command: topf apply --confirm=false --auto-bootstrap=true --allow-not-ready=true
+  args:
+    chdir: "talos/{{ cluster_name }}"
+  changed_when: false
+
+- name: Bootstrap | Generate & Store Kubeconfig
+  block:
+    - name: Bootstrap | Generate Kubeconfig
+      ansible.builtin.command: topf kubeconfig --validity=8760h
+      args:
+        chdir: "talos/{{ cluster_name }}"
+      changed_when: false
+      register: kubeconfig
+
+    - name: Bootstrap | Store Kubeconfig
+      ansible.builtin.copy:
+        content: "{{ kubeconfig.stdout }}"
+        dest: "talos/{{ cluster_name }}/kubeconfig"
+        mode: "0644"
+
+- name: Apply-Helm | Apply helm charts
+  kubernetes.core.helm:
+    name: "{{ item.name }}"
+    release_namespace: "{{ item.namespace }}"
+    chart_ref: |
+      {{ lookup('file', 'kubernetes/' + cluster_name + '/apps/' + item.namespace + '/' + item.name + '/helm/ocirepository.yaml')
+        | from_yaml | json_query('spec.url') }}
+    chart_version: |
+      {{ lookup('file', 'kubernetes/' + cluster_name + '/apps/' + item.namespace + '/' + item.name + '/helm/ocirepository.yaml')
+        | from_yaml | json_query('spec.ref.tag') }}
+    values: |
+      {{ lookup('file', 'kubernetes/' + cluster_name + '/apps/' + item.namespace + '/' + item.name + '/helm/helmrelease.yaml')
+        | from_yaml | json_query('spec.values') }}
+    create_namespace: true
+    wait: true
+    kubeconfig_path: "talos/{{ cluster_name }}/kubeconfig"
+  loop:
+    - name: envoy-gateway
+      namespace: network-system
+    - name: grafana-operator
+      namespace: observability-system
+    - name: victoria-metrics-k8s-stack
+      namespace: observability-system
+    - name: cilium
+      namespace: kube-system
+    - name: cert-manager
+      namespace: network-system
+    - name: flux-operator
+      namespace: flux-system
+
+- name: Apply-Flux | Apply flux-instance
+  kubernetes.core.k8s:
+    state: present
+    wait: true
+    kubeconfig: "{{ lookup('file', 'talos/' + cluster_name + '/kubeconfig') | from_yaml }}"
+    definition: "{{ lookup('file', 'kubernetes/' + cluster_name + '/apps/flux-system/flux-operator/app/flux-instance.yaml') | from_yaml }}"

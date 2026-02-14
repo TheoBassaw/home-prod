@@ -3,14 +3,14 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: victoria-metrics-k8s-stack
+  name: victoria-metrics-k8s-stack-helm
   namespace: observability-system
 spec:
   dependsOn:
-    - name: piraeus-operator
+    - name: piraeus-operator-app
       namespace: storage-system
   interval: 1h
-  path: ./kubernetes/home-k8s/apps/observability-system/victoria-metrics-k8s-stack/app
+  path: ./kubernetes/home-k8s/apps/observability-system/victoria-metrics-k8s-stack/helm
   prune: true
   sourceRef:
     kind: GitRepository
