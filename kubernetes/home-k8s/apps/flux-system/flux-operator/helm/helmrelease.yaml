@@ -13,4 +13,12 @@ spec:
   interval: 1h
   values:
     installCRDs: true
-
+    web:
+      serverReplicas: 3
+      # httpRoute:
+      #   enabled: false
+      #   annotations: {}
+      #   parentRefs: []
+      #   hostnames: []
+      serviceMonitor:
+        create: true
