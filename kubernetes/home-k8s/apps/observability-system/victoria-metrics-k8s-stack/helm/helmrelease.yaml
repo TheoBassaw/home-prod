@@ -13,3 +13,5 @@ spec:
   values:
     grafana:
       enabled: false
+    victoria-metrics-operator:
+      createCRD: true

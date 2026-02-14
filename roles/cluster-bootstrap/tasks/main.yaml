@@ -34,7 +34,7 @@
         dest: "talos/{{ cluster_name }}/kubeconfig"
         mode: "0644"
 
-- name: Apply-Helm | Apply helm charts
+- name: Apply-Helm | Apply Helm Charts
   kubernetes.core.helm:
     name: "{{ item.name }}"
     release_namespace: "{{ item.namespace }}"
@@ -48,21 +48,26 @@
       {{ lookup('file', 'kubernetes/' + cluster_name + '/apps/' + item.namespace + '/' + item.name + '/helm/helmrelease.yaml')
         | from_yaml | json_query('spec.values') }}
     create_namespace: true
-    wait: true
+    disable_hook: "{{ item.disable_hook | default(false) }}"
+    wait: "{{ item.wait | default(true) }}"
     kubeconfig_path: "talos/{{ cluster_name }}/kubeconfig"
-  retries: 30
-  delay: 10
   loop:
+    - name: envoy-gateway
+      namespace: network-system
+      disable_hook: true
+      wait: false
+    - name: victoria-metrics-k8s-stack
+      namespace: observability-system
+      disable_hook: true
+      wait: false
+    - name: grafana-operator
+      namespace: observability-system
+      disable_hook: true
+      wait: false
     - name: cilium
       namespace: kube-system
     - name: cert-manager
       namespace: network-system
-    - name: envoy-gateway
-      namespace: network-system
-    - name: grafana-operator
-      namespace: observability-system
-    - name: victoria-metrics-k8s-stack
-      namespace: observability-system
     - name: flux-operator
       namespace: flux-system
 
