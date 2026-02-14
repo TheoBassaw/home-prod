@@ -1,52 +1,30 @@
-- name: Bootstrap | Generate & Store Talosconfig
-  block:
-    - name: Bootstrap | Generate Talosconfig
-      ansible.builtin.command: topf talosconfig
-      args:
-        chdir: "talos/{{ cluster_name }}"
-      changed_when: false
-      register: talosconfig
-
-    - name: Bootstrap | Store Talosconfig
-      ansible.builtin.copy:
-        content: "{{ talosconfig.stdout }}"
-        dest: "talos/{{ cluster_name }}/talosconfig"
-        mode: "0644"
+- name: Bootstrap | Generate Talosconfig
+  ansible.builtin.shell: topf talosconfig > talosconfig
+  args:
+    chdir: "talos/{{ cluster_name }}"
+    creates: talosconfig
 
 - name: Bootstrap | Apply Cluster Configs
   ansible.builtin.command: topf apply --confirm=false --auto-bootstrap=true --allow-not-ready=true
   args:
     chdir: "talos/{{ cluster_name }}"
-  changed_when: false
+  register: apply_config
+  changed_when:
+    - apply_config.stderr | regex_search("applied machine config") is not none
 
-- name: Bootstrap | Generate & Store Kubeconfig
-  block:
-    - name: Bootstrap | Generate Kubeconfig
-      ansible.builtin.command: topf kubeconfig --validity=8760h
-      args:
-        chdir: "talos/{{ cluster_name }}"
-      changed_when: false
-      register: kubeconfig
-
-    - name: Bootstrap | Store Kubeconfig
-      ansible.builtin.copy:
-        content: "{{ kubeconfig.stdout }}"
-        dest: "talos/{{ cluster_name }}/kubeconfig"
-        mode: "0644"
+- name: Bootstrap | Generate Kubeconfig
+  ansible.builtin.shell: topf kubeconfig --validity=8760h > kubeconfig
+  args:
+    chdir: "talos/{{ cluster_name }}"
+    creates: kubeconfig
 
 - name: Apply-Helm | Apply Helm Charts
   kubernetes.core.helm:
     name: "{{ item.name }}"
     release_namespace: "{{ item.namespace }}"
-    chart_ref: |
-      {{ lookup('file', 'kubernetes/' + cluster_name + '/apps/' + item.namespace + '/' + item.name + '/helm/ocirepository.yaml')
-        | from_yaml | json_query('spec.url') }}
-    chart_version: |
-      {{ lookup('file', 'kubernetes/' + cluster_name + '/apps/' + item.namespace + '/' + item.name + '/helm/ocirepository.yaml')
-        | from_yaml | json_query('spec.ref.tag') }}
-    values: |
-      {{ lookup('file', 'kubernetes/' + cluster_name + '/apps/' + item.namespace + '/' + item.name + '/helm/helmrelease.yaml')
-        | from_yaml | json_query('spec.values') }}
+    chart_ref: "{{ lookup('file', 'kubernetes/' + cluster_name + '/apps/' + item.namespace + '/' + item.name + '/helm/ocirepository.yaml') | from_yaml | json_query('spec.url') }}"
+    chart_version: "{{ lookup('file', 'kubernetes/' + cluster_name + '/apps/' + item.namespace + '/' + item.name + '/helm/ocirepository.yaml') | from_yaml | json_query('spec.ref.tag') }}"
+    values: "{{ lookup('file', 'kubernetes/' + cluster_name + '/apps/' + item.namespace + '/' + item.name + '/helm/helmrelease.yaml') | from_yaml | json_query('spec.values') }}"
     create_namespace: true
     disable_hook: "{{ item.disable_hook | default(false) }}"
     wait: "{{ item.wait | default(true) }}"
@@ -54,6 +32,10 @@
   retries: 30
   delay: 10
   loop:
+    - name: prometheus-operator-crds
+      namespace: observability-system
+      disable_hook: true
+      wait: false
     - name: envoy-gateway
       namespace: network-system
       disable_hook: true
@@ -73,7 +55,7 @@
     - name: flux-operator
       namespace: flux-system
 
-- name: Apply-Flux | Apply flux-instance
+- name: Apply-Flux | Apply FluxInstance
   kubernetes.core.k8s:
     state: present
     wait: true

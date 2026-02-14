@@ -10,3 +10,4 @@ spec:
     kind: OCIRepository
     name: prometheus-operator-crds
   interval: 1h
+  values: {}
