@@ -50,6 +50,8 @@
     create_namespace: true
     wait: true
     kubeconfig_path: "talos/{{ cluster_name }}/kubeconfig"
+  retries: 30
+  delay: 10
   loop:
     - name: envoy-gateway
       namespace: network-system
