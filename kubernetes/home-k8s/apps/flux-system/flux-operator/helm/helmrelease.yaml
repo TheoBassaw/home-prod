@@ -15,10 +15,12 @@ spec:
     installCRDs: true
     web:
       serverReplicas: 3
-      # httpRoute:
-      #   enabled: false
-      #   annotations: {}
-      #   parentRefs: []
-      #   hostnames: []
+      httpRoute:
+        enabled: true
+        parentRefs:
+          - name: envoy
+            namespace: network-system
+        hostnames:
+          - flux-operator.home.paradisenetworkz.com
       serviceMonitor:
         create: true

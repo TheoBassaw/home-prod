@@ -70,3 +70,5 @@ spec:
       autoMount:
         enabled: false
       hostRoot: /sys/fs/cgroup
+    dashboards:
+      enabled: true

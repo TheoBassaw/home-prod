@@ -7,8 +7,8 @@ metadata:
 spec:
   internalTLS:
     certManager:
-      name: linstor-internal-ca
-      kind: Issuer
+      name: mtls-ca-issuer
+      kind: ClusterIssuer
     tlsHandshakeDaemon: true
   storagePools:
     - name: vg1-thin

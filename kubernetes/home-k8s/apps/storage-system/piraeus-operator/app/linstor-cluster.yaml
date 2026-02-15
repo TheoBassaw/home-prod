@@ -10,8 +10,8 @@ spec:
     replicas: 3
   apiTLS:
     certManager:
-      name: linstor-api-ca
-      kind: Issuer
+      name: mtls-ca-issuer
+      kind: ClusterIssuer
   csiController:
     enabled: true
     replicas: 3
@@ -19,8 +19,8 @@ spec:
     enabled: true
   internalTLS:
     certManager:
-      name: linstor-internal-ca
-      kind: Issuer
+      name: mtls-ca-issuer
+      kind: ClusterIssuer
   properties:
     - name: DrbdOptions/Net/protocol
       value: C
