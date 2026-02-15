@@ -17,3 +17,5 @@ spec:
       enabled: false
     vmalert:
       enabled: false
+    vmagent:
+      enabled: false
