@@ -3,4 +3,4 @@
   vars:
     cluster_name: home-k8s
   roles:
-    - cluster-bootstraps
+    - cluster-bootstrap
