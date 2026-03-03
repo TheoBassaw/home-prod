@@ -1,6 +1,4 @@
-- name: Cluster Bootstrap (home-k8s)
+- name: Cluster Bootstrap
   hosts: localhost
-  vars:
-    cluster_name: home-k8s
   roles:
     - cluster-bootstrap
