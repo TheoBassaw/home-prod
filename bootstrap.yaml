@@ -1,0 +1,2 @@
+- name: Cluster bootstrap
+  ansible.builtin.import_playbook: kubernetes/main.yaml
