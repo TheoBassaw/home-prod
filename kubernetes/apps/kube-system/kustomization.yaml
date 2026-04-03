@@ -1,12 +1,90 @@
 ---
-# yaml-language-server: $schema=https://json.schemastore.org/kustomization
-apiVersion: kustomize.config.k8s.io/v1beta1
+apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
-namespace: kube-system
-resources:
-  - ./cilium/ks.yaml
-  - ./spegel/ks.yaml
-  - ./descheduler/ks.yaml
-  - ./intel-gpu-resource-driver/ks.yaml
-  - ./metrics-server/ks.yaml
-  - ./reloader/ks.yaml
+metadata:
+  name: cilium
+  namespace: kube-system
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/kube-system/cilium
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: descheduler
+  namespace: kube-system
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/kube-system/descheduler
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: intel-gpu-resource-driver
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/kube-system/intel-gpu-resource-driver
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: metrics-server
+  namespace: kube-system
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/kube-system/metrics-server
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: reloader
+  namespace: kube-system
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/kube-system/reloader
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: spegel
+  namespace: kube-system
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/kube-system/spegel
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false

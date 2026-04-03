@@ -14,6 +14,18 @@ volumeBindingMode: WaitForFirstConsumer
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
+  name: replica-2-flash
+allowVolumeExpansion: true
+parameters:
+  linstor.csi.linbit.com/allowRemoteVolumeAccess: "false"
+  linstor.csi.linbit.com/placementCount: "2"
+  linstor.csi.linbit.com/storagePool: vg1-thin
+provisioner: linstor.csi.linbit.com
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
   name: replica-3-flash
 allowVolumeExpansion: true
 parameters:

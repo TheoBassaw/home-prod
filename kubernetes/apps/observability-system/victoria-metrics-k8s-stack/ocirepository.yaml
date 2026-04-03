@@ -13,3 +13,15 @@ spec:
   ref:
     tag: 27.0.0
   url: oci://ghcr.io/prometheus-community/charts/prometheus-operator-crds
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: victoria-metrics-k8s-stack
+  namespace: observability-system
+spec:
+  interval: 15m
+  ref:
+    tag: 0.70.0
+  url: oci://ghcr.io/victoriametrics/helm-charts/victoria-metrics-k8s-stack

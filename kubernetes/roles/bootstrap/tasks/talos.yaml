@@ -1,0 +1,34 @@
+- name: Ensure correct machine image config
+  block:
+    - ansible.builtin.uri:
+        url: https://factory.talos.dev/schematics
+        method: POST
+        body: "{{ lookup('ansible.builtin.file', 'talos/schematic.yaml') }}"
+        body_format: raw
+        status_code: 201
+      register: bootstrap_schematic
+
+    - ansible.builtin.template:
+        src: 02-image.yaml.j2
+        dest: talos/all/02-image.yaml
+        mode: '0644'
+
+- name: Ensure talosconfig exists
+  ansible.builtin.shell: "topf talosconfig > {{ playbook_dir }}/talosconfig"
+  args:
+    chdir: talos
+    creates: "{{ playbook_dir }}/talosconfig"
+
+- name: Ensure talos machine configs are applied
+  ansible.builtin.command: topf apply --confirm=false --auto-bootstrap=true --allow-not-ready=true
+  args:
+    chdir: talos
+  register: bootstrap_apply_config
+  changed_when:
+    - bootstrap_apply_config.stderr | regex_search("applied machine config") is not none
+
+- name: Ensure kubeconfig exists
+  ansible.builtin.shell: "topf kubeconfig --validity=8760h > {{ playbook_dir }}/kubeconfig"
+  args:
+    chdir: talos
+    creates: "{{ playbook_dir }}/kubeconfig"

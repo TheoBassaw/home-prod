@@ -1,9 +1,31 @@
 ---
-# yaml-language-server: $schema=https://json.schemastore.org/kustomization
-apiVersion: kustomize.config.k8s.io/v1beta1
+apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
-namespace: network-system
-resources:
-  - ./namespace.yaml
-  - ./cert-manager/ks.yaml
-  - ./envoy-gateway/ks.yaml
+metadata:
+  name: cert-manager
+  namespace: network-system
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/network-system/cert-manager
+  prune: false
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: true
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: envoy-gateway
+  namespace: network-system
+spec:
+  interval: 1h
+  path: ./kubernetes/apps/network-system/envoy-gateway
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: false

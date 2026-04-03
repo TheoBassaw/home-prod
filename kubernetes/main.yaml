@@ -1,4 +1,6 @@
 - name: Cluster Bootstrap
   hosts: localhost
   roles:
-    - cluster-bootstrap
+    - role: bootstrap
+      vars:
+        bootstrap_talos_version: 1.12.6

@@ -1,0 +1,34 @@
+- name: Ensure helm charts are applied
+  kubernetes.core.helm:
+    name: "{{ item.name }}"
+    release_namespace: "{{ item.namespace }}"
+    chart_ref: "{{ lookup('file', 'apps/' + item.namespace + '/' + item.name + '/ocirepository.yaml') | from_yaml | json_query('spec.url') }}"
+    chart_version: "{{ lookup('file', 'apps/' + item.namespace + '/' + item.name + '/ocirepository.yaml') | from_yaml | json_query('spec.ref.tag') }}"
+    values: "{{ lookup('file', 'apps/' + item.namespace + '/' + item.name + '/helmrelease.yaml') | from_yaml | json_query('spec.values') }}"
+    create_namespace: true
+    disable_hook: true
+    kubeconfig_path: kubeconfig
+  retries: 30
+  delay: 10
+  loop:
+    - name: prometheus-operator-crds
+      namespace: observability-system
+    - name: envoy-gateway
+      namespace: network-system
+    - name: victoria-metrics-k8s-stack
+      namespace: observability-system
+    - name: grafana-operator
+      namespace: observability-system
+    - name: cilium
+      namespace: kube-system
+    - name: cert-manager
+      namespace: network-system
+    - name: flux-operator
+      namespace: flux-system
+
+- name: Ensure flux reconciliation
+  kubernetes.core.k8s:
+    state: present
+    wait: true
+    kubeconfig: kubeconfig
+    definition: "{{ lookup('file', 'apps/flux-system/flux-operator/flux-instance.yaml') | from_yaml }}"

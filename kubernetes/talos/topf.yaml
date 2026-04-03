@@ -3,11 +3,11 @@ clusterEndpoint: https://10.20.0.200:6443
 kubernetesVersion: 1.35.0
 nodes:
   - host: talos-control-1.home.paradisenetworkz.com
-    ip: 10.20.0.12
+    ip: 10.20.0.66
     role: control-plane
   - host: talos-control-2.home.paradisenetworkz.com
-    ip: 10.20.0.30
+    ip: 10.20.0.69
     role: control-plane
   - host: talos-control-3.home.paradisenetworkz.com
-    ip: 10.20.0.15
+    ip: 10.20.0.72
     role: control-plane
