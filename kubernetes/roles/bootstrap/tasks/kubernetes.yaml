@@ -28,7 +28,5 @@
 
 - name: Ensure flux reconciliation
   kubernetes.core.k8s:
-    state: present
-    wait: true
     kubeconfig: kubeconfig
     definition: "{{ lookup('file', 'apps/flux-system/flux-operator/flux-instance.yaml') | from_yaml }}"
