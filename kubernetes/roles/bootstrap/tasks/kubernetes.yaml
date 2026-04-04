@@ -19,10 +19,12 @@
       namespace: observability-system
     - name: grafana-operator
       namespace: observability-system
-    - name: cilium
-      namespace: kube-system
     - name: cert-manager
       namespace: network-system
+    - name: piraeus-operator
+      namespace: storage-system
+    - name: cilium
+      namespace: kube-system
     - name: flux-operator
       namespace: flux-system
 
