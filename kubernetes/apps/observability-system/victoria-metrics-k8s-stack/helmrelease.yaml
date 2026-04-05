@@ -16,3 +16,7 @@ spec:
   values:
     grafana:
       enabled: false
+    vmsingle:
+      spec:
+        storage:
+          storageClassName: replica-1-flash
