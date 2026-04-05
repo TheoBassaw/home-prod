@@ -17,7 +17,7 @@
       namespace: observability-system
     - name: victoria-metrics-k8s-stack
       namespace: observability-system
-    - name: gateway-crds
+    - name: envoy-gateway
       namespace: network-system
     - name: cert-manager
       namespace: network-system

@@ -3,16 +3,20 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: gateway-crds
+  name: envoy-gateway
   namespace: network-system
 spec:
   chartRef:
     kind: OCIRepository
-    name: gateway-crds
+    name: envoy-gateway
   interval: 1h
   values:
-    crds:
-      gatewayAPI:
-        channel: standard
-        enabled: true
-
+    global:
+      imageRegistry: mirror.gcr.io
+    config:
+      envoyGateway:
+        provider:
+          type: Kubernetes
+          kubernetes:
+            deploy:
+              type: GatewayNamespace
