@@ -8,5 +8,5 @@ metadata:
 spec:
   interval: 15m
   ref:
-    tag: v0.0.0-latest
-  url: oci://docker.io/envoyproxy/gateway-crds-helm
+    tag: v1.7.1
+  url: oci://registry-1.docker.io/envoyproxy/gateway-crds-helm
