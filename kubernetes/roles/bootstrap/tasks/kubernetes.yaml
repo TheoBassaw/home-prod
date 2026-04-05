@@ -13,12 +13,12 @@
   loop:
     - name: prometheus-operator-crds
       namespace: observability-system
-    - name: envoy-gateway
-      namespace: network-system
-    - name: victoria-metrics-k8s-stack
-      namespace: observability-system
     - name: grafana-operator
       namespace: observability-system
+    - name: victoria-metrics-k8s-stack
+      namespace: observability-system
+    - name: gateway-crds
+      namespace: network-system
     - name: cert-manager
       namespace: network-system
     - name: piraeus-operator

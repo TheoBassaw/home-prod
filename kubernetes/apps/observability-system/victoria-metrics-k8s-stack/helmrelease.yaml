@@ -16,9 +16,3 @@ spec:
   values:
     grafana:
       enabled: false
-    vmsingle:
-      enabled: false
-    vmalert:
-      enabled: false
-    vmagent:
-      enabled: false

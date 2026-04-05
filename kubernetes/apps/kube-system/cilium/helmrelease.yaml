@@ -28,7 +28,7 @@ spec:
     endpointRoutes:
       enabled: true
     envoy:
-      enabled: false
+      enabled: true
     pmtuDiscovery:
       enabled: true
     ipam:
@@ -45,6 +45,8 @@ spec:
       algorithm: maglev
       mode: dsr
     l7Proxy: true
+    gatewayAPI:
+      enabled: true
     l2announcements:
       enabled: true
     k8sClientRateLimit:

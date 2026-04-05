@@ -18,11 +18,11 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: envoy-gateway
+  name: gateway-crds
   namespace: network-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/network-system/envoy-gateway
+  path: ./kubernetes/apps/network-system/gateway-crds
   prune: true
   sourceRef:
     kind: GitRepository

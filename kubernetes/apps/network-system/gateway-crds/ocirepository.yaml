@@ -3,10 +3,10 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: envoy-gateway
+  name: gateway-crds
   namespace: network-system
 spec:
   interval: 15m
   ref:
-    tag: v1.6.2
-  url: oci://mirror.gcr.io/envoyproxy/gateway-helm
+    tag: v0.0.0-latest
+  url: oci://docker.io/envoyproxy/gateway-crds-helm
