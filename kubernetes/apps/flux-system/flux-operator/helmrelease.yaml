@@ -21,6 +21,6 @@ spec:
           - name: envoy
             namespace: network-system
         hostnames:
-          - flux-operator.home.paradisenetworkz.com
+          - flux-operator-home.paradisenetworkz.com
       serviceMonitor:
         create: true
