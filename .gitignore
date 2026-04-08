@@ -4,3 +4,5 @@
 .DS_Store
 talosconfig
 kubeconfig
+
+kubernetes/talos/all/02-image.yaml

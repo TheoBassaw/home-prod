@@ -30,20 +30,15 @@
 
 - name: Ensure secrets are applied
   block:
-    - set_fact:
-        secrets: "{{ lookup('community.sops.sops', 'creds.sops.yaml') | from_yaml }}"
-
-    - kubernetes.core.k8s:
+    - name: Ensure creation of global-secrets namespace
+      kubernetes.core.k8s:
         kubeconfig: kubeconfig
-        definition:
-          apiVersion: v1
-          kind: Secret
-          metadata:
-            name: cloudflare-api-token-secret
-            namespace: network-system
-          type: Opaque
-          stringData:
-            api-token: "{{ secrets.cloudflare_api_token }}"
+        definition: "{{ lookup('file', 'apps/global-secrets/namespace.yaml') | from_yaml }}"
+
+    - name: Ensure secrets are applied
+      kubernetes.core.k8s:
+        kubeconfig: kubeconfig
+        definition: "{{ lookup('community.sops.sops', 'apps/global-secrets/secret.sops.yaml') | from_yaml }}"
 
 - name: Ensure flux reconciliation
   kubernetes.core.k8s:
