@@ -1,1 +1,1 @@
-kubernetes/apps/global-secrets/secret.sops.yaml
+kubernetes/global-secrets/secret.sops.yaml

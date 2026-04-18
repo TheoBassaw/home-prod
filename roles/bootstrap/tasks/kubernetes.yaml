@@ -2,9 +2,9 @@
   kubernetes.core.helm:
     name: "{{ item.name }}"
     release_namespace: "{{ item.namespace }}"
-    chart_ref: "{{ lookup('file', 'apps/' + item.namespace + '/' + item.name + '/ocirepository.yaml') | from_yaml | json_query('spec.url') }}"
-    chart_version: "{{ lookup('file', 'apps/' + item.namespace + '/' + item.name + '/ocirepository.yaml') | from_yaml | json_query('spec.ref.tag') }}"
-    values: "{{ lookup('file', 'apps/' + item.namespace + '/' + item.name + '/helmrelease.yaml') | from_yaml | json_query('spec.values') }}"
+    chart_ref: "{{ lookup('file', 'kubernetes/' + item.namespace + '/' + item.name + '/ocirepository.yaml') | from_yaml | json_query('spec.url') }}"
+    chart_version: "{{ lookup('file', 'kubernetes/' + item.namespace + '/' + item.name + '/ocirepository.yaml') | from_yaml | json_query('spec.ref.tag') }}"
+    values: "{{ lookup('file', 'kubernetes/' + item.namespace + '/' + item.name + '/helmrelease.yaml') | from_yaml | json_query('spec.values') }}"
     create_namespace: true
     disable_hook: true
     kubeconfig_path: kubeconfig
@@ -35,14 +35,14 @@
     - name: Ensure creation of global-secrets namespace
       kubernetes.core.k8s:
         kubeconfig: kubeconfig
-        definition: "{{ lookup('file', 'apps/global-secrets/namespace.yaml') | from_yaml }}"
+        definition: "{{ lookup('file', 'kubernetes/global-secrets/namespace.yaml') | from_yaml }}"
 
     - name: Ensure secrets are applied
       kubernetes.core.k8s:
         kubeconfig: kubeconfig
-        definition: "{{ lookup('community.sops.sops', 'apps/global-secrets/secret.sops.yaml') | from_yaml }}"
+        definition: "{{ lookup('community.sops.sops', 'kubernetes/global-secrets/secret.sops.yaml') | from_yaml }}"
 
 - name: Ensure flux reconciliation
   kubernetes.core.k8s:
     kubeconfig: kubeconfig
-    definition: "{{ lookup('file', 'apps/flux-system/flux-operator/flux-instance.yaml') | from_yaml }}"
+    definition: "{{ lookup('file', 'kubernetes/flux-system/flux-operator/flux-instance.yaml') | from_yaml }}"
