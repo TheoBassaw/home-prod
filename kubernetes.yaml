@@ -1,0 +1,60 @@
+- name: Cluster Bootstrap
+  hosts: localhost
+  tasks:
+    - name: Ensure helm charts are applied
+      kubernetes.core.helm:
+        name: "{{ item.name }}"
+        release_namespace: "{{ item.namespace }}"
+        chart_ref: "{{ lookup('file', 'kubernetes/' + item.namespace + '/' + item.name + '/ocirepository.yaml') | from_yaml | json_query('spec.url') }}"
+        chart_version: "{{ lookup('file', 'kubernetes/' + item.namespace + '/' + item.name + '/ocirepository.yaml') | from_yaml | json_query('spec.ref.tag') }}"
+        values: "{{ lookup('file', 'kubernetes/' + item.namespace + '/' + item.name + '/helmrelease.yaml') | from_yaml | json_query('spec.values') }}"
+        create_namespace: true
+        disable_hook: true
+        kubeconfig_path: kubeconfig
+      retries: 30
+      delay: 10
+      loop:
+        - name: prometheus-operator-crds
+          namespace: observability-system
+        - name: grafana-operator
+          namespace: observability-system
+        - name: victoria-metrics-k8s-stack
+          namespace: observability-system
+        - name: external-secrets
+          namespace: security-system
+        - name: envoy-gateway
+          namespace: network-system
+        - name: cert-manager
+          namespace: network-system
+        - name: piraeus-operator
+          namespace: storage-system
+        - name: cilium
+          namespace: kube-system
+        - name: flux-operator
+          namespace: flux-system
+
+    - name: Ensure creation of global-secrets namespace
+      kubernetes.core.k8s:
+        kubeconfig: kubeconfig
+        definition: "{{ lookup('file', 'kubernetes/global-secrets/namespace.yaml') | from_yaml }}"
+
+    - name: Ensure secrets are applied
+      kubernetes.core.k8s:
+        kubeconfig: kubeconfig
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "{{ item.name }}"
+            namespace: global-secrets
+          type: Opaque
+          stringData: "{{ item.stringData }}"
+      loop:
+        - name: cloudflare-api-token-secret
+          stringData:
+            api-token: "{{ lookup('community.general.bitwarden', 'cloudflare-token-kubernetes', field='password') | first }}"
+
+    - name: Ensure flux reconciliation
+      kubernetes.core.k8s:
+        kubeconfig: kubeconfig
+        definition: "{{ lookup('file', 'kubernetes/flux-system/flux-operator/flux-instance.yaml') | from_yaml }}"

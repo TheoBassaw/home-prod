@@ -1,6 +1,5 @@
 ---
 collections:
   - community.general
-  - community.sops
   - ansible.utils
   - kubernetes.core

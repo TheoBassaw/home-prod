@@ -1,6 +1,5 @@
-- name: Cluster Bootstrap
-  hosts: localhost
-  roles:
-    - role: bootstrap
-      vars:
-        bootstrap_talos_version: 1.12.6
+- name: Run Talos Playbook
+  ansible.builtin.import_playbook: talos.yaml
+
+- name: Run Kubernetes Playbook
+  ansible.builtin.import_playbook: kubernetes.yaml

@@ -1,12 +1,4 @@
 creation_rules:
-  # Kubernetes
-  - path_regex: secret.sops.yaml
-    encrypted_regex: '^(data|stringData)$'
-    key_groups:
-      - age:
-          - age1yvpeenghcvzvun90nzrvxf3jekkev0tdn3rnsd5u0cnphulkavfq2v93qt
-
-  # Everything else
   - age:
       - age1yvpeenghcvzvun90nzrvxf3jekkev0tdn3rnsd5u0cnphulkavfq2v93qt
 
