@@ -3,6 +3,11 @@
   vars:
     bootstrap_talos_version: 1.12.6
   tasks:
+    - name: Retrieve sops credentials
+      ansible.builtin.set_fact:
+        sops_age_key: "{{ lookup('community.general.bitwarden', 'sops-age-talos', field = 'private-key') | first }}"
+        sops_age_recipients: "{{ lookup('community.general.bitwarden', 'sops-age-talos', field = 'public-key') | first }}"
+
     - name: Retrieve schematic id
       ansible.builtin.uri:
         url: https://factory.talos.dev/schematics
@@ -26,6 +31,9 @@
       args:
         chdir: talos
         creates: "{{ playbook_dir }}/talosconfig"
+      environment:
+        SOPS_AGE_KEY: "{{ sops_age_key }}"
+        SOPS_AGE_RECIPIENTS: "{{ sops_age_recipients }}"
 
     - name: Ensure talos machine configs are applied
       ansible.builtin.command: topf apply --confirm=false --auto-bootstrap=true --allow-not-ready=true
@@ -34,9 +42,15 @@
       register: bootstrap_apply_config
       changed_when:
         - bootstrap_apply_config.stderr | regex_search("applied machine config") is not none
+      environment:
+        SOPS_AGE_KEY: "{{ sops_age_key }}"
+        SOPS_AGE_RECIPIENTS: "{{ sops_age_recipients }}"
 
     - name: Ensure kubeconfig exists
       ansible.builtin.shell: "topf kubeconfig --validity=8760h > {{ playbook_dir }}/kubeconfig"
       args:
         chdir: talos
         creates: "{{ playbook_dir }}/kubeconfig"
+      environment:
+        SOPS_AGE_KEY: "{{ sops_age_key }}"
+        SOPS_AGE_RECIPIENTS: "{{ sops_age_recipients }}"

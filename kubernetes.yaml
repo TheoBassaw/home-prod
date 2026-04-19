@@ -52,7 +52,7 @@
       loop:
         - name: cloudflare-api-token-secret
           stringData:
-            api-token: "{{ lookup('community.general.bitwarden', 'cloudflare-token-kubernetes', field='password') | first }}"
+            api-token: "{{ lookup('community.general.bitwarden', 'cloudflare-token-kubernetes', field = 'password') | first }}"
 
     - name: Ensure flux reconciliation
       kubernetes.core.k8s:
