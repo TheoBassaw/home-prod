@@ -6,7 +6,7 @@ metadata:
   namespace: network-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/network-system/cert-manager
+  path: ./kubernetes/network-system/cert-manager
   prune: false
   sourceRef:
     kind: GitRepository
@@ -22,7 +22,7 @@ metadata:
   namespace: network-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/network-system/envoy-gateway
+  path: ./kubernetes/network-system/envoy-gateway
   prune: true
   sourceRef:
     kind: GitRepository
@@ -38,7 +38,7 @@ metadata:
   namespace: network-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/network-system/k8s-gateway
+  path: ./kubernetes/network-system/k8s-gateway
   prune: true
   sourceRef:
     kind: GitRepository

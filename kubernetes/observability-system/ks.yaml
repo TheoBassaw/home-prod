@@ -7,7 +7,7 @@ metadata:
   namespace: observability-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/observability-system/grafana-operator
+  path: ./kubernetes/observability-system/grafana-operator
   prune: true
   sourceRef:
     kind: GitRepository
@@ -23,7 +23,7 @@ metadata:
   namespace: observability-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/observability-system/prometheus-operator-crds
+  path: ./kubernetes/observability-system/prometheus-operator-crds
   prune: true
   sourceRef:
     kind: GitRepository
@@ -39,7 +39,7 @@ metadata:
   namespace: observability-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/observability-system/victoria-metrics-k8s-stack
+  path: ./kubernetes/observability-system/victoria-metrics-k8s-stack
   prune: true
   sourceRef:
     kind: GitRepository
