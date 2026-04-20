@@ -3,12 +3,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: envoy-gateway
+  name: k8s-gateway
   namespace: network-system
 spec:
   chartRef:
     kind: OCIRepository
-    name: envoy-gateway
+    name: k8s-gateway
   interval: 1h
   values:
     domain: paradisenetworkz.com
