@@ -7,3 +7,7 @@ mod kubernetes "kubernetes"
 [private]
 default:
   just -l --list-submodules
+
+bootstrap:
+  just talos
+  just kubernetes
