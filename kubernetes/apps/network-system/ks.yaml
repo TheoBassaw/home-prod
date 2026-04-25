@@ -1,14 +1,13 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: grafana-operator
-  namespace: observability-system
+  name: cert-manager
+  namespace: network-system
 spec:
   interval: 1h
-  path: ./kubernetes/observability-system/grafana-operator
-  prune: true
+  path: ./kubernetes/apps/network-system/cert-manager
+  prune: false
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -19,11 +18,11 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: prometheus-operator-crds
-  namespace: observability-system
+  name: envoy-gateway
+  namespace: network-system
 spec:
   interval: 1h
-  path: ./kubernetes/observability-system/prometheus-operator-crds
+  path: ./kubernetes/apps/network-system/envoy-gateway
   prune: true
   sourceRef:
     kind: GitRepository
@@ -35,11 +34,11 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: victoria-metrics-k8s-stack
-  namespace: observability-system
+  name: k8s-gateway
+  namespace: network-system
 spec:
   interval: 1h
-  path: ./kubernetes/observability-system/victoria-metrics-k8s-stack
+  path: ./kubernetes/apps/network-system/k8s-gateway
   prune: true
   sourceRef:
     kind: GitRepository

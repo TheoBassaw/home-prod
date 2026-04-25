@@ -1,5 +1,0 @@
-- name: Run Talos Playbook
-  ansible.builtin.import_playbook: talos.yaml
-
-- name: Run Kubernetes Playbook
-  ansible.builtin.import_playbook: kubernetes.yaml

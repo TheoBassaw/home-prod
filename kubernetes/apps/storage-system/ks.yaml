@@ -10,7 +10,7 @@ spec:
     - name: cert-manager
       namespace: network-system
   interval: 1h
-  path: ./kubernetes/storage-system/piraeus-operator
+  path: ./kubernetes/apps/storage-system/piraeus-operator
   prune: true
   sourceRef:
     kind: GitRepository
@@ -26,7 +26,7 @@ metadata:
   namespace: storage-system
 spec:
   interval: 1h
-  path: ./kubernetes/storage-system/snapshot-controller
+  path: ./kubernetes/apps/storage-system/snapshot-controller
   prune: true
   sourceRef:
     kind: GitRepository
@@ -47,7 +47,7 @@ spec:
     - name: snapshot-controller
       namespace: storage-system
   interval: 1h
-  path: ./kubernetes/storage-system/volsync
+  path: ./kubernetes/apps/storage-system/volsync
   prune: true
   sourceRef:
     kind: GitRepository

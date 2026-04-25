@@ -1,47 +1,35 @@
 ---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cert-manager
-  namespace: network-system
+  name: flux-operator
+  namespace: flux-system
 spec:
   interval: 1h
-  path: ./kubernetes/network-system/cert-manager
-  prune: false
+  path: ./kubernetes/apps/flux-system/flux-operator
+  prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
+  timeout: 10m
   wait: true
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: envoy-gateway
-  namespace: network-system
+  name: tofu-controller
+  namespace: flux-system
 spec:
   interval: 1h
-  path: ./kubernetes/network-system/envoy-gateway
+  path: ./kubernetes/apps/flux-system/tofu-controller
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: false
----
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: k8s-gateway
-  namespace: network-system
-spec:
-  interval: 1h
-  path: ./kubernetes/network-system/k8s-gateway
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false
+  timeout: 10m
+  wait: true
+
