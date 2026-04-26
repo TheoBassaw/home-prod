@@ -29,6 +29,11 @@ apply-secrets:
     --from-literal=api-token=`bw get item cloudflare-token-kubernetes | yq -e '.login.password'` \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
+  kubectl create secret generic smb-credentials -n kube-system --dry-run=client -o yaml \
+    --from-literal=username=`bw get item truenas-k8s-smb-creds | yq -e '.login.username'` \
+    --from-literal=password=`bw get item truenas-k8s-smb-creds | yq -e '.login.password'` \
+    | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
+
 # Apply cilium manifests
 apply-cilium:
   flux-local build hr cilium -n kube-system --path apps --no-skip-secrets \
