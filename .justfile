@@ -8,6 +8,7 @@ mod kubernetes "kubernetes"
 default:
   just -l --list-submodules
 
+# Bootstrap infrastructure
 bootstrap:
   just talos
   just kubernetes
