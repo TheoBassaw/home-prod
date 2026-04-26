@@ -6,9 +6,13 @@ metadata:
   name: csi-driver-smb
   namespace: kube-system
 spec:
-  chartRef:
-    kind: OCIRepository
-    name: csi-driver-smb
+  chart:
+    spec:
+      chart: csi-driver-smb
+      version: 1.20.1
+      sourceRef:
+        kind: HelmRepository
+        name: csi-driver-smb
   interval: 1h
   values:
     controller:
