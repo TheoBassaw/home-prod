@@ -21,8 +21,18 @@ spec:
       replicas: 3
   dataSource:
     pgbackrest:
-      repos:
+      repo:
         name: repo1
+        volume:
+          volumeClaimSpec:
+            accessModes:
+              - ReadWriteMany
+            volumeName: pg-main-pgbackrest-smb
+            storageClassName: ""
+            resources:
+              requests:
+                storage: 50Gi
+
   backups:
     pgbackrest:
       repos:
@@ -36,8 +46,8 @@ spec:
               resources:
                 requests:
                   storage: 50Gi
-      schedules:
-        incremental: "0 2 * * 1-6"
+          schedules:
+            incremental: "0 2 * * 1-6"
   users:
     - name: authentik
       databases:
