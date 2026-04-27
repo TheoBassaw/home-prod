@@ -14,9 +14,3 @@ allowVolumeExpansion: true
 mountOptions:
   - vers=3.0
   - seal
-  - noserverino
-  - mfsymlinks
-  - cache=strict
-  - noperm
-  - dir_mode=0755
-  - file_mode=0644
