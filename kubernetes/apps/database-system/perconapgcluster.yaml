@@ -1,0 +1,44 @@
+---
+apiVersion: pgv2.percona.com/v2
+kind: PerconaPGCluster
+metadata:
+  name: pg-main
+  namespace: database-system
+spec:
+  postgresVersion: 17
+  instances:
+    - name: instance1
+      replicas: 3
+      dataVolumeClaimSpec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: replica-1-flash
+        resources:
+          requests:
+            storage: 20Gi
+  proxy:
+    pgBouncer:
+      replicas: 3
+  dataSource:
+    pgbackrest:
+      repos:
+        name: repo1
+  backups:
+    pgbackrest:
+      repos:
+        - name: repo1
+          volume:
+            volumeClaimSpec:
+              accessModes:
+                - ReadWriteMany
+              volumeName: pg-main-pgbackrest-smb
+              storageClassName: ""
+              resources:
+                requests:
+                  storage: 50Gi
+      schedules:
+        incremental: "0 2 * * 1-6"
+  users:
+    - name: authentik
+      databases:
+        - authentik
