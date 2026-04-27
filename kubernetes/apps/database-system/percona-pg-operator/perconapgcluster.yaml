@@ -5,7 +5,8 @@ metadata:
   name: pg-main
   namespace: database-system
 spec:
-  postgresVersion: 17
+  postgresVersion: 18
+  image: docker.io/perconalab/percona-postgresql-operator:main-ppg18-postgres
   instances:
     - name: instance1
       replicas: 3
@@ -18,24 +19,12 @@ spec:
             storage: 20Gi
   proxy:
     pgBouncer:
+      image: docker.io/perconalab/percona-postgresql-operator:main-pgbouncer18
       replicas: 3
-  dataSource:
-    pgbackrest:
-      stanza: db
-      repo:
-        name: repo1
-        volume:
-          volumeClaimSpec:
-            accessModes:
-              - ReadWriteMany
-            volumeName: pg-main-pgbackrest-smb
-            storageClassName: ""
-            resources:
-              requests:
-                storage: 50Gi
 
   backups:
     pgbackrest:
+      image: docker.io/perconalab/percona-postgresql-operator:main-pgbackrest18
       repos:
         - name: repo1
           volume:

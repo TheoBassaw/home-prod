@@ -6,7 +6,7 @@ machine:
   features:
     hostDNS:
       enabled: true
-      forwardKubeDNSToHost: false
+      forwardKubeDNSToHost: true
   files:
     - path: /etc/cri/conf.d/20-customization.part
       op: create
@@ -51,3 +51,8 @@ encryption:
       tpm:
         checkSecurebootStatusOnEnroll: true
       lockToState: true
+---
+apiVersion: v1alpha1
+kind: ResolverConfig
+nameservers:
+  - address: 10.20.0.1

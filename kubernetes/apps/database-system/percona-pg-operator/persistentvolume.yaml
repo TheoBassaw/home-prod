@@ -14,7 +14,7 @@ spec:
     driver: smb.csi.k8s.io
     volumeHandle: pg-main-pgbackrest-smb
     volumeAttributes:
-      source: "//truenas.paradisenetworkz.com/percona-postgres-backups"
+      source: "//10.20.0.70/percona-postgres-backups"
       subDir: "pg-main"
     nodeStageSecretRef:
       name: smb-credentials
