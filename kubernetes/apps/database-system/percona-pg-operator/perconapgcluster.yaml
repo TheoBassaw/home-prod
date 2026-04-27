@@ -38,21 +38,21 @@ spec:
                   storage: 50Gi
           schedules:
             incremental: "0 2 * * 1-6"
-  dataSource:
-    pgbackrest:
-      stanza: db
-      global:
-        repo1-path: /percona-postgres/pg-main/repo1
-      repo:
-        name: repo1
-        volume:
-          volumeClaimSpec:
-            accessModes:
-              - ReadWriteMany
-            resources:
-              requests:
-                storage: 50Gi
-            storageClassName: backup-share
+  # dataSource:
+  #   pgbackrest:
+  #     stanza: db
+  #     global:
+  #       repo1-path: /percona-postgres/pg-main/repo1
+  #     repo:
+  #       name: repo1
+  #       volume:
+  #         volumeClaimSpec:
+  #           accessModes:
+  #             - ReadWriteMany
+  #           resources:
+  #             requests:
+  #               storage: 50Gi
+  #           storageClassName: backup-share
   users:
     - name: authentik
       databases:
