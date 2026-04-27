@@ -21,23 +21,38 @@ spec:
     pgBouncer:
       image: docker.io/perconalab/percona-postgresql-operator:main-pgbouncer18
       replicas: 3
-
   backups:
     pgbackrest:
       image: docker.io/perconalab/percona-postgresql-operator:main-pgbackrest18
+      global:
+        repo1-path: /percona-postgres/pg-main/repo1
       repos:
         - name: repo1
           volume:
             volumeClaimSpec:
               accessModes:
                 - ReadWriteMany
-              volumeName: pg-main-pgbackrest-smb
-              storageClassName: ""
+              storageClassName: backup-share
               resources:
                 requests:
                   storage: 50Gi
           schedules:
             incremental: "0 2 * * 1-6"
+  dataSource:
+    pgbackrest:
+      stanza: db
+      global:
+        repo1-path: /percona-postgres/pg-main/repo1
+      repo:
+        name: repo1
+        volume:
+          volumeClaimSpec:
+            accessModes:
+              - ReadWriteMany
+            resources:
+              requests:
+                storage: 50Gi
+            storageClassName: backup-share
   users:
     - name: authentik
       databases:
