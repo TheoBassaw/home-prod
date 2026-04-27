@@ -25,7 +25,7 @@ spec:
     pgbackrest:
       image: docker.io/perconalab/percona-postgresql-operator:main-pgbackrest18
       global:
-        repo1-path: /percona-postgres/pg-main/repo1
+        repo1-path: /pgbackrest/repo1/pg-main/repo1
       repos:
         - name: repo1
           volume:
@@ -42,7 +42,7 @@ spec:
   #   pgbackrest:
   #     stanza: db
   #     global:
-  #       repo1-path: /percona-postgres/pg-main/repo1
+  #       repo1-path: /pgbackrest/repo1/pg-main/repo1
   #     repo:
   #       name: repo1
   #       volume:
