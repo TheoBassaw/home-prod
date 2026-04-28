@@ -26,7 +26,6 @@ spec:
       image: docker.io/perconalab/percona-postgresql-operator:main-pgbackrest18
       global:
         repo1-path: /pgbackrest/repo1/postgres/pg-main/repo1
-        log-path: /pgbackrest/repo1/postgres/pg-main/repo1/log
       repos:
         - name: repo1
           volume:
@@ -44,7 +43,6 @@ spec:
       stanza: db
       global:
         repo1-path: /pgbackrest/repo1/postgres/pg-main/repo1
-        log-path: /pgbackrest/repo1/postgres/pg-main/repo1/log
       repo:
         name: repo1
         volume:
