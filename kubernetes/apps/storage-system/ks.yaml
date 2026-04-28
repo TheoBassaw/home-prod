@@ -42,6 +42,8 @@ metadata:
   namespace: storage-system
 spec:
   dependsOn:
+    - name: cert-manager
+      namespace: network-system
     - name: piraeus-operator
       namespace: storage-system
     - name: snapshot-controller
