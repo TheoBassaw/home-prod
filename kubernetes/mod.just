@@ -1,7 +1,6 @@
 set quiet := true
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
-export SOPS_AGE_KEY := `bw get item sops-age-talos | yq -e '.fields[] | select(.name == "private-key").value'`
 export KUBECONFIG := justfile_dir() + '/kubeconfig'
 
 [private]
@@ -27,8 +26,6 @@ apply-namespaces:
 
 # Apply global secrets
 apply-secrets:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/global-secrets/namespace.yaml
-
   kubectl create secret generic cloudflare-api-token-secret -n global-secrets --dry-run=client -o yaml \
     --from-literal=api-token=`bw get item cloudflare-token-kubernetes | yq -e '.login.password'` \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
