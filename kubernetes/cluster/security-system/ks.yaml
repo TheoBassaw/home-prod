@@ -9,6 +9,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/security-system/external-secrets
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -25,6 +26,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/security-system/tuppr
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -41,6 +43,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/security-system/authentik
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system

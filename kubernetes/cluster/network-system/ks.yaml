@@ -8,6 +8,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/network-system/cert-manager
   prune: false
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -27,6 +28,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/network-system/envoy-gateway
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -46,6 +48,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/network-system/k8s-gateway
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system

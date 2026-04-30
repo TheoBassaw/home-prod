@@ -8,6 +8,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/kube-system/cilium
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -23,6 +24,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/kube-system/descheduler
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -39,6 +41,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/kube-system/intel-gpu-resource-driver
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -53,6 +56,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/kube-system/metrics-server
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -69,6 +73,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/kube-system/reloader
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -84,6 +89,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/kube-system/spegel
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -100,6 +106,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/kube-system/csi-driver-smb
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -116,6 +123,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/kube-system/snapshot-controller
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system

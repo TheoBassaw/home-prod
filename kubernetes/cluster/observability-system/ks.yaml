@@ -9,6 +9,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/observability-system/grafana-operator
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -25,6 +26,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/observability-system/prometheus-operator-crds
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -41,6 +43,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/observability-system/victoria-metrics-k8s-stack
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system

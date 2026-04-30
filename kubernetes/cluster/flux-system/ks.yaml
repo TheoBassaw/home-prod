@@ -9,6 +9,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/flux-system/flux-operator
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -25,6 +26,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/flux-system/tofu-controller
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system

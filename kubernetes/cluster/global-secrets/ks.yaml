@@ -9,6 +9,7 @@ spec:
   interval: 1h
   path: ./kubernetes/cluster/global-secrets
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
