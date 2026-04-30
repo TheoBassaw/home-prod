@@ -5,7 +5,7 @@ export SOPS_AGE_KEY := `bw get item sops-age-talos | yq -e '.fields[] | select(.
 export KUBECONFIG := justfile_dir() + '/kubeconfig'
 
 [private]
-default: wait apply-secrets apply-cilium apply-flux
+default: wait apply-crds apply-namespaces apply-secrets apply-cilium apply-flux reconciliation
 
 # Wait until api server is available
 [private]
@@ -18,7 +18,11 @@ wait:
 
 # Apply crds
 apply-crds:
-  flux-local build hr --path apps --no-hooks --no-skip-crds -A | yq ea -e 'select(.kind == "CustomResourceDefinition")' \
+  flux-local build hr --path cluster --no-hooks --no-skip-crds -A | yq ea -e 'select(.kind == "CustomResourceDefinition")' \
+    | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
+
+apply-namespaces:
+  flux-local build hr --path cluster --no-hooks --no-skip-crds -A | yq ea -e 'select(.kind == "Namespace")' \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Apply global secrets
@@ -39,11 +43,11 @@ apply-cilium:
   flux-local build hr cilium -n kube-system --path cluster --no-skip-secrets \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-# Apply flux and start reconciliation
+# Apply flux operator manifests
 apply-flux:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/namespace.yaml
-
   flux-local build hr flux-operator -n flux-system --path cluster --no-skip-secrets \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
+# Start reconciliation
+reconciliation:
   kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/flux-operator/flux-instance.yaml
