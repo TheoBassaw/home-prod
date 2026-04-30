@@ -36,14 +36,14 @@ apply-secrets:
 
 # Apply cilium manifests
 apply-cilium:
-  flux-local build hr cilium -n kube-system --path apps --no-skip-secrets \
+  flux-local build hr cilium -n kube-system --path cluster --no-skip-secrets \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Apply flux and start reconciliation
 apply-flux:
   kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/namespace.yaml
 
-  flux-local build hr flux-operator -n flux-system --path apps --no-skip-secrets \
+  flux-local build hr flux-operator -n flux-system --path cluster --no-skip-secrets \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
   kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/flux-operator/flux-instance.yaml
