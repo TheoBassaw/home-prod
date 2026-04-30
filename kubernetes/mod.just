@@ -21,8 +21,8 @@ apply-crds:
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 apply-namespaces:
-  flux-local build ks --path cluster -A | yq ea -e 'select(.kind == "Namespace")' \
-    | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/global-secrets/namespace.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/namespace.yaml
 
 # Apply global secrets
 apply-secrets:

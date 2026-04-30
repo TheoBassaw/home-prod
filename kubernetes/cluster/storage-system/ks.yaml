@@ -6,9 +6,6 @@ metadata:
   name: piraeus-operator
   namespace: storage-system
 spec:
-  dependsOn:
-    - name: cert-manager
-      namespace: network-system
   interval: 1h
   path: ./kubernetes/cluster/storage-system/piraeus-operator
   prune: true
@@ -26,9 +23,6 @@ metadata:
   name: volsync
   namespace: storage-system
 spec:
-  dependsOn:
-    - name: cert-manager
-      namespace: network-system
   interval: 1h
   path: ./kubernetes/cluster/storage-system/volsync
   prune: true
