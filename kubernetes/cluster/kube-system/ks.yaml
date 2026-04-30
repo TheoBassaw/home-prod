@@ -6,7 +6,7 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/cilium
+  path: .kubernetes/cluster/kube-system/cilium
   prune: true
   sourceRef:
     kind: GitRepository
@@ -21,7 +21,7 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/descheduler
+  path: .kubernetes/cluster/kube-system/descheduler
   prune: true
   sourceRef:
     kind: GitRepository
@@ -37,7 +37,7 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/intel-gpu-resource-driver
+  path: .kubernetes/cluster/kube-system/intel-gpu-resource-driver
   prune: true
   sourceRef:
     kind: GitRepository
@@ -51,7 +51,7 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/metrics-server
+  path: .kubernetes/cluster/kube-system/metrics-server
   prune: true
   sourceRef:
     kind: GitRepository
@@ -67,7 +67,7 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/reloader
+  path: .kubernetes/cluster/kube-system/reloader
   prune: true
   sourceRef:
     kind: GitRepository
@@ -82,7 +82,7 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/spegel
+  path: .kubernetes/cluster/kube-system/spegel
   prune: true
   sourceRef:
     kind: GitRepository
@@ -98,7 +98,7 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/csi-driver-smb
+  path: .kubernetes/cluster/kube-system/csi-driver-smb
   prune: true
   sourceRef:
     kind: GitRepository

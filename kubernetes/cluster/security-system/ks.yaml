@@ -7,7 +7,7 @@ metadata:
   namespace: security-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/security-system/external-secrets
+  path: ./kubernetes/cluster/security-system/external-secrets
   prune: true
   sourceRef:
     kind: GitRepository
@@ -23,7 +23,7 @@ metadata:
   namespace: security-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/security-system/tuppr
+  path: ./kubernetes/cluster/security-system/tuppr
   prune: true
   sourceRef:
     kind: GitRepository
@@ -39,7 +39,7 @@ metadata:
   namespace: security-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/security-system/authentik
+  path: ./kubernetes/cluster/security-system/authentik
   prune: true
   sourceRef:
     kind: GitRepository
