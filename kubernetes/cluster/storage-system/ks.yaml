@@ -30,8 +30,6 @@ spec:
       namespace: network-system
     - name: piraeus-operator
       namespace: storage-system
-    - name: snapshot-controller
-      namespace: storage-system
   interval: 1h
   path: ./kubernetes/cluster/storage-system/volsync
   prune: true
