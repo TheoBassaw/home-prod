@@ -5,7 +5,7 @@ export SOPS_AGE_KEY := `bw get item sops-age-talos | yq -e '.fields[] | select(.
 export KUBECONFIG := justfile_dir() + '/kubeconfig'
 
 [private]
-default: wait apply-crds apply-secrets apply-cilium apply-flux
+default: wait apply-secrets apply-cilium apply-flux
 
 # Wait until api server is available
 [private]
@@ -23,13 +23,13 @@ apply-crds:
 
 # Apply global secrets
 apply-secrets:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f apps/global-secrets/namespace.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/global-secrets/namespace.yaml
 
   kubectl create secret generic cloudflare-api-token-secret -n global-secrets --dry-run=client -o yaml \
     --from-literal=api-token=`bw get item cloudflare-token-kubernetes | yq -e '.login.password'` \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  kubectl create secret generic smb-credentials -n kube-system --dry-run=client -o yaml \
+  kubectl create secret generic smb-credentials -n global-secrets --dry-run=client -o yaml \
     --from-literal=username=`bw get item truenas-k8s-smb-creds | yq -e '.login.username'` \
     --from-literal=password=`bw get item truenas-k8s-smb-creds | yq -e '.login.password'` \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
@@ -41,9 +41,9 @@ apply-cilium:
 
 # Apply flux and start reconciliation
 apply-flux:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f apps/flux-system/namespace.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/namespace.yaml
 
   flux-local build hr flux-operator -n flux-system --path apps --no-skip-secrets \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f apps/flux-system/flux-operator/flux-instance.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/flux-operator/flux-instance.yaml
