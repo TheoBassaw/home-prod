@@ -114,7 +114,7 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/cluster/storage-system/snapshot-controller
+  path: ./kubernetes/cluster/kube-system/snapshot-controller
   prune: true
   sourceRef:
     kind: GitRepository
