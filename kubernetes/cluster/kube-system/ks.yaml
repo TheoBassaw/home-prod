@@ -6,8 +6,9 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/cilium
+  path: ./kubernetes/cluster/kube-system/cilium
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -21,8 +22,9 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/descheduler
+  path: ./kubernetes/cluster/kube-system/descheduler
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -37,8 +39,9 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/intel-gpu-resource-driver
+  path: ./kubernetes/cluster/kube-system/intel-gpu-resource-driver
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -51,8 +54,9 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/metrics-server
+  path: ./kubernetes/cluster/kube-system/metrics-server
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -67,8 +71,9 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/reloader
+  path: ./kubernetes/cluster/kube-system/reloader
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -82,8 +87,9 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/spegel
+  path: ./kubernetes/cluster/kube-system/spegel
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -98,10 +104,28 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/kube-system/csi-driver-smb
+  path: ./kubernetes/cluster/kube-system/csi-driver-smb
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
   wait: false
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: snapshot-controller
+  namespace: kube-system
+spec:
+  interval: 1h
+  path: ./kubernetes/cluster/kube-system/snapshot-controller
+  prune: true
+  retryInterval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  wait: true

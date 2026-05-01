@@ -1,11 +1,10 @@
 set quiet := true
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
-export SOPS_AGE_KEY := `bw get item sops-age-talos | yq -e '.fields[] | select(.name == "private-key").value'`
 export KUBECONFIG := justfile_dir() + '/kubeconfig'
 
 [private]
-default: wait apply-crds apply-secrets apply-cilium apply-flux
+default: wait apply-crds apply-namespaces apply-secrets apply-cilium apply-flux reconciliation
 
 # Wait until api server is available
 [private]
@@ -18,32 +17,34 @@ wait:
 
 # Apply crds
 apply-crds:
-  flux-local build hr --path apps --no-hooks --no-skip-crds -A | yq ea -e 'select(.kind == "CustomResourceDefinition")' \
+  flux-local build hr --path cluster --no-hooks --no-skip-crds -A | yq ea -e 'select(.kind == "CustomResourceDefinition")' \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
+
+apply-namespaces:
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/global-secrets/namespace.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/namespace.yaml
 
 # Apply global secrets
 apply-secrets:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f apps/global-secrets/namespace.yaml
-
   kubectl create secret generic cloudflare-api-token-secret -n global-secrets --dry-run=client -o yaml \
     --from-literal=api-token=`bw get item cloudflare-token-kubernetes | yq -e '.login.password'` \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  kubectl create secret generic smb-credentials -n kube-system --dry-run=client -o yaml \
+  kubectl create secret generic smb-credentials -n global-secrets --dry-run=client -o yaml \
     --from-literal=username=`bw get item truenas-k8s-smb-creds | yq -e '.login.username'` \
     --from-literal=password=`bw get item truenas-k8s-smb-creds | yq -e '.login.password'` \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Apply cilium manifests
 apply-cilium:
-  flux-local build hr cilium -n kube-system --path apps --no-skip-secrets \
+  flux-local build hr cilium -n kube-system --path cluster --no-skip-secrets \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-# Apply flux and start reconciliation
+# Apply flux operator manifests
 apply-flux:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f apps/flux-system/namespace.yaml
-
-  flux-local build hr flux-operator -n flux-system --path apps --no-skip-secrets \
+  flux-local build hr flux-operator -n flux-system --path cluster --no-skip-secrets \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f apps/flux-system/flux-operator/flux-instance.yaml
+# Start reconciliation
+reconciliation:
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/flux-operator/flux-instance.yaml

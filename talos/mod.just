@@ -23,7 +23,7 @@ kubeconfig:
 
 # Create talosconfig
 talosconfig:
-  topf talosconfig > {{ justfile_dir() }}/kubeconfig
+  topf talosconfig > {{ justfile_dir() }}/talosconfig
 
 # Reset nodes
 reset-nodes:

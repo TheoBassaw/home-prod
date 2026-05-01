@@ -1,17 +1,14 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: piraeus-operator
-  namespace: storage-system
+  name: cert-manager
+  namespace: network-system
 spec:
-  dependsOn:
-    - name: cert-manager
-      namespace: network-system
   interval: 1h
-  path: ./kubernetes/apps/storage-system/piraeus-operator
-  prune: true
+  path: ./kubernetes/cluster/network-system/cert-manager
+  prune: false
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -22,38 +19,32 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: snapshot-controller
-  namespace: storage-system
+  name: envoy-gateway
+  namespace: network-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/storage-system/snapshot-controller
+  path: ./kubernetes/cluster/network-system/envoy-gateway
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: true
+  wait: false
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: volsync
-  namespace: storage-system
+  name: k8s-gateway
+  namespace: network-system
 spec:
-  dependsOn:
-    - name: cert-manager
-      namespace: network-system
-    - name: piraeus-operator
-      namespace: storage-system
-    - name: snapshot-controller
-      namespace: storage-system
   interval: 1h
-  path: ./kubernetes/apps/storage-system/volsync
+  path: ./kubernetes/cluster/network-system/k8s-gateway
   prune: true
+  retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  timeout: 10m
-  wait: true
+  wait: false
