@@ -1,6 +1,7 @@
 clusterName: home-k8s
 clusterEndpoint: https://10.20.0.200:6443
-kubernetesVersion: 1.35.0
+kubernetesVersion: 1.35.4
+talosVersion: 1.12.7
 nodes:
   - host: talos-control-1.home.paradisenetworkz.com
     ip: 10.20.0.66

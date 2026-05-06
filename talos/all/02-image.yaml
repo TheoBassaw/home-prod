@@ -1,3 +1,0 @@
-machine:
-  install:
-    image: factory.talos.dev/metal-installer-secureboot/fec932da901811c8291a4155bc9714f33da050c97985a731d99dce52de1d90c2:v1.12.6

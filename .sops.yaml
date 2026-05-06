@@ -1,0 +1,7 @@
+creation_rules:
+  - age:
+      - age1vlzuh7xykl6wfprduqgry37s2t3455kd7t35q4k4ktcv0y0y8ekqu8xd5d
+
+stores:
+  yaml:
+    indent: 2
