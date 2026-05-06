@@ -21,8 +21,9 @@ apply-crds:
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 apply-namespaces:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/global-secrets/namespace.yaml
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/namespace.yaml
+  find ./cluster -name "namespace.yaml" | while read -r f; do \
+    kubectl apply --server-side --field-manager kubectl --force-conflicts -f "$f"; \
+  done
 
 # Apply global secrets
 apply-secrets:
