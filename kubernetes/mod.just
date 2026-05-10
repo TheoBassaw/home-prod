@@ -4,7 +4,7 @@ set shell := ['bash', '-euo', 'pipefail', '-c']
 export KUBECONFIG := justfile_dir() + '/kubeconfig'
 
 [private]
-default: wait apply-crds apply-namespaces apply-cilium apply-flux reconciliation
+default: wait apply-crds apply-namespaces apply-secrets apply-cilium apply-flux reconciliation
 
 # Wait until api server is available
 [private]
