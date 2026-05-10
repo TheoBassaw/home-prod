@@ -10,5 +10,6 @@ default:
 
 # Bootstrap infrastructure
 bootstrap:
+  doppler setup --no-interactive
   just talos
   just kubernetes

@@ -4,7 +4,7 @@ set shell := ['bash', '-euo', 'pipefail', '-c']
 export KUBECONFIG := justfile_dir() + '/kubeconfig'
 
 [private]
-default: wait apply-crds apply-namespaces apply-secrets apply-cilium apply-flux reconciliation
+default: wait apply-crds apply-namespaces apply-cilium apply-flux reconciliation
 
 # Wait until api server is available
 [private]
@@ -20,20 +20,16 @@ apply-crds:
   flux-local build hr --path cluster --no-hooks --no-skip-crds -A | yq ea -e 'select(.kind == "CustomResourceDefinition")' \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
+# Apply namespaces
 apply-namespaces:
   find ./cluster -name "namespace.yaml" | while read -r f; do \
     kubectl apply --server-side --field-manager kubectl --force-conflicts -f "$f"; \
   done
 
-# Apply global secrets
+# Apply secrets
 apply-secrets:
-  kubectl create secret generic cloudflare-api-token-secret -n global-secrets --dry-run=client -o yaml \
-    --from-literal=api-token=`bw get item cloudflare-token-kubernetes | yq -e '.login.password'` \
-    | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
-
-  kubectl create secret generic smb-credentials -n global-secrets --dry-run=client -o yaml \
-    --from-literal=username=`bw get item truenas-k8s-smb-creds | yq -e '.login.username'` \
-    --from-literal=password=`bw get item truenas-k8s-smb-creds | yq -e '.login.password'` \
+  kubectl create secret generic doppler-token-auth-api -n security-system --dry-run=client -o yaml \
+    --from-literal=dopplerToken=`doppler secrets get DOPPLER_TOKEN --plain` \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Apply cilium manifests

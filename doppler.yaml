@@ -1,0 +1,7 @@
+setup:
+  - project: home-prod
+    config: prd_talos
+    path: talos/
+  - project: home-prod
+    config: prd_k8s
+    path: kubernetes/
