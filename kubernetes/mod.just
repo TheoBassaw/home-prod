@@ -29,7 +29,7 @@ apply-namespaces:
 # Apply secrets
 apply-secrets:
   kubectl create secret generic doppler-token-auth-api -n security-system --dry-run=client -o yaml \
-    --from-literal=dopplerToken=`doppler secrets get DOPPLER_TOKEN --plain` \
+    --from-literal=dopplerToken=$(doppler secrets get DOPPLER_TOKEN --plain) \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Apply cilium manifests

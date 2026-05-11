@@ -3,6 +3,7 @@ set shell := ['bash', '-euo', 'pipefail', '-c']
 
 mod talos "talos"
 mod kubernetes "kubernetes"
+mod truenas "truenas"
 
 [private]
 default:

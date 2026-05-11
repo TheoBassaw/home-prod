@@ -1,0 +1,17 @@
+[
+  {
+    "name": "rust-pool",
+    "topology": {
+      "data": [
+        {
+          "type": "MIRROR",
+          "disks": ["sda", "sdd"]
+        },
+        {
+          "type": "MIRROR",
+          "disks": ["sdb", "sdc"]
+        }
+      ]
+    }
+  }
+]

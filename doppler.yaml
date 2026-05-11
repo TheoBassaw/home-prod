@@ -5,3 +5,6 @@ setup:
   - project: home-prod
     config: prd_k8s
     path: kubernetes/
+  - project: home-prod
+    config: prd_truenas
+    path: truenas/
