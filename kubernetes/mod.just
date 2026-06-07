@@ -4,7 +4,7 @@ set shell := ['bash', '-euo', 'pipefail', '-c']
 export KUBECONFIG := justfile_dir() + '/kubeconfig'
 
 [private]
-default: wait apply-crds apply-namespaces apply-secrets apply-cilium apply-flux reconciliation
+default: wait apply-manifests start-reconciliation
 
 # Wait until api server is available
 [private]
@@ -15,33 +15,25 @@ wait:
       sleep 5; \
   done
 
-# Apply crds
-apply-crds:
-  flux-local build hr --path cluster --no-hooks --no-skip-crds -A | yq ea -e 'select(.kind == "CustomResourceDefinition")' \
+# Apply manifests
+apply-manifests:
+  flate build hr --path cluster --only-crds \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-# Apply namespaces
-apply-namespaces:
   find ./cluster -name "namespace.yaml" | while read -r f; do \
     kubectl apply --server-side --field-manager kubectl --force-conflicts -f "$f"; \
   done
 
-# Apply secrets
-apply-secrets:
-  kubectl create secret generic doppler-token-auth-api -n security-system --dry-run=client -o yaml \
-    --from-literal=dopplerToken=$(doppler secrets get DOPPLER_TOKEN --plain) \
+  find ./cluster -name "secret.yaml" | while read -r f; do \
+    envsubst < "$f" | kubectl apply --server-side --field-manager kubectl --force-conflicts -f - ; \
+  done
+
+  flate build hr cilium --path cluster --skip-secrets=false \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-# Apply cilium manifests
-apply-cilium:
-  flux-local build hr cilium -n kube-system --path cluster --no-skip-secrets \
-    | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
-
-# Apply flux operator manifests
-apply-flux:
-  flux-local build hr flux-operator -n flux-system --path cluster --no-skip-secrets \
+  flate build hr flux-operator --path cluster --skip-secrets=false \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Start reconciliation
-reconciliation:
+start-reconciliation:
   kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/flux-operator/flux-instance.yaml

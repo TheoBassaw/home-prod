@@ -1,6 +1,0 @@
----
-collections:
-  - community.general
-  - ansible.utils
-  - kubernetes.core
-  - community.routeros

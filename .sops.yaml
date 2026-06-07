@@ -1,0 +1,5 @@
+creation_rules:
+  - age:
+    - age1yubikey1q29kztq080yv35qukfpew6hwrvzaqx79a2832zdlctc4famfsnv0xqewrhm
+yaml:
+  indent: 2

@@ -3,7 +3,6 @@ set shell := ['bash', '-euo', 'pipefail', '-c']
 
 mod talos "talos"
 mod kubernetes "kubernetes"
-mod truenas "truenas"
 
 [private]
 default:
@@ -11,6 +10,5 @@ default:
 
 # Bootstrap infrastructure
 bootstrap:
-  doppler setup --no-interactive
   just talos
   just kubernetes
