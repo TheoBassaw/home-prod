@@ -1,0 +1,11 @@
+default_provider = "bitwarden"
+
+[providers]
+keychain = { type = "keychain", service = "fnox" }
+bitwarden = { type = "bitwarden" }
+
+[secrets]
+BW_SESSION = { provider = "keychain", value = "BW_SESSION" }
+SOPS_AGE_KEY = { provider = "bitwarden", value = "Age-Secret-Key" }
+SOPS_AGE_RECIPIENTS = { provider = "bitwarden", value = "Age-Public-Key" }
+CLOUDFLARE_TOKEN = { provider = "bitwarden", value = "Cloudflare-Token" }

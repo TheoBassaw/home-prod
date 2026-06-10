@@ -1,21 +1,12 @@
-[env]
-SOPS_AGE_KEY_FILE = '{{env.HOME}}/.config/sops/age/keys.txt'
-_.file = ".env.yaml"
-
-[settings.sops]
-rops = false
-strict = false
-
 [shell_alias]
 k = "kubectl"
 t = "talosctl"
 
 [tools]
 age = "1.3.1"
-age-plugin-yubikey = "0.5.1"
 "aqua:postfinance/topf" = "0.4.0"
-"github:home-operations/flate" = "0.3.2"
 fnox = "1.25.1"
+"github:home-operations/flate" = "0.3.2"
 helm = "4.2.0"
 just = "1.51.0"
 kubectl = "1.36.1"
