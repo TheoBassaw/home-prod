@@ -24,9 +24,7 @@ apply-manifests:
     kubectl apply --server-side --field-manager kubectl --force-conflicts -f "$f"; \
   done
 
-  find ./cluster -name "secret.yaml" | while read -r f; do \
-    envsubst < "$f" | kubectl apply --server-side --field-manager kubectl --force-conflicts -f - ; \
-  done
+  envsubst < bootstrap/secrets.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
   flate build hr cilium --path cluster --skip-secrets=false \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
@@ -36,4 +34,4 @@ apply-manifests:
 
 # Start reconciliation
 start-reconciliation:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/flux-operator/flux-instance.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f bootstrap/flux-seed.yaml
