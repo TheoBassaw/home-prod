@@ -1,3 +1,6 @@
+[env]
+KUBECONFIG = "{{config_root}}/kubeconfig"
+
 [shell_alias]
 k = "kubectl"
 t = "talosctl"
