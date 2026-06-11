@@ -3,11 +3,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: grafana-operator
+  name: observability-system
   namespace: observability-system
 spec:
   interval: 1h
-  path: ./kubernetes/cluster/observability-system/grafana-operator
+  path: ./kubernetes/cluster/observability-system
   prune: true
   retryInterval: 1m
   sourceRef:
@@ -15,37 +15,3 @@ spec:
     name: flux-system
     namespace: flux-system
   wait: true
----
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: prometheus-operator-crds
-  namespace: observability-system
-spec:
-  interval: 1h
-  path: ./kubernetes/cluster/observability-system/prometheus-operator-crds
-  prune: true
-  retryInterval: 1m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false
----
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: victoria-metrics-k8s-stack
-  namespace: observability-system
-spec:
-  interval: 1h
-  path: ./kubernetes/cluster/observability-system/victoria-metrics-k8s-stack
-  prune: true
-  retryInterval: 1m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  wait: false

@@ -4,7 +4,7 @@ set shell := ['bash', '-euo', 'pipefail', '-c']
 export KUBECONFIG := justfile_dir() + '/kubeconfig'
 
 [private]
-default: wait apply-manifests start-reconciliation
+default: wait apply-manifests apply-secrets start-reconciliation
 
 # Wait until api server is available
 [private]
@@ -20,18 +20,19 @@ apply-manifests:
   flate build hr --path cluster --only-crds \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  find ./cluster -name "namespace.yaml" | while read -r f; do \
-    kubectl apply --server-side --field-manager kubectl --force-conflicts -f "$f"; \
-  done
-
-  envsubst < bootstrap/secrets.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
-
   flate build hr cilium --path cluster --skip-secrets=false \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  flate build hr flux-operator --path cluster --skip-secrets=false \
+  flate build all --path cluster --skip-secrets=false -n flux-system \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
+
+  flate build all --path cluster --skip-secrets=false -n global-secrets \
+    | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
+
+# Apply secrets
+apply-secrets:
+  envsubst < bootstrap/secrets.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Start reconciliation
 start-reconciliation:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f bootstrap/flux-seed.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f bootstrap/flux.yaml

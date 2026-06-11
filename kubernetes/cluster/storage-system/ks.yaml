@@ -3,33 +3,15 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: piraeus-operator
+  name: storage-system
   namespace: storage-system
 spec:
   interval: 1h
-  path: ./kubernetes/cluster/storage-system/piraeus-operator
+  path: ./kubernetes/cluster/storage-system
   prune: true
   retryInterval: 1m
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: true
----
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: volsync
-  namespace: storage-system
-spec:
-  interval: 1h
-  path: ./kubernetes/cluster/storage-system/volsync
-  prune: true
-  retryInterval: 1m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  timeout: 10m
   wait: true

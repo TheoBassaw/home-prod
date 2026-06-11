@@ -3,11 +3,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: security-system
-  namespace: security-system
+  name: global-secrets
+  namespace: global-secrets
 spec:
   interval: 1h
-  path: ./kubernetes/cluster/security-system
+  path: ./kubernetes/cluster/global-secrets
   prune: true
   retryInterval: 1m
   sourceRef:

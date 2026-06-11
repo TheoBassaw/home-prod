@@ -3,11 +3,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cloudnative-pg
+  name: database-system
   namespace: database-system
 spec:
   interval: 1h
-  path: ./kubernetes/cluster/database-system/cloudnative-pg
+  path: ./kubernetes/cluster/database-system
   prune: true
   retryInterval: 1m
   sourceRef:
