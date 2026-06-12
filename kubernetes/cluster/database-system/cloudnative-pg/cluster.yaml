@@ -4,7 +4,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: postgres-18
-  namespace: security-system
+  namespace: database-system
   annotations:
     cnpg.io/skipEmptyWalArchiveCheck: "enabled"
 spec:

@@ -17,16 +17,16 @@ wait:
 
 # Apply manifests
 apply-manifests:
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/namespace.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/global-secrets/namespace.yaml
+
   flate build hr --path cluster --only-crds \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
   flate build hr cilium --path cluster --skip-secrets=false \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  flate build all --path cluster --skip-secrets=false -n flux-system \
-    | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
-
-  flate build all --path cluster --skip-secrets=false -n global-secrets \
+  flate build hr flux-operator --path cluster --skip-secrets=false -n flux-system \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Apply secrets
