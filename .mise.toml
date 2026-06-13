@@ -3,12 +3,6 @@ _.file = ".env.yaml"
 KUBECONFIG = "{{config_root}}/kubeconfig"
 TALOSCONFIG = "{{config_root}}/talosconfig"
 
-SOPS_AGE_KEY = """
-{%- if os() == "linux" -%}
-  {{ exec(command='secret-tool lookup key AGE_SECRET_KEY') }}
-{%- endif -%}
-"""
-
 [settings]
 sops.rops = false
 sops.strict = false
