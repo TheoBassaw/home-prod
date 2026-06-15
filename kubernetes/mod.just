@@ -4,7 +4,7 @@ set shell := ['bash', '-euo', 'pipefail', '-c']
 export KUBECONFIG := justfile_dir() + '/kubeconfig'
 
 [private]
-default: wait apply-manifests apply-secrets start-reconciliation
+default: wait apply-manifests start-reconciliation
 
 # Wait until api server is available
 [private]
@@ -18,7 +18,7 @@ wait:
 # Apply manifests
 apply-manifests:
   kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/namespace.yaml
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/global-secrets/namespace.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/security-system/namespace.yaml
 
   flate build hr --path cluster --only-crds \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
@@ -29,9 +29,7 @@ apply-manifests:
   flate build hr flux-operator --path cluster --skip-secrets=false -n flux-system \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-# Apply secrets
-apply-secrets:
-  envsubst < bootstrap/secrets.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
+  envsubst < bootstrap/secret.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Start reconciliation
 start-reconciliation:

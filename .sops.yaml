@@ -1,7 +1,0 @@
-creation_rules:
-  - age:
-      - age1yubikey1qwdaycenvf3vu90qvdh960d8vjgx6xp669ypyz6rtwg35fv5p4x0wqj3rp4 # yubikey-main
-      - age1yubikey1qg04qwlsfj4ea4qsrhhz8ryutuz0es44tzgedqgnx2fudy862auqs07vgw6 # yubikey-backup
-stores:
-  yaml:
-    indent: 2
