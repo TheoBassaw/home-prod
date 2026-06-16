@@ -29,7 +29,9 @@ apply-manifests:
   flate build hr flux-operator --path cluster --skip-secrets=false -n flux-system \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  envsubst < bootstrap/secret.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
+  doppler run -- kubectl create secret generic doppler-token-auth-api \
+    --from-literal=dopplerToken='${CLOUDFLARE_TOKEN}' --dry-run=client -n security-system -o yaml \
+    | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Start reconciliation
 start-reconciliation:
