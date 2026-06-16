@@ -30,9 +30,9 @@ apply-manifests:
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
   doppler run -- kubectl create secret generic doppler-token-auth-api \
-    --from-literal=dopplerToken='${CLOUDFLARE_TOKEN}' --dry-run=client -n security-system -o yaml \
+    --from-literal=dopplerToken='${DOPPLER_TOKEN}' --dry-run=client -n security-system -o yaml \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Start reconciliation
 start-reconciliation:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f bootstrap/flux.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/flux-operator/fluxinstance.yaml
