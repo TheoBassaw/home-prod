@@ -30,7 +30,8 @@ apply-manifests:
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
   doppler run -- kubectl create secret generic doppler-token-auth-api \
-    --from-literal=dopplerToken='${DOPPLER_TOKEN}' --dry-run=client -n security-system -o yaml \
+    --from-literal=dopplerToken=$(doppler secrets get DOPPLER_TOKEN --plain) \
+    --dry-run=client -n security-system -o yaml \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Start reconciliation
