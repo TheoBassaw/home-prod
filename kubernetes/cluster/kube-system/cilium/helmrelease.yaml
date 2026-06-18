@@ -14,7 +14,7 @@ spec:
     rollOutCiliumPods: true
     routingMode: native
     autoDirectNodeRoutes: true
-    ipv4NativeRoutingCIDR: 10.0.0.0/8
+    ipv4NativeRoutingCIDR: 10.30.0.0/16
     kubeProxyReplacement: true
     k8sServiceHost: 127.0.0.1
     k8sServicePort: 7445

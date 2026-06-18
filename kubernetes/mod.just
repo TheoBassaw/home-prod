@@ -17,8 +17,9 @@ wait:
 
 # Apply manifests
 apply-manifests:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/namespace.yaml
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/security-system/namespace.yaml
+  find ./cluster -name "namespace.yaml" | while read -r f; do \
+    kubectl apply --server-side --field-manager kubectl --force-conflicts -f "$f"; \
+  done
 
   flate build hr --path cluster --only-crds \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
@@ -29,11 +30,8 @@ apply-manifests:
   flate build hr flux-operator --path cluster --skip-secrets=false -n flux-system \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  doppler run -- kubectl create secret generic doppler-token-auth-api \
-    --from-literal=dopplerToken=$(doppler secrets get DOPPLER_TOKEN --plain) \
-    --dry-run=client -n security-system -o yaml \
-    | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
+  doppler run -- envsubst < bootstrap/secrets.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Start reconciliation
 start-reconciliation:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/flux-operator/fluxinstance.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f bootstrap/flux.yaml
