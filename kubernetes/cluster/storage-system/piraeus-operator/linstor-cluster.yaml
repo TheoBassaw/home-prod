@@ -42,3 +42,7 @@ spec:
       value: "325521"
     - name: DrbdOptions/PeerDevice/c-plan-ahead
       value: "10"
+    - name: DrbdOptions/auto-quorum
+      value: io-error
+    - name: DrbdOptions/Resource/on-no-data-accessible
+      value: io-error

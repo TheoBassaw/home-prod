@@ -4,7 +4,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: postgres-18
-  namespace: database-system
+  namespace: security-system
   annotations:
     cnpg.io/skipEmptyWalArchiveCheck: "enabled"
 spec:
@@ -12,7 +12,7 @@ spec:
   instances: 3
   primaryUpdateStrategy: unsupervised
   storage:
-    size: 15Gi
+    size: 10Gi
     storageClass: replica-1-flash
   enableSuperuserAccess: true
   affinity:
