@@ -1,0 +1,23 @@
+default_provider = "pass"
+
+[providers.pass]
+type = "password-store"
+
+[secrets]
+CLOUDFLARE_TOKEN = { provider = "pass", value = "CLOUDFLARE_TOKEN" }
+MIKROTIK_USERNAME = { provider = "pass", value = "MIKROTIK_USERNAME" }
+MIKROTIK_PASSWORD = { provider = "pass", value = "MIKROTIK_PASSWORD" }
+TALOS_CERTS_ETCD_CRT = { provider = "pass", value = "TALOS_CERTS_ETCD_CRT" }
+TALOS_CERTS_ETCD_KEY = { provider = "pass", value = "TALOS_CERTS_ETCD_KEY" }
+TALOS_CERTS_K8S_CRT = { provider = "pass", value = "TALOS_CERTS_K8S_CRT" }
+TALOS_CERTS_K8S_KEY = { provider = "pass", value = "TALOS_CERTS_K8S_KEY" }
+TALOS_CERTS_K8SAGGREGATOR_CRT = { provider = "pass", value = "TALOS_CERTS_K8SAGGREGATOR_CRT" }
+TALOS_CERTS_K8SAGGREGATOR_KEY = { provider = "pass", value = "TALOS_CERTS_K8SAGGREGATOR_KEY" }
+TALOS_CERTS_K8SSERVICEACCOUNT_KEY = { provider = "pass", value = "TALOS_CERTS_K8SSERVICEACCOUNT_KEY" }
+TALOS_CERTS_OS_CRT = { provider = "pass", value = "TALOS_CERTS_OS_CRT" }
+TALOS_CERTS_OS_KEY = { provider = "pass", value = "TALOS_CERTS_OS_KEY" }
+TALOS_CLUSTER_ID = { provider = "pass", value = "TALOS_CLUSTER_ID" }
+TALOS_CLUSTER_SECRET = { provider = "pass", value = "TALOS_CLUSTER_SECRET" }
+TALOS_SECRETS_BOOTSTRAPTOKEN = { provider = "pass", value = "TALOS_SECRETS_BOOTSTRAPTOKEN" }
+TALOS_SECRETS_SECRETBOXENCRYPTIONSECRET = { provider = "pass", value = "TALOS_SECRETS_SECRETBOXENCRYPTIONSECRET" }
+TALOS_TRUSTDINFO_TOKEN = { provider = "pass", value = "TALOS_TRUSTDINFO_TOKEN" }

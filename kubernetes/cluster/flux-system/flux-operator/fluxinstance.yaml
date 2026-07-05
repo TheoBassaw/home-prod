@@ -20,7 +20,7 @@ spec:
     domain: cluster.local
   sync:
     kind: GitRepository
-    url: https://github.com/TheoBassaw/home-prod.git
+    url: https://truenas.paradisenetworkz.com:30142/truenas_admin/home-prod.git
     ref: refs/heads/main
     path: kubernetes/cluster
     interval: 1h
