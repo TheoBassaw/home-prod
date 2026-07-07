@@ -30,7 +30,7 @@ apply-manifests:
   flate build hr flux-operator --path cluster --skip-secrets=false -n flux-system \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  envsubst < bootstrap/secrets.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
+  envsubst < cluster/global-secrets/bootstrap-secrets.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Start reconciliation
 start-reconciliation:
