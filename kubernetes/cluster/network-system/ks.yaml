@@ -10,7 +10,7 @@ spec:
   prune: false
   retryInterval: 1m
   sourceRef:
-    kind: GitRepository
+    kind: OCIRepository
     name: flux-system
     namespace: flux-system
   wait: true
