@@ -19,7 +19,7 @@ spec:
     networkPolicy: true
     domain: cluster.local
   sync:
-    kind: GitRepository
+    kind: OCIRepository
     url: oci://ghcr.io/theobassaw/home-prod
     ref: latest
     path: ./cluster
