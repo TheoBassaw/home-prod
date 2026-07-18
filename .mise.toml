@@ -8,9 +8,11 @@ t = "talosctl"
 
 [tools]
 "aqua:postfinance/topf" = "0.4.1"
+fnox = "latest"
 "github:home-operations/flate" = "0.3.2"
 just = "1.51.0"
 kubectl = "1.36.1"
 talosctl = "1.13.3"
+uv = "latest"
 vals = "0.44.0"
 yq = "4.53.3"
