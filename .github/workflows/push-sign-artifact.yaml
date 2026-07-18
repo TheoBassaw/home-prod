@@ -10,7 +10,7 @@ permissions:
   id-token: write
 
 env:
-  OCI_REPO: "oci://ghcr.io/theocassaw/${{ github.event.repository.name }}"
+  OCI_REPO: "oci://ghcr.io/theobassaw/${{ github.event.repository.name }}"
 
 jobs:
   kubernetes:
