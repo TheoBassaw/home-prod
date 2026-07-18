@@ -22,5 +22,5 @@ spec:
     kind: OCIRepository
     url: oci://ghcr.io/theobassaw/home-prod
     ref: latest
-    path: ./cluster
+    path: ./kubernetes/cluster
     interval: 1h
