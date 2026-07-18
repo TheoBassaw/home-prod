@@ -34,7 +34,7 @@ jobs:
         run: |
           digest_url=$(flux push artifact \
           $OCI_REPO:$(git rev-parse --short HEAD) \
-          --path="./kubernetes" \
+          --path="./" \
           --source="$(git config --get remote.origin.url)" \
           --revision="$(git branch --show-current)@sha1:$(git rev-parse HEAD)" \
           --output=json | \
