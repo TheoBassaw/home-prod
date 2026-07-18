@@ -10,7 +10,7 @@ permissions:
   id-token: write
 
 env:
-  OCI_REPO: "ghcr.io/TheoBassaw/${{ github.event.repository.name }}"
+  OCI_REPO: "oci://ghcr.io/TheoBassaw/${{ github.event.repository.name }}"
 
 jobs:
   kubernetes:
@@ -39,5 +39,7 @@ jobs:
           --revision="$(git branch --show-current)@sha1:$(git rev-parse HEAD)" \
           --output=json | \
           jq -r '. | .repository + "@" + .digest')
+
+          echo $digest_url
 
           cosign sign --yes $digest_url 
