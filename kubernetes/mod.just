@@ -17,21 +17,19 @@ wait:
 
 # Apply manifests
 apply-manifests:
-  find ./cluster -name "namespace.yaml" | while read -r f; do \
-    kubectl apply --server-side --field-manager kubectl --force-conflicts -f "$f"; \
-  done
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f apps/flux-system/namespace.yaml
 
-  flate build hr --path cluster --only-crds \
+  flate build hr --path apps --only-crds \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  flate build hr cilium --path cluster --skip-secrets=false \
+  flate build hr cilium --path apps --skip-secrets=false \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  flate build hr flux-operator --path cluster --skip-secrets=false -n flux-system \
+  flate build hr flux-operator --path apps --skip-secrets=false -n flux-system \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  envsubst < cluster/global-secrets/bootstrap-secrets.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
+  envsubst < bootstrap/secrets.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Start reconciliation
 start-reconciliation:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f cluster/flux-system/flux-operator/fluxinstance.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f apps/flux-system/flux-operator/fluxinstance.yaml
