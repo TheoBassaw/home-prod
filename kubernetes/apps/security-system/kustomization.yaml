@@ -7,5 +7,4 @@ resources:
   - ./namespace.yaml
   - ./cluster.yaml
   - ./authentik/
-  - ./external-secrets/
   - ./tuppr

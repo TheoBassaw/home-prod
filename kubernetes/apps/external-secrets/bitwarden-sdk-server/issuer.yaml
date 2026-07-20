@@ -1,0 +1,30 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: bitwarden-bootstrap-issuer
+  namespace: external-secrets
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: bitwarden-bootstrap-certificate
+  namespace: external-secrets
+spec:
+  commonName: bitwarden-tls-ca
+  isCA: true
+  secretName: bitwarden-ca-certs
+  issuerRef:
+    name: bitwarden-bootstrap-issuer
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: bitwarden-certificate-issuer
+  namespace: external-secrets
+spec:
+  ca:
+    secretName: bitwarden-ca-certs

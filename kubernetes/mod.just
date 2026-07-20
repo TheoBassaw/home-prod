@@ -18,7 +18,7 @@ wait:
 # Apply manifests
 apply-manifests:
   kubectl apply --server-side --field-manager kubectl --force-conflicts -f apps/flux-system/namespace.yaml
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f apps/global-secrets/namespace.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f apps/external-secrets/namespace.yaml
 
   flate build hr --path apps --only-crds \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
@@ -29,7 +29,7 @@ apply-manifests:
   flate build hr flux-operator --path apps --skip-secrets=false -n flux-system \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  envsubst < bootstrap/secrets.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
+  envsubst < bootstrap/secret.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Start reconciliation
 start-reconciliation:

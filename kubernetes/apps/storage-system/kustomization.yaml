@@ -5,5 +5,5 @@ kind: Kustomization
 namespace: storage-system
 resources:
   - ./namespace.yaml
-  - ./piraeus-operator/
-  - ./volsync/
+  - ./cloudnative-pg/
+  - ./kopiur/
