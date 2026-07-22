@@ -3,10 +3,10 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: bitwarden-sdk-server
-  namespace: external-secrets
+  name: miroir
+  namespace: miroir-system
 spec:
   interval: 15m
-  url: oci://ghcr.io/external-secrets/charts/bitwarden-sdk-server
   ref:
-    tag: v0.7.0
+    tag: 2.10.3
+  url: oci://ghcr.io/home-operations/charts/miroir

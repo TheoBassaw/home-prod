@@ -16,4 +16,4 @@ spec:
     vmsingle:
       spec:
         storage:
-          storageClassName: replica-1-flash
+          storageClassName: miroir-local

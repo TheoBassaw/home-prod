@@ -7,7 +7,7 @@ metadata:
 spec:
   interval: 1h
   path: ./kubernetes/apps/network-system
-  prune: false
+  prune: true
   retryInterval: 1m
   sourceRef:
     kind: OCIRepository

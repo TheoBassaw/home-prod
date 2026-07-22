@@ -19,4 +19,6 @@ TALOS_CLUSTER_SECRET = { provider = "pass", value = "TALOS_CLUSTER_SECRET" }
 TALOS_SECRETS_BOOTSTRAPTOKEN = { provider = "pass", value = "TALOS_SECRETS_BOOTSTRAPTOKEN" }
 TALOS_SECRETS_SECRETBOXENCRYPTIONSECRET = { provider = "pass", value = "TALOS_SECRETS_SECRETBOXENCRYPTIONSECRET" }
 TALOS_TRUSTDINFO_TOKEN = { provider = "pass", value = "TALOS_TRUSTDINFO_TOKEN" }
-BWS_ACCESS_TOKEN = { provider = "pass", value = "BWS_ACCESS_TOKEN" }
+CLOUDFLARE_TOKEN = { provider = "pass", value = "CLOUDFLARE_TOKEN" }
+MIKROTIK_USERNAME = { provider = "pass", value = "MIKROTIK_USERNAME" }
+MIKROTIK_PASSWORD = { provider = "pass", value = "MIKROTIK_PASSWORD" }

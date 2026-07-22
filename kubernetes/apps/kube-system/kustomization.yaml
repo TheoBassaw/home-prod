@@ -9,3 +9,4 @@ resources:
   - ./intel-gpu-resource-driver/
   - ./metrics-server/
   - ./reloader/
+  - ./snapshot-controller/

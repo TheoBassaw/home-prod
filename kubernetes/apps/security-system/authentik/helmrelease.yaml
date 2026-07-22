@@ -30,7 +30,7 @@ spec:
     authentik:
       postgresql:
         host: postgres-rw
-        name: authentik
+        name: app
         user: app
     server:
       replicas: 3
