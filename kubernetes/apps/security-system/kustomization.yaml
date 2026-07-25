@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: security-system
 resources:
   - ./namespace.yaml
-  #  - ./authentik/
+  - ./postgres-cluster.yaml
+  - ./authentik
   - ./external-secrets/
   - ./tuppr/

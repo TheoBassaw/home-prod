@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: authentik
-      version: 2026.5.3
+      version: 2026.5.6
       sourceRef:
         kind: HelmRepository
         name: authentik
@@ -30,7 +30,7 @@ spec:
     authentik:
       postgresql:
         host: postgres-rw
-        name: app
+        name: authentik
         user: app
     server:
       replicas: 3
