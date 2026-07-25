@@ -7,6 +7,9 @@ metadata:
   namespace: network-system
 spec:
   interval: 15m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
   ref:
     tag: 1.21.1
   url: oci://ghcr.io/home-operations/charts-mirror/external-dns
