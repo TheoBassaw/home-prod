@@ -22,3 +22,5 @@ TALOS_TRUSTDINFO_TOKEN = { provider = "pass", value = "TALOS_TRUSTDINFO_TOKEN" }
 CLOUDFLARE_TOKEN = { provider = "pass", value = "CLOUDFLARE_TOKEN" }
 MIKROTIK_USERNAME = { provider = "pass", value = "MIKROTIK_USERNAME" }
 MIKROTIK_PASSWORD = { provider = "pass", value = "MIKROTIK_PASSWORD" }
+S3_ACCESS_KEY = { provider = "pass", value = "S3_ACCESS_KEY" }
+S3_SECRET_KEY = { provider = "pass", value = "S3_SECRET_KEY" }
