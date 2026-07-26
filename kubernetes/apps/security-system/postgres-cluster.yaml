@@ -36,7 +36,7 @@ spec:
   retentionPolicy: "8d"
   configuration:
     destinationPath: s3://security-system-postgres/
-    endpointURL: https://truenas.paradisenetworkz.com:30355
+    endpointURL: https://truenas.paradisenetworkz.com:30157
     s3Credentials:
       accessKeyId:
         name: s3-credentials
