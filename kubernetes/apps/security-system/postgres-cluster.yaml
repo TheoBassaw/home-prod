@@ -43,7 +43,7 @@ metadata:
 spec:
   retentionPolicy: "8d"
   configuration:
-    destinationPath: s3://security-system-postgres/
+    destinationPath: s3://postgres-backups/security-system
     endpointURL: https://truenas.paradisenetworkz.com:30157
     s3Credentials:
       accessKeyId:
