@@ -13,4 +13,4 @@ spec:
     args:
       - --kubelet-insecure-tls
       - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
-    replicas: 3
+    replicas: 2

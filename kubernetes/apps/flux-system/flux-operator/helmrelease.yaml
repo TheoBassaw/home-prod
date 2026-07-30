@@ -13,7 +13,7 @@ spec:
   values:
     installCRDs: true
     web:
-      serverReplicas: 3
+      serverReplicas: 2
       httpRoute:
         enabled: true
         parentRefs:

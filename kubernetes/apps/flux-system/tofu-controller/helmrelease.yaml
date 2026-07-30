@@ -11,7 +11,7 @@ spec:
     name: tofu-controller
   interval: 1h
   values:
-    replicaCount: 3
+    replicaCount: 2
     metrics:
       enabled: true
       serviceMonitor:

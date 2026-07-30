@@ -13,4 +13,4 @@ spec:
   values:
     installCRDs: true
     leaderElect: true
-    replicaCount: 3
+    replicaCount: 2

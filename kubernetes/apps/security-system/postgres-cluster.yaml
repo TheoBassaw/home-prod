@@ -9,7 +9,7 @@ metadata:
     cnpg.io/skipEmptyWalArchiveCheck: "enabled"
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:18.4-minimal-trixie
-  instances: 3
+  instances: 2
   primaryUpdateStrategy: unsupervised
   storage:
     size: 5Gi
@@ -25,7 +25,15 @@ spec:
       parameters:
         barmanObjectName: versity-truenas
   bootstrap:
-    initdb: {}
+    # initdb: {}
+    recovery:
+      source: origin
+  externalClusters:
+    - name: origin
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: versity-truenas
 ---
 apiVersion: barmancloud.cnpg.io/v1
 kind: ObjectStore

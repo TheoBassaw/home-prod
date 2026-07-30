@@ -3,20 +3,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: cert-manager
-  namespace: network-system
+  name: reloader
+  namespace: kube-system
 spec:
   chartRef:
     kind: OCIRepository
-    name: cert-manager
+    name: kubernetes-reflector
   interval: 1h
   values:
-    cainjector:
-      replicaCount: 2
-    crds:
-      enabled: true
     replicaCount: 2
-    webhook:
-      networkPolicy:
-        enabled: false
-      replicaCount: 2

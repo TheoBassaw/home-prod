@@ -72,7 +72,7 @@ spec:
     service:
       enabled: true
     #serviceMonitor:
-      #enabled: true
+    #enabled: true
     leaderElection:
       enabled: true
-    replicas: 3
+    replicas: 2
