@@ -36,7 +36,7 @@ spec:
       extraVolumes:
         - name: pg-client-cert
           secret:
-            secretName: authentik-pg-client-cert
+            secretName: authentik
       extraVolumeMounts:
         - name: pg-client-cert
           mountPath: /var/run/secrets/postgresql
@@ -54,7 +54,7 @@ spec:
       extraVolumes:
         - name: pg-client-cert
           secret:
-            secretName: authentik-pg-client-cert
+            secretName: authentik
       extraVolumeMounts:
         - name: pg-client-cert
           mountPath: /var/run/secrets/postgresql

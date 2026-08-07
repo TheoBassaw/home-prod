@@ -6,7 +6,6 @@ resources:
   - ./certificate.yaml
   - ./database.yaml
   - ./databaserole.yaml
-  - ./connection-url.yaml
 
 replacements:
   - source:
@@ -16,36 +15,21 @@ replacements:
     targets:
       - select:
           kind: Certificate
-          name: APP-pg-client-cert
+          name: APP
         fieldPaths:
           - metadata.name
           - spec.commonName
           - spec.secretName
       - select:
           kind: Database
-          name: APP-pg-database
+          name: APP
         fieldPaths:
           - metadata.name
           - spec.name
           - spec.owner
       - select:
           kind: DatabaseRole
-          name: APP-pg-role
+          name: APP
         fieldPaths:
           - metadata.name
           - spec.name
-      - select:
-          kind: Secret
-          name: APP-pg-connection
-        fieldPaths:
-          - metadata.name
-  - source:
-      kind: ConfigMap
-      name: postgres-app-params
-      fieldPath: data.PGURL
-    targets:
-      - select:
-          kind: Secret
-          name: APP-pg-connection
-        fieldPaths:
-          - stringData.DATABASE_URL

@@ -2,7 +2,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
-  name: APP-pg-database
+  name: APP
   namespace: storage-system
 spec:
   name: APP
