@@ -29,14 +29,14 @@ spec:
     authentik:
       postgresql:
         host: postgres-rw.storage-system
-        name: authentik
-        user: authentik
+        name: authentik-idp
+        user: authentik-idp
     server:
       replicas: 2
       extraVolumes:
         - name: pg-client-cert
           secret:
-            secretName: authentik
+            secretName: authentik-idp
       extraVolumeMounts:
         - name: pg-client-cert
           mountPath: /var/run/secrets/postgresql
@@ -54,7 +54,7 @@ spec:
       extraVolumes:
         - name: pg-client-cert
           secret:
-            secretName: authentik
+            secretName: authentik-idp
       extraVolumeMounts:
         - name: pg-client-cert
           mountPath: /var/run/secrets/postgresql

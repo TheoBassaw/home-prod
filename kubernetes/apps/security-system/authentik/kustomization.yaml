@@ -12,8 +12,8 @@ configMapGenerator:
     options:
       disableNameSuffixHash: true
     literals:
-      - APP=authentik
-      - PGURL=postgresql://authentik@postgres-rw.storage-system:5432/authentik?sslmode=verify-full&sslcert=/var/run/secrets/postgresql/tls.crt&sslkey=/var/run/secrets/postgresql/tls.key&sslrootcert=/var/run/secrets/postgresql/ca.crt
+      - APP=authentik-idp
+      - PGURL=postgresql://authentik-idp@postgres-rw.storage-system:5432/authentik-idp?sslmode=verify-full&sslcert=/var/run/secrets/postgresql/tls.crt&sslkey=/var/run/secrets/postgresql/tls.key&sslrootcert=/var/run/secrets/postgresql/ca.crt
 
 resources:
   - ./external-secret.yaml
