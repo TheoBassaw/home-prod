@@ -24,6 +24,9 @@ spec:
     serverCASecret: postgres-server-cert
     replicationTLSSecret: postgres-client-cert
     clientCASecret: postgres-client-cert
+  postgresql:
+    pg_hba:
+      - hostssl all all all cert
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
