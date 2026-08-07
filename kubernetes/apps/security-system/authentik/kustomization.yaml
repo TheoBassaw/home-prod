@@ -5,7 +5,7 @@ kind: Kustomization
 namespace: security-system
 
 components:
-  - ../../components/postgres
+  - ../../../components/postgres
 
 configMapGenerator:
   - name: postgres-app-params
