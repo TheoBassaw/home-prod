@@ -4,7 +4,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: postgres
-  namespace: security-system
+  namespace: storage-system
   annotations:
     cnpg.io/skipEmptyWalArchiveCheck: "enabled"
 spec:
@@ -19,13 +19,17 @@ spec:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
     podAntiAffinityType: required
+  certificates:
+    serverTLSSecret: postgres-server-cert
+    serverCASecret: postgres-server-cert
+    replicationTLSSecret: postgres-client-cert
+    clientCASecret: postgres-client-cert
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
       parameters:
         barmanObjectName: versity-truenas
   bootstrap:
-    # initdb: {}
     recovery:
       source: origin
   externalClusters:
@@ -39,11 +43,11 @@ apiVersion: barmancloud.cnpg.io/v1
 kind: ObjectStore
 metadata:
   name: versity-truenas
-  namespace: security-system
+  namespace: storage-system
 spec:
   retentionPolicy: "8d"
   configuration:
-    destinationPath: s3://postgres-backups/security-system
+    destinationPath: s3://postgres-backups
     endpointURL: https://truenas.paradisenetworkz.com:30157
     s3Credentials:
       accessKeyId:
@@ -59,7 +63,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
 metadata:
   name: postgres-hourly
-  namespace: security-system
+  namespace: storage-system
 spec:
   immediate: true
   schedule: "0 0 * * * *" # 4 AM EST

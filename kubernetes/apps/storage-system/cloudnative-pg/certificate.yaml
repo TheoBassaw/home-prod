@@ -1,0 +1,52 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: postgres-server-cert
+  namespace: storage-system
+spec:
+  secretName: postgres-server-cert
+  duration: 8760h
+  renewBefore: 720h
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  usages:
+    - server auth
+  dnsNames:
+    - postgres-rw
+    - postgres-rw.storage-system
+    - postgres-rw.storage-system.svc
+    - postgres-rw.storage-system.svc.cluster.local
+    - postgres-r
+    - postgres-r.storage-system
+    - postgres-r.storage-system.svc
+    - postgres-r.storage-system.svc.cluster.local
+    - postgres-ro
+    - postgres-ro.storage-system
+    - postgres-ro.storage-system.svc
+    - postgres-ro.storage-system.svc.cluster.local
+  issuerRef:
+    name: root-ca-clusterissuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: postgres-client-cert
+  namespace: storage-system
+spec:
+  secretName: postgres-client-cert
+  duration: 8760h
+  renewBefore: 720h
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  usages:
+    - client auth
+  commonName: streaming_replica
+  issuerRef:
+    name: root-ca-clusterissuer
+    kind: ClusterIssuer
+    group: cert-manager.io

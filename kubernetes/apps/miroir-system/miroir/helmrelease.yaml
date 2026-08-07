@@ -13,7 +13,7 @@ spec:
   values:
     replicaCount: 2
     gateway:
-      enabled: true
+      enabled: false
     drbd:
       verify:
         schedule: 0 8 * * *

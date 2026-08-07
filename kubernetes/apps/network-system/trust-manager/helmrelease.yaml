@@ -3,12 +3,12 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: reloader
-  namespace: kube-system
+  name: trust-manager
+  namespace: network-system
 spec:
   chartRef:
     kind: OCIRepository
-    name: kubernetes-reflector
+    name: trust-manager
   interval: 1h
   values:
     replicaCount: 2

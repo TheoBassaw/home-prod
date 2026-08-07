@@ -19,7 +19,7 @@ routes:
 ---
 apiVersion: v1alpha1
 kind: Layer2VIPConfig
-name: 10.20.0.200
+name: 10.20.0.201
 link: eth0
 ---
 apiVersion: v1alpha1

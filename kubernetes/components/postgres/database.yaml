@@ -1,10 +1,11 @@
+---
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
-  name: authentik
-  namespace: security-system
+  name: APP-pg-database
+  namespace: storage-system
 spec:
-  name: authentik
-  owner: app
+  name: APP
+  owner: APP
   cluster:
     name: postgres

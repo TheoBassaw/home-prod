@@ -1,0 +1,7 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: APP-pg-connection
+stringData:
+  DATABASE_URL: PGURL

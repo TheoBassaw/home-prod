@@ -4,7 +4,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: observability-system
 resources:
-  - ./namespace.yaml
   - ./grafana-operator/
   - ./prometheus-operator-crds/
   - ./victoria-metrics-k8s-stack/
+  - ./namespace.yaml

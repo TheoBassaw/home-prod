@@ -6,3 +6,5 @@ namespace: storage-system
 resources:
   - ./helmrelease.yaml
   - ./ocirepository.yaml
+  - ./certificate.yaml
+  - ./postgres-cluster.yaml
