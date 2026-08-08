@@ -2,10 +2,9 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: DatabaseRole
 metadata:
-  name: APP
-  namespace: storage-system
+  name: ${APP}
 spec:
-  name: APP
+  name: ${APP}
   login: true
   cluster:
     name: postgres
