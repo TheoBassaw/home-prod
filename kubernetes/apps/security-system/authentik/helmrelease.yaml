@@ -51,7 +51,7 @@ spec:
         name: authentik
         user: authentik
     server:
-      replicas: 1
+      replicas: 2
       route:
         main:
           enabled: true
@@ -61,4 +61,4 @@ spec:
           hostnames:
             - authentik.paradisenetworkz.com
     worker:
-      replicas: 1
+      replicas: 2
