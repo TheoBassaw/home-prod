@@ -26,21 +26,22 @@ spec:
           value: /var/run/secrets/postgresql/tls.key
         - name: AUTHENTIK_POSTGRESQL__SSLROOTCERT
           value: /var/run/secrets/postgresql/ca.crt
+      volumes:
+        - name: pg-client-cert
+          secret:
+            secretName: authentik-idp
+            defaultMode: "0440"
+      volumeMounts:
+        - name: pg-client-cert
+          mountPath: /var/run/secrets/postgresql
+          readOnly: true
     authentik:
       postgresql:
         host: postgres-rw.storage-system
         name: authentik-idp
         user: authentik-idp
     server:
-      replicas: 2
-      extraVolumes:
-        - name: pg-client-cert
-          secret:
-            secretName: authentik-idp
-      extraVolumeMounts:
-        - name: pg-client-cert
-          mountPath: /var/run/secrets/postgresql
-          readOnly: true
+      replicas: 1
       route:
         main:
           enabled: true
@@ -50,12 +51,4 @@ spec:
           hostnames:
             - authentik.paradisenetworkz.com
     worker:
-      replicas: 2
-      extraVolumes:
-        - name: pg-client-cert
-          secret:
-            secretName: authentik-idp
-      extraVolumeMounts:
-        - name: pg-client-cert
-          mountPath: /var/run/secrets/postgresql
-          readOnly: true
+      replicas: 1
