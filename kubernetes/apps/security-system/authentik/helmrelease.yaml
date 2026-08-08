@@ -25,21 +25,31 @@ spec:
         - name: AUTHENTIK_POSTGRESQL__SSLKEY
           value: /var/run/secrets/postgresql/tls.key
         - name: AUTHENTIK_POSTGRESQL__SSLROOTCERT
-          value: /var/run/secrets/postgresql/ca.crt
+          value: /var/run/secrets/root-ca/ca.crt
       volumes:
         - name: pg-client-cert
-          secret:
-            secretName: authentik-idp
-            defaultMode: "0440"
+          csi:
+            driver: csi.cert-manager.io
+            readOnly: true
+            volumeAttributes:
+              csi.cert-manager.io/issuer-name: root-ca-clusterissuer
+              csi.cert-manager.io/issuer-kind: ClusterIssuer
+              csi.cert-manager.io/common-name: authentik
+              csi.cert-manager.io/key-usages: client auth
+              csi.cert-manager.io/fs-group: "1000"
+        - name: pg-root-ca
+          configMap:
+            name: root-ca
       volumeMounts:
         - name: pg-client-cert
           mountPath: /var/run/secrets/postgresql
-          readOnly: true
+        - name: pg-root-ca
+          mountPath: /var/run/secrets/root-ca
     authentik:
       postgresql:
         host: postgres-rw.storage-system
-        name: authentik-idp
-        user: authentik-idp
+        name: authentik
+        user: authentik
     server:
       replicas: 1
       route:
