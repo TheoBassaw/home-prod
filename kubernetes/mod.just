@@ -1,10 +1,8 @@
 set quiet := true
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
-export KUBECONFIG := justfile_dir() + '/kubeconfig'
-
 [private]
-default: wait apply-manifests start-reconciliation
+default: wait crds namespaces bootstrap-secrets apply-manifests start-reconciliation
 
 # Wait until api server is available
 [private]
@@ -15,22 +13,28 @@ wait:
       sleep 5; \
   done
 
-# Apply manifests
-apply-manifests:
+# Apply Namespaces
+namespaces:
   find ./apps -name "namespace.yaml" | while read -r f; do \
     kubectl apply --server-side --field-manager kubectl --force-conflicts -f "$f"; \
   done
 
+# Apply CRDS
+crds:
   flate build hr --path apps --only-crds \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
+# Apply Bootstrap Secrets
+bootstrap-secrets:
+  envsubst < secrets.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
+
+# Apply CNI & GitOps Operator
+apply-manifests:
   flate build hr cilium --path apps --skip-secrets=false \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
   flate build hr flux-operator --path apps --skip-secrets=false -n flux-system \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
-
-  envsubst < bootstrap/secrets.yaml | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
 # Start reconciliation
 start-reconciliation:

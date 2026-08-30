@@ -6,6 +6,5 @@ namespace: network-system
 resources:
   - ./cert-manager/
   - ./envoy-gateway/
-  - ./external-dns/
   - ./trust-manager/
   - ./namespace.yaml

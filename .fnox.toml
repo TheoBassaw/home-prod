@@ -1,0 +1,6 @@
+default_provider = "pass"
+import           = ["./talos/secrets.toml", "./kubernetes/secrets.toml"]
+
+[providers.pass]
+type   = "password-store"
+prefix = "home-prod/"
