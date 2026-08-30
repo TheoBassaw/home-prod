@@ -28,9 +28,3 @@ kind: RegistryMirrorConfig
 name: quay.io
 endpoints:
   - url: https://truenas.paradisenetworkz.com:7004
----
-apiVersion: v1alpha1
-kind: RegistryMirrorConfig
-name: factory.talos.dev
-endpoints:
-  - url: https://truenas.paradisenetworkz.com:7005
