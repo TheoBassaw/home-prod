@@ -1,0 +1,114 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: openbao
+  namespace: security-system
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: openbao
+  interval: 1h
+  values:
+    global:
+      tlsDisable: false
+    injector:
+      enabled: false
+    server:
+      extraEnvironmentVars:
+        BAO_CACERT: /openbao/tls/ca.crt
+      dataStorage:
+        enabled: false
+      ha:
+        enabled: true
+        replicas: 2
+        raft:
+          enabled: false
+        disruptionBudget:
+          enabled: false
+        config: |
+          ui = true
+
+          listener "tcp" {
+            address = "[::]:8200"
+            cluster_address = "[::]:8201"
+            tls_cert_file = "/openbao/tls/tls.crt"
+            tls_key_file = "/openbao/tls/tls.key"
+          }
+
+          storage "postgresql" {
+            connection_url = "postgres://openbao@postgres-rw.storage-system:5432/openbao?sslmode=verify-full&sslcert=/var/run/secrets/postgresql/tls.crt&sslkey=/var/run/secrets/postgresql/tls.key&sslrootcert=/var/run/secrets/root-ca/ca.crt"
+            ha_enabled = "true"
+          }
+
+          service_registration "kubernetes" {}
+
+          plugin_directory = "/openbao/plugins"
+          plugin_auto_download = true
+
+          plugin "kms" "ocikms" {
+            image       = "ghcr.io/openbao/openbao-plugin-kms-oci"
+            version     = "v0.1.0"
+            binary_name = "openbao-plugin-kms-oci"
+            sha256sum   = "1d10812139a4a5f2fec52b9e18c3d1d3129fcea34fbab15bf6b7bbddd989f3e4"
+          }
+
+          seal "ocikms" {
+            key_id              = "ocid1.key.oc1.iad.ejvixdqvaaanw.abuwcljrrdtmjkgb6kp353yq3f3mkrtcwfqt7d5wjycqc7xc7yjfg6w4thpq"
+            crypto_endpoint     = "https://ejvixdqvaaanw-crypto.kms.us-ashburn-1.oraclecloud.com"
+            management_endpoint = "https://ejvixdqvaaanw-management.kms.us-ashburn-1.oraclecloud.com"
+            auth_type_api_key   = "true"
+          }
+      volumes:
+        - name: plugins
+          emptyDir: {}
+        - name: oci-config
+          secret:
+            secretName: openbao-oci-config
+        - name: pg-client-cert
+          csi:
+            driver: csi.cert-manager.io
+            readOnly: true
+            volumeAttributes:
+              csi.cert-manager.io/issuer-name: root-ca-clusterissuer
+              csi.cert-manager.io/issuer-kind: ClusterIssuer
+              csi.cert-manager.io/common-name: openbao
+              csi.cert-manager.io/key-usages: client auth
+              csi.cert-manager.io/fs-group: "1000"
+        - name: pg-root-ca
+          configMap:
+            name: root-ca
+        - name: openbao-tls
+          secret:
+            secretName: openbao-server-cert
+      volumeMounts:
+        - name: plugins
+          mountPath: /openbao/plugins
+        - name: oci-config
+          mountPath: /home/openbao/.oci
+          readOnly: true
+        - name: pg-client-cert
+          mountPath: /var/run/secrets/postgresql
+          readOnly: true
+        - name: pg-root-ca
+          mountPath: /var/run/secrets/root-ca
+          readOnly: true
+        - name: openbao-tls
+          mountPath: /openbao/tls
+          readOnly: true
+      gateway:
+        httpRoute:
+          enabled: true
+          hosts:
+            - openbao.paradisenetworkz.com
+          parentRefs:
+            - name: envoy
+              namespace: network-system
+        tlsPolicy:
+          enabled: true
+          validation:
+            caCertificateRefs:
+              - group: ""
+                kind: ConfigMap
+                name: root-ca

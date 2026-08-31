@@ -1,0 +1,38 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: openbao-server-cert
+  namespace: security-system
+spec:
+  secretName: openbao-server-cert
+  duration: 8760h
+  renewBefore: 720h
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  usages:
+    - server auth
+    - client auth
+  dnsNames:
+    - openbao
+    - openbao.security-system
+    - openbao.security-system.svc
+    - openbao.security-system.svc.cluster.local
+    - openbao-active
+    - openbao-active.security-system
+    - openbao-active.security-system.svc
+    - openbao-active.security-system.svc.cluster.local
+    - openbao-internal
+    - openbao-internal.security-system
+    - openbao-internal.security-system.svc
+    - openbao-internal.security-system.svc.cluster.local
+    - "*.openbao-internal.security-system.svc"
+    - "*.openbao-internal.security-system.svc.cluster.local"
+  ipAddresses:
+    - 127.0.0.1
+    - "::1"
+  issuerRef:
+    name: root-ca-clusterissuer
+    kind: ClusterIssuer
+    group: cert-manager.io

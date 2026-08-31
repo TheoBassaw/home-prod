@@ -12,4 +12,6 @@ spec:
   interval: 1h
   values:
     dashboard:
+      enabled: false
+    serviceMonitor:
       enabled: true
