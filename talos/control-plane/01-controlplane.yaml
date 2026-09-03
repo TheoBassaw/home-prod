@@ -1,14 +1,18 @@
 ---
-machine:
-  features:
-    kubernetesTalosAPIAccess:
-      allowedKubernetesNamespaces:
-        - security-system
-      allowedRoles:
-        - os:admin
-      enabled: true
-cluster:
-  apiServer:
-    certSANs:
-      - kube-api.home.paradisenetworkz.com
-  allowSchedulingOnControlPlanes: true
+apiVersion: v1alpha1
+kind: KubeTalosAPIAccessConfig
+allowedRoles:
+  - os:admin
+allowedKubernetesNamespaces:
+  - security-system
+---
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+taints:
+  node-role.kubernetes.io/control-plane:
+    $patch: delete
+---
+apiVersion: v1alpha1
+kind: KubeAPIServerConfig
+certExtraSANs:
+  - kube-api.home.paradisenetworkz.com

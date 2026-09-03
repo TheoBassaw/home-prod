@@ -1,35 +1,45 @@
 ---
-machine:
-  install:
-    wipe: true
-    grubUseUKICmdline: true
-  features:
-    hostDNS:
-      enabled: true
-      forwardKubeDNSToHost: true
-  kernel:
-    modules:
-      - name: drbd
-        parameters:
-          - usermode_helper=disabled
-      - name: drbd_transport_tcp
-      - name: dm-thin-pool
-  kubelet:
-    extraConfig:
-      shutdownGracePeriod: 120s
-      shutdownGracePeriodCriticalPods: 60s
-  nodeLabels:
-    storage.miroir.home-operations.com/class: std
-cluster:
-  network:
-    cni:
-      name: none
-    podSubnets:
-      - 10.30.0.0/16
-    serviceSubnets:
-      - 10.96.0.0/12
-  proxy:
-    disabled: true
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+#installer:
+#  image: factory.talos.dev/metal-installer-secureboot/ed7d5bd74bfde7bcb715d6e6e4a7a4c2d895e818dc5e09070d0d615d95fbb40c:v1.14.0-rc.2
+provisioning:
+  wipe: true
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: drbd
+parameters:
+  - usermode_helper=disabled
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: drbd_transport_tcp
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: dm-thin-pool
+---
+apiVersion: v1alpha1
+kind: KubeletConfig
+config:
+  shutdownGracePeriod: 120s
+  shutdownGracePeriodCriticalPods: 60s
+---
+apiVersion: v1alpha1
+kind: KubeFlannelCNIConfig
+$patch: delete
+---
+apiVersion: v1alpha1
+kind: KubeProxyConfig
+enabled: false
+---
+apiVersion: v1alpha1
+kind: KubeNetworkConfig
+podSubnets:
+  - 10.30.0.0/16
+serviceSubnets:
+  - 10.96.0.0/12
 ---
 apiVersion: v1alpha1
 kind: VolumeConfig
@@ -54,5 +64,13 @@ encryption:
 ---
 apiVersion: v1alpha1
 kind: ResolverConfig
+hostDNS:
+  enabled: true
+  forwardKubeDNSToHost: true
 nameservers:
   - address: 10.20.0.1
+---
+apiVersion: v1alpha1
+kind: SysctlConfig
+params:
+  user.max_user_namespaces: "11254"

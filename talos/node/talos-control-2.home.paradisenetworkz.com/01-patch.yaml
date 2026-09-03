@@ -1,7 +1,9 @@
 ---
-machine:
-  install:
-    disk: /dev/disk/by-id/nvme-nvme.1d79-47363933393432363834-5453313238474d544531313053-00000001
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+provisioning:
+  diskSelector:
+    match: disk.dev_path == "/dev/disk/by-id/nvme-nvme.1d79-47363933393432363834-5453313238474d544531313053-00000001"
 ---
 apiVersion: v1alpha1
 kind: LinkAliasConfig
