@@ -22,4 +22,4 @@ talosconfig:
 
 # Reset nodes
 reset-nodes:
-  topf reset --full=false --wait-for-maintenance=true
+  topf reset --full=false --wait-for-maintenance=true --graceful=false

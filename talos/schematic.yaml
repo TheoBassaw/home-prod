@@ -7,3 +7,5 @@ customization:
       - siderolabs/xe
   secureboot:
     includeWellKnownCertificates: true
+  extraKernelArgs:
+    - lockdown=integrity

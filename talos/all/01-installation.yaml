@@ -1,8 +1,6 @@
 ---
 apiVersion: v1alpha1
 kind: UnattendedInstallConfig
-#installer:
-#  image: factory.talos.dev/metal-installer-secureboot/ed7d5bd74bfde7bcb715d6e6e4a7a4c2d895e818dc5e09070d0d615d95fbb40c:v1.14.0-rc.2
 provisioning:
   wipe: true
 ---
@@ -73,4 +71,48 @@ nameservers:
 apiVersion: v1alpha1
 kind: SysctlConfig
 params:
-  user.max_user_namespaces: "11254"
+  user.max_user_namespaces: "11255"
+---
+apiVersion: v1alpha1
+kind: CRICustomizationConfig
+name: containerd
+content: |
+  [plugins."io.containerd.cri.v1.images"]
+    discard_unpacked_layers = false
+---
+apiVersion: v1alpha1
+kind: KubeAdmissionControlConfig
+name: PodSecurity
+configuration:
+  apiVersion: pod-security.admission.config.k8s.io/v1alpha1
+  defaults:
+    audit: restricted
+    audit-version: latest
+    enforce: baseline
+    enforce-version: latest
+    warn: restricted
+    warn-version: latest
+  exemptions:
+    namespaces:
+      - kube-system
+      - piraeus-system
+    runtimeClasses: []
+    usernames: []
+  kind: PodSecurityConfiguration
+---
+apiVersion: v1alpha1
+kind: SecurityProfileConfig
+workloadIsolation: true
+---
+apiVersion: v1alpha1
+kind: WatchdogTimerConfig
+device: /dev/watchdog0
+timeout: 2m
+---
+apiVersion: v1alpha1
+kind: FilesystemTrimConfig
+interval: 168h0m0s
+---
+apiVersion: v1alpha1
+kind: FilesystemScrubConfig
+interval: 168h0m0s

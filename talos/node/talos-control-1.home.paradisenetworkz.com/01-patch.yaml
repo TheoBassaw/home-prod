@@ -3,7 +3,7 @@ apiVersion: v1alpha1
 kind: UnattendedInstallConfig
 provisioning:
   diskSelector:
-    match: disk.dev_path == "/dev/disk/by-id/nvme-nvme.c0a9-323331334536433137344536-4354353030503353534438-00000001"
+    match: disk.wwid == "nvme.c0a9-323331334536433137344536-4354353030503353534438-00000001"
 ---
 apiVersion: v1alpha1
 kind: LinkAliasConfig
@@ -42,3 +42,11 @@ encryption:
   keys:
     - slot: 0
       tpm: {}
+      lockToState: true
+---
+apiVersion: v1alpha1
+kind: LVMVolumeGroupConfig
+name: vg-pool
+provisioning:
+  volumeSelector:
+    match: '"/dev/disk/by-id/dm-name-luks2-r-piraeus-data-1" in disk.symlinks'

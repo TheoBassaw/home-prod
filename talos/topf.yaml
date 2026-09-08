@@ -1,7 +1,7 @@
 clusterName: home-k8s
 clusterEndpoint: https://10.20.0.200:6443
 kubernetesVersion: 1.36.1
-talosVersion: v1.14.0-rc.2
+talosVersion: v1.14.0
 schematicId: "@schematic.yaml"
 secureboot: true
 nodes:
