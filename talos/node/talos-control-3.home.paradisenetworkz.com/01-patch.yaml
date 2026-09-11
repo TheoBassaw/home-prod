@@ -14,15 +14,11 @@ selector:
 apiVersion: v1alpha1
 kind: LinkConfig
 name: eth0
-addresses:
-  - address: 10.20.0.72/24
-routes:
-  - gateway: 10.20.0.1
+up: true
 ---
 apiVersion: v1alpha1
-kind: Layer2VIPConfig
-name: 10.20.0.200
-link: eth0
+kind: DHCPv4Config
+name: eth0
 ---
 apiVersion: v1alpha1
 kind: HostnameConfig
@@ -42,7 +38,6 @@ encryption:
   keys:
     - slot: 0
       tpm: {}
-      lockToState: true
 ---
 apiVersion: v1alpha1
 kind: LVMVolumeGroupConfig
@@ -50,3 +45,35 @@ name: vg-pool
 provisioning:
   volumeSelector:
     match: '"/dev/disk/by-id/dm-name-luks2-r-piraeus-data-1" in disk.symlinks'
+---
+apiVersion: v1alpha1
+kind: BGPInstanceConfig
+name: workload
+vrf: vrf-workload
+localASN: 4200000002
+routerID: 10.20.0.66
+installRoutes: false
+neighbors:
+  - address: "fda1:b2c3:d4e5:1::"
+    peerASN: 4200000003
+    passive: true
+---
+apiVersion: v1alpha1
+kind: BGPInstanceConfig
+name: fabric
+localASN: 4200000001
+routerID: 10.20.0.72
+routeSource: fd00:10:20:0:6e4b:90ff:fe55:3e66
+installRoutes: true
+advertise:
+  - dummy0
+multipath: true
+neighbors:
+  - address: fd00:10:20:0:c6ad:34ff:fe8d:7f26
+    peerASN: 4200000000
+importRoutes:
+  - bgpInstance: workload
+    prefixes:
+      - fd00:10:30::/56
+      - fd00:10:22::/64
+      - 10.30.0.0/16

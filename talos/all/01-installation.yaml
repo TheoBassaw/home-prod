@@ -1,3 +1,7 @@
+cluster:
+  etcd:
+    advertisedSubnets:
+      - fd00:10:20::/64
 ---
 apiVersion: v1alpha1
 kind: UnattendedInstallConfig
@@ -23,6 +27,7 @@ kind: KubeletConfig
 config:
   shutdownGracePeriod: 120s
   shutdownGracePeriodCriticalPods: 60s
+defaultRuntimeSeccompProfileEnabled: true
 ---
 apiVersion: v1alpha1
 kind: KubeFlannelCNIConfig
@@ -33,10 +38,20 @@ kind: KubeProxyConfig
 enabled: false
 ---
 apiVersion: v1alpha1
+kind: KubeNodeConfig
+labels:
+  zone: home
+nodeIP:
+  validSubnets:
+    - fd00:10:20::/64
+---
+apiVersion: v1alpha1
 kind: KubeNetworkConfig
 podSubnets:
+  - fd00:10:30::/56
   - 10.30.0.0/16
 serviceSubnets:
+  - fd00:10:96::/108
   - 10.96.0.0/12
 ---
 apiVersion: v1alpha1
@@ -66,7 +81,7 @@ hostDNS:
   enabled: true
   forwardKubeDNSToHost: true
 nameservers:
-  - address: 10.20.0.1
+  - address: fd00:10:20:0:c6ad:34ff:fe8d:7f26
 ---
 apiVersion: v1alpha1
 kind: SysctlConfig
@@ -94,7 +109,6 @@ configuration:
     warn-version: latest
   exemptions:
     namespaces:
-      - kube-system
       - piraeus-system
     runtimeClasses: []
     usernames: []
@@ -116,3 +130,20 @@ interval: 168h0m0s
 apiVersion: v1alpha1
 kind: FilesystemScrubConfig
 interval: 168h0m0s
+---
+apiVersion: v1alpha1
+kind: VethConfig
+name: veth-workload
+addresses:
+  - address: fda1:b2c3:d4e5:1::/127
+peer:
+  name: veth-router
+  addresses:
+    - address: fda1:b2c3:d4e5:1::1/127
+---
+apiVersion: v1alpha1
+kind: VRFConfig
+name: vrf-workload
+links:
+  - veth-router
+table: "88"

@@ -13,6 +13,7 @@ taints:
     $patch: delete
 ---
 apiVersion: v1alpha1
-kind: KubeAPIServerConfig
-certExtraSANs:
-  - kube-api.home.paradisenetworkz.com
+kind: DummyLinkConfig
+name: dummy0
+addresses:
+  - address: fd00:10:21::/128

@@ -2,8 +2,7 @@
 apiVersion: "cilium.io/v2"
 kind: CiliumLoadBalancerIPPool
 metadata:
-  name: "blue-pool"
+  name: "workload-vips"
 spec:
   blocks:
-    - start: 10.20.0.210
-      stop: 10.20.0.239
+    - cidr: fd00:10:22::/64

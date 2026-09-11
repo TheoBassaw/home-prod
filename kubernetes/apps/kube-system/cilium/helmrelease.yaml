@@ -11,15 +11,21 @@ spec:
     name: cilium
   interval: 1h
   values:
+    preferIpv6: true
+    ipv6:
+      enabled: true
     rollOutCiliumPods: true
     routingMode: native
-    autoDirectNodeRoutes: true
     ipv4NativeRoutingCIDR: 10.30.0.0/16
+    ipv6NativeRoutingCIDR: fd00:10:30::/56
+    enableIPv6BIGTCP: true
     kubeProxyReplacement: true
     k8sServiceHost: 127.0.0.1
     k8sServicePort: 7445
     enableIPv4BIGTCP: true
     bpfClockProbe: true
+    bgpControlPlane:
+      enabled: true
     bandwidthManager:
       enabled: true
       bbr: true
@@ -47,11 +53,6 @@ spec:
     l7Proxy: false
     gatewayAPI:
       enabled: false
-    l2announcements:
-      enabled: true
-    k8sClientRateLimit:
-      qps: 25
-      burst: 50
     hubble:
       relay:
         enabled: true
