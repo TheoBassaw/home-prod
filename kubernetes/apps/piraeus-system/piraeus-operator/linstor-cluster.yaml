@@ -1,0 +1,34 @@
+---
+apiVersion: piraeus.io/v1
+kind: LinstorCluster
+metadata:
+  name: linstor-cluster
+  namespace: piraeus-system
+spec:
+  affinityController:
+    enabled: true
+    replicas: 3
+  apiTLS:
+    certManager:
+      name: root-ca-clusterissuer
+      kind: ClusterIssuer
+  csiController:
+    enabled: true
+    replicas: 3
+  highAvailabilityController:
+    enabled: true
+  internalTLS:
+    certManager:
+      name: root-ca-clusterissuer
+      kind: ClusterIssuer
+  properties:
+    - name: DrbdOptions/Net/protocol
+      value: C
+    - name: DrbdOptions/Net/tls
+      value: "yes"
+    - name: DrbdOptions/auto-quorum
+      value: io-error
+    - name: DrbdOptions/Resource/on-no-data-accessible
+      value: io-error
+    - name: DrbdOptions/PeerDevice/c-min-rate
+      value: 10M
