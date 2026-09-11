@@ -16,4 +16,4 @@ spec:
     vmsingle:
       spec:
         storage:
-          storageClassName: miroir-local
+          storageClassName: piraeus-local
