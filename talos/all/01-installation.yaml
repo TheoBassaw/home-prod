@@ -2,6 +2,7 @@ cluster:
   etcd:
     advertisedSubnets:
       - fd00:10:20::/64
+      - 10.20.0.0/24
 ---
 apiVersion: v1alpha1
 kind: UnattendedInstallConfig
@@ -44,6 +45,7 @@ labels:
 nodeIP:
   validSubnets:
     - fd00:10:20::/64
+    - 10.20.0.0/24
 ---
 apiVersion: v1alpha1
 kind: KubeNetworkConfig
@@ -87,6 +89,8 @@ apiVersion: v1alpha1
 kind: SysctlConfig
 params:
   user.max_user_namespaces: "11255"
+  net.ipv6.conf.all.use_tempaddr: "0"
+  net.ipv6.conf.default.use_tempaddr: "0"
 ---
 apiVersion: v1alpha1
 kind: CRICustomizationConfig

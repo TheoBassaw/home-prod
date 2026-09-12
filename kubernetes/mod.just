@@ -33,7 +33,7 @@ apply-manifests:
   flate build hr cilium --path apps --skip-secrets=false \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  kubectl apply -f apps/kube-system/cilium/cilium-bgp.yaml
+  until kubectl apply -f apps/kube-system/cilium/cilium-bgp.yaml; do sleep 1; done
 
   flate build hr flux-operator --path apps --skip-secrets=false -n flux-system \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -

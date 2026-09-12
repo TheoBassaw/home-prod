@@ -12,9 +12,8 @@ spec:
     tlsHandshakeDaemon: true
   storagePools:
     - name: vg-pool
-      lvmThinPool:
+      lvmPool:
         volumeGroup: vg-pool
-        thinPool: thin
   podTemplate:
     spec:
       initContainers:

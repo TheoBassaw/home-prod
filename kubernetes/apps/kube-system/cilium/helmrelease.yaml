@@ -19,7 +19,7 @@ spec:
     ipv6NativeRoutingCIDR: fd00:10:30::/56
     enableIPv6BIGTCP: true
     kubeProxyReplacement: true
-    k8sServiceHost: 127.0.0.1
+    k8sServiceHost: localhost
     k8sServicePort: 7445
     enableIPv4BIGTCP: true
     bpfClockProbe: true

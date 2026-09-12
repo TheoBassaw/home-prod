@@ -52,7 +52,7 @@ name: workload
 vrf: vrf-workload
 localASN: 4200000002
 routerID: 10.20.0.66
-installRoutes: false
+installRoutes: true
 neighbors:
   - address: "fda1:b2c3:d4e5:1::"
     peerASN: 4200000003
@@ -61,7 +61,7 @@ neighbors:
 apiVersion: v1alpha1
 kind: BGPInstanceConfig
 name: fabric
-localASN: 4200000001
+localASN: 4200000006
 routerID: 10.20.0.69
 routeSource: fd00:10:20:0:6e4b:90ff:fe55:3e7d
 installRoutes: true
@@ -71,6 +71,10 @@ multipath: true
 neighbors:
   - address: fd00:10:20:0:c6ad:34ff:fe8d:7f26
     peerASN: 4200000000
+    bfd:
+      transmitInterval: 300ms
+      receiveInterval: 300ms
+      detectMultiplier: 3
 importRoutes:
   - bgpInstance: workload
     prefixes:
