@@ -13,6 +13,10 @@ spec:
   values:
     grafana:
       enabled: false
+    victoria-metrics-operator:
+      env:
+        - name: VM_ENABLETCP6
+          value: true
     vmsingle:
       spec:
         storage:

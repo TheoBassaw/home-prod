@@ -64,6 +64,7 @@ name: fabric
 localASN: 4200000005
 routerID: 10.20.0.66
 routeSource: fd00:10:20:0:6e4b:90ff:fe21:bea5
+installRoutes: true
 advertise:
   - dummy0
 multipath: true
