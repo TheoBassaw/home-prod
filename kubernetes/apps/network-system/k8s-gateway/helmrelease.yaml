@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: k8s-gateway
+  namespace: network-system
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: k8s-gateway
+  interval: 1h
+  values:
+    replicaCount: 2
+    domain: home.paradisenetworkz.com
+    watchedResources: ["HTTPRoute", "Service"]
+    service:
+      annotations:
+        "lbipam.cilium.io/ips": "fd00:10:22::1"

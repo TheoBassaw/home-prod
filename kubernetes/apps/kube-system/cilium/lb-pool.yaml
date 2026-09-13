@@ -4,5 +4,6 @@ kind: CiliumLoadBalancerIPPool
 metadata:
   name: "workload-vips"
 spec:
+  allowFirstLastIPs: No
   blocks:
     - cidr: fd00:10:22::/64

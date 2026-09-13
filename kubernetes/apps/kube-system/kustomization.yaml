@@ -11,3 +11,4 @@ resources:
   - ./metrics-server/
   - ./reloader/
   - ./snapshot-controller/
+  - ./spegel/
