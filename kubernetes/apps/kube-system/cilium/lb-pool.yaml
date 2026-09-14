@@ -2,7 +2,7 @@
 apiVersion: "cilium.io/v2"
 kind: CiliumLoadBalancerIPPool
 metadata:
-  name: "workload-vips"
+  name: workload-vips
 spec:
   allowFirstLastIPs: No
   blocks:
