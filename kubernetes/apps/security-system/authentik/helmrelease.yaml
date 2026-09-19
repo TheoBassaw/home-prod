@@ -36,6 +36,7 @@ spec:
               csi.cert-manager.io/issuer-kind: ClusterIssuer
               csi.cert-manager.io/common-name: authentik
               csi.cert-manager.io/key-usages: client auth
+              csi.cert-manager.io/ca-file: ca.crt
               csi.cert-manager.io/fs-group: "1000"
       volumeMounts:
         - name: pg-client-cert
