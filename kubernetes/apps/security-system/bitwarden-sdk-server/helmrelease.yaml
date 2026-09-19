@@ -1,0 +1,35 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bitwarden-sdk-server
+  namespace: security-system
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: bitwarden-sdk-server
+  interval: 1h
+  values:
+    replicaCount: 2
+    podSecurityContext:
+      fsGroup: 2000
+    image:
+      tls:
+        volumes:
+          - name: bitwarden-tls-certs
+            csi:
+              driver: csi.cert-manager.io
+              readOnly: true
+              volumeAttributes:
+                csi.cert-manager.io/issuer-name: root-ca-clusterissuer
+                csi.cert-manager.io/issuer-kind: ClusterIssuer
+                csi.cert-manager.io/common-name: authentik
+                csi.cert-manager.io/key-usages: client auth
+                csi.cert-manager.io/certificate-file: cert.pem
+                csi.cert-manager.io/ca-file: ca.pem
+                csi.cert-manager.io/privatekey-file: key.pem
+                csi.cert-manager.io/fs-group: "2000"
+        volumeMounts:
+          - name: bitwarden-tls-certs
+            mountPath: /certs

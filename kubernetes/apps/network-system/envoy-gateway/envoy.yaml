@@ -47,8 +47,8 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
-#      tls:
-#        certificateRefs:
-#          - kind: Secret
-#            name: paradise-networkz-tls
-#            namespace: network-system
+      tls:
+        certificateRefs:
+          - kind: Secret
+            name: paradise-networkz-tls
+            namespace: network-system

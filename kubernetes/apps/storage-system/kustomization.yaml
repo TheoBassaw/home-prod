@@ -6,4 +6,5 @@ namespace: storage-system
 resources:
   - ./cloudnative-pg/
   - ./kopiur/
+  - ./externalsecret.yaml
   - ./namespace.yaml
