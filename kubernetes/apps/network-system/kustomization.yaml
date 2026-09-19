@@ -7,5 +7,4 @@ resources:
   - ./cert-manager/
   - ./envoy-gateway/
   - ./k8s-gateway/
-  - ./trust-manager/
   - ./namespace.yaml
