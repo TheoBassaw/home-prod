@@ -27,8 +27,10 @@ spec:
                   csi.cert-manager.io/issuer-kind: ClusterIssuer
                   csi.cert-manager.io/common-name: grafana
                   csi.cert-manager.io/key-usages: client auth
-                  csi.cert-manager.io/ca-file: ca.crt
                   csi.cert-manager.io/fs-group: "1000"
+            - name: pg-root-ca
+              configMap:
+                name: root-ca
           containers:
             - name: grafana
               securityContext:
@@ -38,6 +40,8 @@ spec:
               volumeMounts:
                 - name: pg-client-cert
                   mountPath: /var/run/secrets/postgresql
+                - name: pg-root-ca
+                  mountPath: /var/run/secrets/root-ca
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
@@ -62,7 +66,7 @@ spec:
       name: "grafana"
       user: "grafana"
       ssl_mode: "verify-full"
-      ca_cert_path: "/var/run/secrets/postgresql/ca.crt"
+      ca_cert_path: "/var/run/secrets/root-ca/ca.crt"
       client_cert_path: "/var/run/secrets/postgresql/tls.crt"
       client_key_path: "/var/run/secrets/postgresql/tls.key"
     unified_alerting:
