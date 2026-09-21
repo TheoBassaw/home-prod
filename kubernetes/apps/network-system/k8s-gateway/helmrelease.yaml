@@ -12,7 +12,7 @@ spec:
   interval: 1h
   values:
     replicaCount: 2
-    domain: k8s.home.paradisenetworkz.com
+    domain: paradisenetworkz.com
     ttl: 1
     watchedResources: ["HTTPRoute"]
     service:

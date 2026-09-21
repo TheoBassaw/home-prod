@@ -7,7 +7,7 @@ metadata:
 spec:
   dnsNames:
     - paradisenetworkz.com
-    - "*.k8s.home.paradisenetworkz.com"
+    - "*.paradisenetworkz.com"
   duration: 160h
   issuerRef:
     kind: ClusterIssuer
