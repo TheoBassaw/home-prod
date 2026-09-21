@@ -19,6 +19,7 @@ spec:
         selector:
           dnsZones:
             - paradisenetworkz.com
+            - k8s.home.paradisenetworkz.com
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
