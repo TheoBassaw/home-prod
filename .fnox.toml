@@ -4,3 +4,7 @@ import           = ["./talos/secrets.toml", "./kubernetes/secrets.toml"]
 [providers.pass]
 type   = "password-store"
 prefix = "home-prod/"
+
+[providers.sync-age]
+type = "age"
+recipients = ["age1tag1qgat02wvzks56mqvhcgukgs0l9snvhh9tg4j7msms9j9qvxajg4lcqlcxyw"]

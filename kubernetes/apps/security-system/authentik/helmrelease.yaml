@@ -59,6 +59,6 @@ spec:
             - name: envoy
               namespace: network-system
           hostnames:
-            - authentik.home.paradisenetworkz.com
+            - authentik.k8s.home.paradisenetworkz.com
     worker:
       replicas: 2

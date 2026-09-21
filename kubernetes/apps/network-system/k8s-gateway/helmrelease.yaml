@@ -12,8 +12,12 @@ spec:
   interval: 1h
   values:
     replicaCount: 2
-    domain: home.paradisenetworkz.com
-    watchedResources: ["HTTPRoute", "Service"]
+    domain: k8s.home.paradisenetworkz.com
+    ttl: 1
+    watchedResources: ["HTTPRoute"]
     service:
+      type: LoadBalancer
+      port: 53
       annotations:
         "lbipam.cilium.io/ips": "fd00:10:22::1"
+      externalTrafficPolicy: Cluster
