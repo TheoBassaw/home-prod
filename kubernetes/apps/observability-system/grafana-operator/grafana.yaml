@@ -33,6 +33,12 @@ spec:
                 name: root-ca
           containers:
             - name: grafana
+              env:
+                - name: GF_SECURITY_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-password-secret
+                      key: GF_SECURITY_ADMIN_PASSWORD
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true
@@ -71,9 +77,9 @@ spec:
       client_key_path: "/var/run/secrets/postgresql/tls.key"
     unified_alerting:
       enabled: "true"
-      ha_listen_address: "${POD_IP}:9094"
+      ha_listen_address: "[${POD_IP}]:9094"
       ha_peers: "grafana-alerting:9094"
-      ha_advertise_address: "${POD_IP}:9094"
+      ha_advertise_address: "[${POD_IP}]:9094"
       ha_peer_timeout: 15s
       ha_reconnect_timeout: 2m
     metrics:

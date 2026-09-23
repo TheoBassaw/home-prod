@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: observability-system
 resources:
   - ./database.yaml
+  - ./externalsecret.yaml
   - ./grafana.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
