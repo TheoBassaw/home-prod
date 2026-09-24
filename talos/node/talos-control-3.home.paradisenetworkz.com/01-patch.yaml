@@ -65,8 +65,6 @@ localASN: 4200000007
 routerID: 10.20.0.72
 routeSource: fd00:10:20:0:6e4b:90ff:fe55:3e66
 installRoutes: true
-advertise:
-  - dummy0
 multipath: true
 neighbors:
   - address: fd00:10:20:0:c6ad:34ff:fe8d:7f26

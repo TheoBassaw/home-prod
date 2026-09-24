@@ -13,7 +13,6 @@ taints:
     $patch: delete
 ---
 apiVersion: v1alpha1
-kind: DummyLinkConfig
-name: dummy0
-addresses:
-  - address: fd00:10:21::/128
+kind: Layer2VIPConfig
+name: fd00:10:20:0::200
+link: eth0
