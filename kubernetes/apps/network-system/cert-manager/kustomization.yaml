@@ -5,6 +5,5 @@ kind: Kustomization
 namespace: network-system
 resources:
   - ./clusterissuer.yaml
-  - ./externalsecret.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml

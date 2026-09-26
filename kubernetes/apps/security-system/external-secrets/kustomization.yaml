@@ -5,6 +5,5 @@ kind: Kustomization
 namespace: security-system
 resources:
   - ./clustergenerator.yaml
-  - ./clustersecretstore.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
