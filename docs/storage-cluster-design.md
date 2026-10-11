@@ -23,8 +23,7 @@ rest of the homelab:
 
 - **GitOps**: the signed OCI artifact is the source of truth; Flux reconciles
   the storage cluster the same way it reconciles the compute cluster.
-- **Local-authoritative data** with an offsite copy (Backblaze B2). This is
-  "Posture 1": local disks serve reads/writes, and a continuous data mirror
+- **Local-authoritative data** with an offsite copy (Backblaze B2). Local disks serve reads/writes, and a continuous data mirror
   pushes changes to B2. No reliance on cloud for normal operation.
 - **Workload identity (OIDC)** for S3 consumers — no per-application static
   secrets.
@@ -216,7 +215,7 @@ moving parts, but the CA is shipped to storage.
 single shared static role (or a credential-injecting sidecar/proxy) — a
 documented exception, never per-app `pass` entries.
 
-## 8. Backup (Posture 1 — local-authoritative)
+## 8. Backup
 
 Data classes and their backup paths:
 
