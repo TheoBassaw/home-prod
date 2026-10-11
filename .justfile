@@ -1,8 +1,7 @@
 set quiet := true
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
-mod talos      "talos"
-mod kubernetes "kubernetes"
+mod compute-cluster "compute-cluster"
 
 [private]
 default:
@@ -10,5 +9,4 @@ default:
 
 # Bootstrap infrastructure
 bootstrap:
-  just talos
-  just kubernetes
+  just compute-cluster

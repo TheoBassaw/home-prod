@@ -27,7 +27,7 @@ namespaces:
 # Apply Secrets
 secrets:
   find ./secrets -type f | while read -r f; do \
-    envsubst < "$f" | kubectl apply --server-side --field-manager kubectl --force-conflicts -f - ; \
+    fnox exec -- envsubst < "$f" | kubectl apply --server-side --field-manager kubectl --force-conflicts -f - ; \
   done
 
 # Apply Cilium

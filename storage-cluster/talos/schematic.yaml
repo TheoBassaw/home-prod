@@ -1,0 +1,11 @@
+customization:
+  systemExtensions:
+    officialExtensions:
+      - siderolabs/drbd
+      - siderolabs/i915
+      - siderolabs/intel-ucode
+      - siderolabs/xe
+  secureboot:
+    includeWellKnownCertificates: true
+  extraKernelArgs:
+    - lockdown=integrity
