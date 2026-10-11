@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.just linguist-detectable linguist-language=JUST
+*.justfile linguist-detectable linguist-language=JUST
+*.md linguist-detectable linguist-language=MARKDOWN
+*.toml linguist-detectable linguist-language=TOML
+*.yml linguist-detectable linguist-language=YAML
+*.yaml linguist-detectable linguist-language=YAML
