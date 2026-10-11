@@ -9,4 +9,5 @@ default:
 
 # Bootstrap infrastructure
 bootstrap:
-  just compute-cluster
+  just compute-cluster talos
+  just compute-cluster kubernetes
