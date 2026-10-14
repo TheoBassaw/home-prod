@@ -7,7 +7,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/security-system
+  path: ./compute-cluster/kubernetes/apps/security-system
   prune: true
   retryInterval: 1m
   sourceRef:

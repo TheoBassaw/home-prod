@@ -7,7 +7,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1h
-  path: ./kubernetes/apps/storage-system
+  path: ./compute-cluster/kubernetes/apps/storage-system
   prune: false
   retryInterval: 1m
   sourceRef:
