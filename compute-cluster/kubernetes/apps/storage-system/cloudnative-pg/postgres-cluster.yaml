@@ -48,10 +48,10 @@ metadata:
   name: versity-truenas
   namespace: storage-system
 spec:
-  retentionPolicy: "8d"
+  retentionPolicy: "7d"
   configuration:
     destinationPath: s3://postgres-backups
-    endpointURL: https://truenas.paradisenetworkz.com:30157
+    endpointURL: https://truenas.paradisenetworkz.com:9000
     s3Credentials:
       accessKeyId:
         name: s3-credentials

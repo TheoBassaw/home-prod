@@ -5,6 +5,5 @@ kind: Kustomization
 namespace: security-system
 resources:
   - ./authentik/
-  - ./external-secrets/
   - ./tuppr/
   - ./namespace.yaml

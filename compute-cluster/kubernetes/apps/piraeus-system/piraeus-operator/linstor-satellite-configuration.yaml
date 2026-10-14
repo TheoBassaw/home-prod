@@ -16,6 +16,24 @@ spec:
         volumeGroup: vg-pool
   podTemplate:
     spec:
+      containers:
+        - name: linstor-satellite
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    exec 1>>/proc/1/fd/1 2>>/proc/1/fd/2
+                    for r in $(drbdsetup status | awk '/^[^ ]/ {print $1}'); do
+                      if drbdsetup status "$r" --verbose | grep -q 'open:yes'; then
+                        echo "preStop: $r in use, leaving it up"
+                        continue
+                      fi
+                      drbdadm secondary "$r" || true
+                      drbdadm down "$r" || true
+                    done
       initContainers:
         - name: drbd-shutdown-guard
           $patch: delete

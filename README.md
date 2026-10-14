@@ -5,9 +5,8 @@ declaratively and everything above the OS is reconciled by Flux.
 
 ## Clusters
 
-- **compute-cluster** — the Kubernetes cluster (workload, and infrastructure apps).
-- **storage-cluster** — dedicated 3-node bulk storage (SeaweedFS). *Planned;
-  see the design doc.*
+- **compute-cluster** — the Kubernetes cluster (workload and infrastructure
+  apps), and host of critical-data storage (Piraeus RWX/RWO volumes).
 
 ## Tooling
 
@@ -27,9 +26,6 @@ GitHub Actions, Kubernetes, Flux, and Terraform.
 │       ├── ks/             # Flux entrypoints, one per namespace
 │       ├── secrets/        # envsubst Secret templates
 │       └── components/     # reusable kustomize components
-├── storage-cluster/
-│   ├── talos/              # Talos machine configs
-│   └── kubernetes/         # (planned)
 └── docs/                   # design documents
 ```
 
@@ -67,7 +63,6 @@ each namespace.
 ## Documentation
 
 - [Compute cluster design](docs/design.md)
-- [Storage cluster design](docs/storage-cluster-design.md)
 
 ## Acknowledgements
 

@@ -12,5 +12,4 @@ spec:
   interval: 1h
   values:
     installCRDs: true
-    leaderElect: true
     replicaCount: 2

@@ -16,8 +16,23 @@ spec:
         - name: AUTHENTIK_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: authentik-secret-key
-              key: password
+              name: authentik-secret
+              key: AUTHENTIK_SECRET_KEY
+        - name: AUTHENTIK_BOOTSTRAP_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: authentik-secret
+              key: AUTHENTIK_BOOTSTRAP_EMAIL
+        - name: AUTHENTIK_BOOTSTRAP_PASSWORD_HASH
+          valueFrom:
+            secretKeyRef:
+              name: authentik-secret
+              key: AUTHENTIK_BOOTSTRAP_PASSWORD_HASH
+        - name: AUTHENTIK_BOOTSTRAP_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: authentik-secret
+              key: AUTHENTIK_BOOTSTRAP_TOKEN
         - name: AUTHENTIK_POSTGRESQL__SSLMODE
           value: verify-full
         - name: AUTHENTIK_POSTGRESQL__SSLCERT

@@ -17,6 +17,8 @@ spec:
     replicas: 3
   highAvailabilityController:
     enabled: true
+  nfsServer:
+    enabled: true
   internalTLS:
     certManager:
       name: root-ca-clusterissuer

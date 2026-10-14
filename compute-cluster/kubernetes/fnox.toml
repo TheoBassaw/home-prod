@@ -3,7 +3,12 @@ type   = "password-store"
 prefix = "home-prod/compute-cluster/kubernetes/"
 
 [secrets]
-CLOUDFLARE_TOKEN           = { provider = "pass", value = "network-system/CLOUDFLARE_TOKEN" }
-GF_SECURITY_ADMIN_PASSWORD = { provider = "pass", value = "observability-system/GF_SECURITY_ADMIN_PASSWORD" }
-S3_ACCESS_KEY              = { provider = "pass", value = "S3_ACCESS_KEY" }
-S3_SECRET_KEY              = { provider = "pass", value = "S3_SECRET_KEY" }
+AUTHENTIK_BOOTSTRAP_EMAIL         = { provider = "pass", value = "security-system/AUTHENTIK_BOOTSTRAP_EMAIL" }
+AUTHENTIK_BOOTSTRAP_PASSWORD_HASH = { provider = "pass", value = "security-system/AUTHENTIK_BOOTSTRAP_PASSWORD_HASH" }
+AUTHENTIK_BOOTSTRAP_TOKEN         = { provider = "pass", value = "security-system/AUTHENTIK_BOOTSTRAP_TOKEN" }
+AUTHENTIK_SECRET_KEY              = { provider = "pass", value = "security-system/AUTHENTIK_SECRET_KEY" }
+CLOUDFLARE_TOKEN                  = { provider = "pass", value = "network-system/CLOUDFLARE_TOKEN" }
+GF_SECURITY_ADMIN_USER            = { provider = "pass", value = "observability-system/GF_SECURITY_ADMIN_USER" }
+GF_SECURITY_ADMIN_PASSWORD        = { provider = "pass", value = "observability-system/GF_SECURITY_ADMIN_PASSWORD" }
+S3_ACCESS_KEY                     = { provider = "pass", value = "storage-system/S3_ACCESS_KEY" }
+S3_SECRET_KEY                     = { provider = "pass", value = "storage-system/S3_SECRET_KEY" }

@@ -6,9 +6,6 @@ provisioned declaratively; everything above the OS is reconciled by Flux from a
 signed OCI artifact. Secrets never live in git — they are pulled from `pass` at
 apply time.
 
-This document currently covers the compute cluster. A dedicated storage cluster
-is planned as a follow-up.
-
 ## Repo layout
 ```
 .                          root just/mise/fnox glue
@@ -102,8 +99,7 @@ Flux owns everything.
 - **piraeus-system**: Piraeus / LINSTOR (DRBD protocol C + TLS, LVM `vg-pool`);
   StorageClasses `piraeus-local` (1 replica) and `piraeus-replicated`
   (2 replicas).
-- **security-system**: External Secrets (+ password `ClusterGenerator`),
-  Authentik (SSO, Postgres over TLS), Tuppr (Talos upgrades).
+- **security-system**: Authentik (SSO, Postgres over TLS), Tuppr (Talos upgrades).
 - **observability-system**: VictoriaMetrics k8s stack, Grafana Operator
   (HA, Postgres backend, anonymous auth, route `grafana.paradisenetworkz.com`).
 - **flux-system**: Flux Operator + Tofu controller.
