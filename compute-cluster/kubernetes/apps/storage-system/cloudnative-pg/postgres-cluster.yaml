@@ -33,9 +33,8 @@ spec:
       parameters:
         barmanObjectName: truenas
   bootstrap:
-    initdb: {}
-    #recovery:
-    #  source: origin
+    recovery:
+      source: origin
   externalClusters:
     - name: origin
       plugin:
