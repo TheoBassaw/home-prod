@@ -31,21 +31,22 @@ spec:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
       parameters:
-        barmanObjectName: versity-truenas
+        barmanObjectName: truenas
   bootstrap:
-    recovery:
-      source: origin
+    initdb: {}
+    #recovery:
+    #  source: origin
   externalClusters:
     - name: origin
       plugin:
         name: barman-cloud.cloudnative-pg.io
         parameters:
-          barmanObjectName: versity-truenas
+          barmanObjectName: truenas
 ---
 apiVersion: barmancloud.cnpg.io/v1
 kind: ObjectStore
 metadata:
-  name: versity-truenas
+  name: truenas
   namespace: storage-system
 spec:
   retentionPolicy: "7d"
