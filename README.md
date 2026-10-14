@@ -3,10 +3,11 @@
 Bare-metal, GitOps-managed Home Production. Talos Linux nodes are provisioned
 declaratively and everything above the OS is reconciled by Flux.
 
-## Clusters
+## Clusters and storage
 
 - **compute-cluster** — the Kubernetes cluster (workload and infrastructure
   apps), and host of critical-data storage (Piraeus RWX/RWO volumes).
+- **storage** (TrueNAS) — bulk data, served over S3 or NFS (S3 preferred).
 
 ## Tooling
 

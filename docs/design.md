@@ -94,15 +94,23 @@ Flux owns everything.
 - **network-system**: cert-manager (Let's Encrypt DNS-01 via Cloudflare,
   self-signed root CA + `root-ca-clusterissuer`), Envoy Gateway (DualStack,
   3 replicas, HTTPS on 443), k8s-gateway, trust-manager (root-ca bundle).
-- **storage-system**: CloudNative-PG Postgres 18 (3 instances, TLS-only,
-  hourly barman backups to TrueNAS S3), kopiur.
+- **storage-system**: CloudNative-PG Postgres 18 (3 instances, TLS-only, hourly
+  barman backups to TrueNAS S3), and `kopiur` for PVC backups.
 - **piraeus-system**: Piraeus / LINSTOR (DRBD protocol C + TLS, LVM `vg-pool`);
-  StorageClasses `piraeus-local` (1 replica) and `piraeus-replicated`
-  (2 replicas).
+  StorageClasses `piraeus-local` (1 replica), `piraeus-replicated`
+  (2 replicas), and `piraeus-replicated-rwx` (RWX, 2 replicas).
 - **security-system**: Authentik (SSO, Postgres over TLS), Tuppr (Talos upgrades).
 - **observability-system**: VictoriaMetrics k8s stack, Grafana Operator
   (HA, Postgres backend, anonymous auth, route `grafana.paradisenetworkz.com`).
 - **flux-system**: Flux Operator + Tofu controller.
+
+## Storage design
+- Critical data (documents, photos) lives on the compute cluster, backed by
+  Piraeus: RWO volumes for single-consumer apps, RWX volumes for shared data.
+  Both use 2 replicas.
+- TrueNAS provides bulk storage via S3 or NFS. S3 is preferred for bulk because
+  a pod using an NFS mount crashes if the mount goes down.
+- Backups: CloudNative-PG/barman and `kopiur` write to TrueNAS S3.
 
 ## Networking design
 - Host BGP (Talos) advertises pod CIDRs and LB VIPs to the fabric router
