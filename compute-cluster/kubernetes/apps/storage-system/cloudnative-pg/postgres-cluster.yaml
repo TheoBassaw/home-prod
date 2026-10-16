@@ -31,7 +31,7 @@ spec:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
       parameters:
-        barmanObjectName: truenas
+        barmanObjectName: backblaze
   bootstrap:
     recovery:
       source: origin
@@ -40,18 +40,18 @@ spec:
       plugin:
         name: barman-cloud.cloudnative-pg.io
         parameters:
-          barmanObjectName: truenas
+          barmanObjectName: backblaze
 ---
 apiVersion: barmancloud.cnpg.io/v1
 kind: ObjectStore
 metadata:
-  name: truenas
+  name: backblaze
   namespace: storage-system
 spec:
   retentionPolicy: "7d"
   configuration:
-    destinationPath: s3://postgres-backups
-    endpointURL: https://truenas.paradisenetworkz.com:9000
+    destinationPath: s3://home-prod-kubernetes/cloudnative-pg
+    endpointURL: https://s3.us-west-004.backblazeb2.com
     s3Credentials:
       accessKeyId:
         name: s3-credentials
