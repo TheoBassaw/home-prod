@@ -16,3 +16,5 @@ spec:
   sources:
     - pvc:
         name: ${APP}
+  credentialProjection:
+    enabled: true
