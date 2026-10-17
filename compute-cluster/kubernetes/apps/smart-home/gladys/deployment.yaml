@@ -1,0 +1,82 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gladys
+  namespace: smart-home
+spec:
+  replicas: 1
+  # SQLite on a ReadWriteOnce volume: never run two writers.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: gladys
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: gladys
+    spec:
+      # Root inside the container is mapped to an unprivileged host UID.
+      hostUsers: false
+      automountServiceAccountToken: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: gladys
+          image: gladysassistant/gladys:v5.2.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: SERVER_PORT
+              value: "80"
+            - name: TZ
+              value: America/New_York
+            - name: SQLITE_FILE_PATH
+              value: /var/lib/gladysassistant/gladys-production.db
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+                - ALL
+              # Needed to bind :80 as the container's (namespaced) root.
+              add:
+                - NET_BIND_SERVICE
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            failureThreshold: 30
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/gladysassistant
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            # Created by the kopiur component (APP=gladys).
+            claimName: gladys

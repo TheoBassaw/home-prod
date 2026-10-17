@@ -10,3 +10,5 @@ spec:
     kind: OCIRepository
     name: kopiur
   interval: 1h
+  values:
+    replicaCount: 2
