@@ -16,5 +16,6 @@ spec:
   sources:
     - pvc:
         name: ${APP}
+  volumeSnapshotClassName: piraeus
   credentialProjection:
     enabled: true

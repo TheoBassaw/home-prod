@@ -9,3 +9,4 @@ resources:
   - ./linstor-satellite-configuration.yaml
   - ./ocirepository.yaml
   - ./storage-class.yaml
+  - ./volumesnapshot.yaml
