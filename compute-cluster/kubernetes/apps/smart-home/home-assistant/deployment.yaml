@@ -2,43 +2,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gladys
+  name: home-assistant
   namespace: smart-home
 spec:
   replicas: 1
-  # SQLite on a ReadWriteOnce volume: never run two writers.
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app.kubernetes.io/name: gladys
+      app.kubernetes.io/name: home-assistant
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: gladys
+        app.kubernetes.io/name: home-assistant
     spec:
-      # Root inside the container is mapped to an unprivileged host UID.
       hostUsers: false
       automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 60
       securityContext:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - name: gladys
-          image: gladysassistant/gladys:v5.2.1
+        - name: home-assistant
+          image: ghcr.io/home-assistant/home-assistant:2026.10.2
           imagePullPolicy: IfNotPresent
           env:
-            - name: NODE_ENV
-              value: production
-            - name: SERVER_PORT
-              value: "80"
             - name: TZ
               value: America/New_York
-            - name: SQLITE_FILE_PATH
-              value: /var/lib/gladysassistant/gladys-production.db
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8123
               protocol: TCP
           securityContext:
             allowPrivilegeEscalation: false
@@ -46,20 +39,17 @@ spec:
             capabilities:
               drop:
                 - ALL
-              # Needed to bind :80 as the container's (namespaced) root.
-              add:
-                - NET_BIND_SERVICE
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 250m
+              memory: 512Mi
             limits:
-              memory: 1Gi
+              memory: 2Gi
           startupProbe:
             httpGet:
               path: /
               port: http
-            failureThreshold: 30
+            failureThreshold: 60
             periodSeconds: 5
           readinessProbe:
             httpGet:
@@ -73,10 +63,9 @@ spec:
             periodSeconds: 30
             failureThreshold: 3
           volumeMounts:
-            - name: data
-              mountPath: /var/lib/gladysassistant
+            - name: config
+              mountPath: /config
       volumes:
-        - name: data
+        - name: config
           persistentVolumeClaim:
-            # Created by the kopiur component (APP=gladys).
-            claimName: gladys
+            claimName: home-assistant
