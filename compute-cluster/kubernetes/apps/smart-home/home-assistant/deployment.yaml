@@ -16,15 +16,19 @@ spec:
       labels:
         app.kubernetes.io/name: home-assistant
     spec:
-      hostUsers: false
       automountServiceAccountToken: false
       terminationGracePeriodSeconds: 60
       securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: home-assistant
-          image: ghcr.io/home-assistant/home-assistant:2026.10.2
+          image: ghcr.io/home-operations/home-assistant:2026.10.2
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ

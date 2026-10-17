@@ -10,7 +10,9 @@ spec:
   postBuild:
     substitute:
       APP: home-assistant
-      CAPACITY: 5Gi
+      MOVER_FSGROUP: "1000"
+      MOVER_RUNASGROUP: "1000"
+      MOVER_RUNASUSER: "1000"
       STORAGECLASS: piraeus-replicated
       ACCESSMODE: ReadWriteOnce
   prune: true
