@@ -60,6 +60,8 @@ spec:
         name: s3-credentials
         key: AWS_SECRET_ACCESS_KEY
     wal:
+      compression: zstd
+    data:
       compression: gzip
 ---
 apiVersion: postgresql.cnpg.io/v1
