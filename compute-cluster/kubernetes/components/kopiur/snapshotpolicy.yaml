@@ -15,8 +15,8 @@ spec:
     keepDaily: 7
   mover:
     securityContext:
-      runAsUser: ${MOVER_RUNASUSER:=1000}
-      runAsGroup: ${MOVER_RUNASGROUP:=1000}
+      runAsUser: 1000
+      runAsGroup: 1000
       runAsNonRoot: true
       allowPrivilegeEscalation: false
       privileged: false
@@ -24,7 +24,7 @@ spec:
         drop:
           - ALL
     podSecurityContext:
-      fsGroup: ${MOVER_FSGROUP:=1000}
+      fsGroup: 1000
       fsGroupChangePolicy: OnRootMismatch
   sources:
     - pvc:
