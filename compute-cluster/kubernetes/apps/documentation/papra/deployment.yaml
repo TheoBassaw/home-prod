@@ -1,0 +1,97 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: papra
+  namespace: documentation
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: papra
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: papra
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: papra
+          image: ghcr.io/papra-hq/papra:26.7.0-rootless
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: APP_BASE_URL
+              value: https://papra.paradisenetworkz.com
+            - name: AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: papra-secret
+                  key: AUTH_SECRET
+            - name: DATABASE_URL
+              value: file:/app/app-data/db.sqlite
+            - name: DOCUMENT_STORAGE_FILESYSTEM_ROOT
+              value: /app/app-data/documents
+            - name: PAPRA_CONFIG_DIR
+              value: /app/app-data
+            - name: HOME
+              value: /app/app-data
+            - name: AUTH_IP_ADDRESS_HEADERS
+              value: x-forwarded-for
+            - name: TZ
+              value: America/New_York
+          ports:
+            - name: http
+              containerPort: 1221
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 2Gi
+          startupProbe:
+            httpGet:
+              path: /
+              port: http
+            failureThreshold: 60
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          volumeMounts:
+            - name: data
+              mountPath: /app/app-data
+            - name: files
+              mountPath: /app/app-data/documents
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: papra-data
+        - name: files
+          persistentVolumeClaim:
+            claimName: papra-files

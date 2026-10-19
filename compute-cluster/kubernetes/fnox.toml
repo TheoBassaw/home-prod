@@ -11,5 +11,6 @@ CLOUDFLARE_TOKEN                  = { provider = "pass", value = "network-system
 GF_SECURITY_ADMIN_USER            = { provider = "pass", value = "observability-system/GF_SECURITY_ADMIN_USER" }
 GF_SECURITY_ADMIN_PASSWORD        = { provider = "pass", value = "observability-system/GF_SECURITY_ADMIN_PASSWORD" }
 KOPIA_PASSWORD                    = { provider = "pass", value = "storage-system/KOPIA_PASSWORD" }
+PAPRA_AUTH_SECRET                 = { provider = "pass", value = "documentation/PAPRA_AUTH_SECRET" }
 S3_ACCESS_KEY                     = { provider = "pass", value = "storage-system/S3_ACCESS_KEY" }
 S3_SECRET_KEY                     = { provider = "pass", value = "storage-system/S3_SECRET_KEY" }
