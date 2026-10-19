@@ -48,6 +48,8 @@ spec:
               value: /app/app-data
             - name: AUTH_IP_ADDRESS_HEADERS
               value: x-forwarded-for
+            - name: SERVER_HOSTNAME
+              value: "::"
             - name: TZ
               value: America/New_York
           ports:
