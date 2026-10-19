@@ -33,4 +33,4 @@ spec:
     - name: DrbdOptions/Resource/on-no-data-accessible
       value: io-error
     - name: DrbdOptions/PeerDevice/c-min-rate
-      value: 10M
+      value: "10240"
