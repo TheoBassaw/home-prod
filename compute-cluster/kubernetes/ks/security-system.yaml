@@ -6,6 +6,8 @@ metadata:
   name: security-system
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: storage-system
   interval: 1h
   path: ./compute-cluster/kubernetes/apps/security-system
   prune: true
