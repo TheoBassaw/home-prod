@@ -5,4 +5,5 @@ kind: Kustomization
 namespace: documentation
 resources:
   - ./papra/
+  - ./trilium/
   - ./namespace.yaml
