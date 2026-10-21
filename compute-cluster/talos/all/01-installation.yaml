@@ -24,6 +24,10 @@ kind: KernelModuleConfig
 name: dm-thin-pool
 ---
 apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: tls
+---
+apiVersion: v1alpha1
 kind: KubeletConfig
 config:
   shutdownGracePeriod: 120s
