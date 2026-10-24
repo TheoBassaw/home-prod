@@ -21,11 +21,11 @@ spec:
             - name: pg-client-cert
               secret:
                 secretName: grafana-client-cert
-                defaultMode: 0644
+                defaultMode: 0440
             - name: pg-server-ca
               secret:
                 secretName: postgres-ca
-                defaultMode: 0644
+                defaultMode: 0444
           containers:
             - name: grafana
               env:
@@ -39,14 +39,6 @@ spec:
                     secretKeyRef:
                       name: grafana-admin-password-secret
                       key: GF_SECURITY_ADMIN_PASSWORD
-                - name: GF_DATABASE_SSL_MODE
-                  value: require
-                - name: GF_DATABASE_SSL_CERT
-                  value: /var/run/secrets/postgresql/tls.crt
-                - name: GF_DATABASE_SSL_KEY
-                  value: /var/run/secrets/postgresql/tls.key
-                - name: GF_DATABASE_SSL_ROOT_CERT
-                  value: /var/run/secrets/postgresql-ca/ca.crt
               volumeMounts:
                 - name: pg-client-cert
                   mountPath: /var/run/secrets/postgresql
@@ -81,10 +73,10 @@ spec:
       host: "postgres-rw.observability-system:5432"
       name: "grafana"
       user: "grafana"
-      ssl_mode: "require"
-      ssl_cert: "/var/run/secrets/postgresql/tls.crt"
-      ssl_key: "/var/run/secrets/postgresql/tls.key"
-      ssl_root_cert: "/var/run/secrets/postgresql-ca/ca.crt"
+      ssl_mode: "verify-full"
+      client_cert_path: "/var/run/secrets/postgresql/tls.crt"
+      client_key_path: "/var/run/secrets/postgresql/tls.key"
+      ca_cert_path: "/var/run/secrets/postgresql-ca/ca.crt"
     unified_alerting:
       enabled: "true"
       ha_listen_address: "[${POD_IP}]:9094"
