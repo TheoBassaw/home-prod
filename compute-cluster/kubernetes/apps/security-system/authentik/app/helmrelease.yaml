@@ -45,7 +45,7 @@ spec:
         - name: pg-client-cert
           secret:
             secretName: authentik-client-cert
-            defaultMode: 0400
+            defaultMode: 0440
         - name: pg-server-ca
           secret:
             secretName: postgres-ca
@@ -64,6 +64,9 @@ spec:
         user: authentik
     server:
       replicas: 2
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
       route:
         main:
           enabled: true
@@ -74,3 +77,6 @@ spec:
             - authentik.paradisenetworkz.com
     worker:
       replicas: 2
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
