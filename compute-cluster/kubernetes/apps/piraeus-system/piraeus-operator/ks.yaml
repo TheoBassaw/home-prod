@@ -1,0 +1,16 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: piraeus-operator
+  namespace: piraeus-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  path: ./compute-cluster/kubernetes/apps/piraeus-system/piraeus-operator/app
+  prune: false
+  wait: true
+  sourceRef:
+    kind: OCIRepository
+    name: flux-system
+    namespace: flux-system

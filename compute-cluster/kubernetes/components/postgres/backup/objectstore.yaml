@@ -1,0 +1,21 @@
+---
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: backblaze
+spec:
+  retentionPolicy: "7d"
+  configuration:
+    destinationPath: s3://home-prod-kubernetes/cloudnative-pg/${NAMESPACE}
+    endpointURL: https://s3.us-west-004.backblazeb2.com
+    s3Credentials:
+      accessKeyId:
+        name: s3-credentials
+        key: AWS_ACCESS_KEY_ID
+      secretAccessKey:
+        name: s3-credentials
+        key: AWS_SECRET_ACCESS_KEY
+    wal:
+      compression: zstd
+    data:
+      compression: gzip

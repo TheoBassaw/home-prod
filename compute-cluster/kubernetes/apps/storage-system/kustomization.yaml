@@ -6,6 +6,6 @@ namespace: storage-system
 components:
   - ../../components/helmrelease
 resources:
-  - ./cloudnative-pg/
-  - ./kopiur/
+  - ./cloudnative-pg/ks.yaml
+  - ./kopiur/ks.yaml
   - ./namespace.yaml

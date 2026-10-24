@@ -1,0 +1,24 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: authentik
+  namespace: security-system
+spec:
+  dependsOn:
+    - name: postgres
+      namespace: security-system
+  components:
+    - ../../../../components/postgres/db
+  postBuild:
+    substitute:
+      APP: authentik
+  interval: 1h
+  retryInterval: 1m
+  path: ./compute-cluster/kubernetes/apps/security-system/authentik/app
+  prune: true
+  wait: true
+  sourceRef:
+    kind: OCIRepository
+    name: flux-system
+    namespace: flux-system

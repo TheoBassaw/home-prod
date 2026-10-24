@@ -1,0 +1,76 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authentik
+  namespace: security-system
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: authentik
+  interval: 1h
+  values:
+    global:
+      env:
+        - name: AUTHENTIK_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: authentik-secret
+              key: AUTHENTIK_SECRET_KEY
+        - name: AUTHENTIK_BOOTSTRAP_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: authentik-secret
+              key: AUTHENTIK_BOOTSTRAP_EMAIL
+        - name: AUTHENTIK_BOOTSTRAP_PASSWORD_HASH
+          valueFrom:
+            secretKeyRef:
+              name: authentik-secret
+              key: AUTHENTIK_BOOTSTRAP_PASSWORD_HASH
+        - name: AUTHENTIK_BOOTSTRAP_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: authentik-secret
+              key: AUTHENTIK_BOOTSTRAP_TOKEN
+        - name: AUTHENTIK_POSTGRESQL__SSLMODE
+          value: verify-full
+        - name: AUTHENTIK_POSTGRESQL__SSLCERT
+          value: /var/run/secrets/postgresql/tls.crt
+        - name: AUTHENTIK_POSTGRESQL__SSLKEY
+          value: /var/run/secrets/postgresql/tls.key
+        - name: AUTHENTIK_POSTGRESQL__SSLROOTCERT
+          value: /var/run/secrets/postgresql-ca/ca.crt
+      volumes:
+        - name: pg-client-cert
+          secret:
+            secretName: authentik-client-cert
+            defaultMode: 0400
+        - name: pg-server-ca
+          secret:
+            secretName: postgres-ca
+            defaultMode: 0444
+      volumeMounts:
+        - name: pg-client-cert
+          mountPath: /var/run/secrets/postgresql
+          readOnly: true
+        - name: pg-server-ca
+          mountPath: /var/run/secrets/postgresql-ca
+          readOnly: true
+    authentik:
+      postgresql:
+        host: postgres-rw.security-system
+        name: authentik
+        user: authentik
+    server:
+      replicas: 2
+      route:
+        main:
+          enabled: true
+          parentRefs:
+            - name: envoy
+              namespace: network-system
+          hostnames:
+            - authentik.paradisenetworkz.com
+    worker:
+      replicas: 2

@@ -6,5 +6,5 @@ namespace: piraeus-system
 components:
   - ../../components/helmrelease
 resources:
-  - ./piraeus-operator/
+  - ./piraeus-operator/ks.yaml
   - ./namespace.yaml

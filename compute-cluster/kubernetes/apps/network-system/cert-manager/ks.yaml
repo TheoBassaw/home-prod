@@ -1,0 +1,16 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cert-manager
+  namespace: network-system
+spec:
+  interval: 1h
+  retryInterval: 1m
+  path: ./compute-cluster/kubernetes/apps/network-system/cert-manager/app
+  prune: true
+  wait: true
+  sourceRef:
+    kind: OCIRepository
+    name: flux-system
+    namespace: flux-system

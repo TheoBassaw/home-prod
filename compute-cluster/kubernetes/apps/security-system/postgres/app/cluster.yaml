@@ -1,0 +1,31 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres
+  annotations:
+    cnpg.io/skipEmptyWalArchiveCheck: "enabled"
+spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.4-minimal-trixie
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 5Gi
+    storageClass: piraeus-local
+  enableSuperuserAccess: true
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
+  postgresql:
+    pg_hba:
+      - hostssl all all all cert
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: backblaze
+  bootstrap:
+    initdb:
+      database: app
+      owner: app

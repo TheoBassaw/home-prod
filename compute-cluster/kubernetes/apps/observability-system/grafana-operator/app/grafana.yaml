@@ -1,0 +1,113 @@
+---
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/grafana.integreatly.org/grafana_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+  namespace: observability-system
+  labels:
+    dashboards: grafana
+spec:
+  disableDefaultAdminSecret: true
+  disableDefaultSecurityContext: All
+  deployment:
+    spec:
+      strategy:
+        type: Recreate
+      replicas: 2
+      template:
+        spec:
+          volumes:
+            - name: pg-client-cert
+              secret:
+                secretName: grafana-client-cert
+                defaultMode: 0400
+            - name: pg-server-ca
+              secret:
+                secretName: postgres-ca
+                defaultMode: 0444
+          containers:
+            - name: grafana
+              env:
+                - name: GF_SECURITY_ADMIN_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-password-secret
+                      key: GF_SECURITY_ADMIN_USER
+                - name: GF_SECURITY_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-admin-password-secret
+                      key: GF_SECURITY_ADMIN_PASSWORD
+                - name: GF_DATABASE_SSL_MODE
+                  value: verify-full
+                - name: GF_DATABASE_SSL_CERT
+                  value: /var/run/secrets/postgresql/tls.crt
+                - name: GF_DATABASE_SSL_KEY
+                  value: /var/run/secrets/postgresql/tls.key
+                - name: GF_DATABASE_SSL_ROOT_CERT
+                  value: /var/run/secrets/postgresql-ca/ca.crt
+              volumeMounts:
+                - name: pg-client-cert
+                  mountPath: /var/run/secrets/postgresql
+                  readOnly: true
+                - name: pg-server-ca
+                  mountPath: /var/run/secrets/postgresql-ca
+                  readOnly: true
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities: { drop: ["ALL"] }
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
+  config:
+    log:
+      mode: "console"
+    analytics:
+      check_for_updates: "false"
+      check_for_plugin_updates: "false"
+      feedback_links_enabled: "false"
+      reporting_enabled: "false"
+    auth:
+      disable_login_form: "false"
+    auth.anonymous:
+      enabled: "True"
+    database:
+      type: "postgres"
+      host: "postgres-rw.observability-system:5432"
+      name: "grafana"
+      user: "grafana"
+    unified_alerting:
+      enabled: "true"
+      ha_listen_address: "[${POD_IP}]:9094"
+      ha_peers: "grafana-alerting:9094"
+      ha_advertise_address: "[${POD_IP}]:9094"
+      ha_peer_timeout: 15s
+      ha_reconnect_timeout: 2m
+    metrics:
+      enabled: "true"
+    server:
+      enable_gzip: "true"
+    news:
+      news_feed_enabled: "false"
+    plugins:
+      plugin_admin_enabled: "false"
+  httpRoute:
+    spec:
+      parentRefs:
+        - name: envoy
+          namespace: network-system
+      hostnames:
+        - grafana.paradisenetworkz.com
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /
+          backendRefs:
+            - name: grafana-service
+              port: 3000

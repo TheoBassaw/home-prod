@@ -1,0 +1,24 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: postgres
+  namespace: observability-system
+spec:
+  dependsOn:
+    - name: cloudnative-pg
+      namespace: storage-system
+  components:
+    - ../../../../components/postgres/backup
+  postBuild:
+    substitute:
+      NAMESPACE: observability-system
+  interval: 1h
+  retryInterval: 1m
+  path: ./compute-cluster/kubernetes/apps/observability-system/postgres/app
+  prune: true
+  wait: true
+  sourceRef:
+    kind: OCIRepository
+    name: flux-system
+    namespace: flux-system

@@ -1,0 +1,23 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: home-assistant
+  namespace: smart-home
+spec:
+  components:
+    - ../../../../components/kopiur
+  postBuild:
+    substitute:
+      APP: home-assistant
+      ACCESSMODE: ReadWriteOnce
+      STORAGECLASS: piraeus-replicated
+  interval: 1h
+  retryInterval: 1m
+  path: ./compute-cluster/kubernetes/apps/smart-home/home-assistant/app
+  prune: true
+  wait: true
+  sourceRef:
+    kind: OCIRepository
+    name: flux-system
+    namespace: flux-system

@@ -1,0 +1,13 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: DatabaseRole
+metadata:
+  name: ${APP}
+spec:
+  name: ${APP}
+  login: true
+  disablePassword: true
+  clientCertificate:
+    enabled: true
+  cluster:
+    name: postgres

@@ -6,7 +6,8 @@ namespace: observability-system
 components:
   - ../../components/helmrelease
 resources:
-  - ./grafana-operator/
-  - ./prometheus-operator-crds/
-  - ./victoria-metrics-k8s-stack/
+  - ./grafana-operator/ks.yaml
+  - ./postgres/ks.yaml
+  - ./prometheus-operator-crds/ks.yaml
+  - ./victoria-metrics-k8s-stack/ks.yaml
   - ./namespace.yaml

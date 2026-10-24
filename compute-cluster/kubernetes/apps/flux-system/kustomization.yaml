@@ -6,6 +6,6 @@ namespace: flux-system
 components:
   - ../../components/helmrelease
 resources:
-  - ./flux-operator/
-  - ./tofu-controller/
+  - ./flux-operator/ks.yaml
+  - ./tofu-controller/ks.yaml
   - ./namespace.yaml

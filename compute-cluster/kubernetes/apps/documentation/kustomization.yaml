@@ -6,6 +6,4 @@ namespace: documentation
 components:
   - ../../components/helmrelease
 resources:
-  - ./papra/
-  - ./trilium/
   - ./namespace.yaml
