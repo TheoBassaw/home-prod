@@ -35,7 +35,7 @@ cni:
   flate build hr cilium --path apps --skip-secrets=false \
     | kubectl apply --server-side --field-manager kubectl --force-conflicts -f -
 
-  until kubectl apply -f apps/kube-system/cilium/cilium-bgp.yaml; do sleep 1; done
+  until kubectl apply -f apps/kube-system/cilium/app/cilium-bgp.yaml; do sleep 1; done
 
 # Apply Flux Operator
 flux:
@@ -44,4 +44,4 @@ flux:
 
 # Start reconciliation
 reconciliation:
-  kubectl apply --server-side --field-manager kubectl --force-conflicts -f apps/flux-system/flux-operator/fluxinstance.yaml
+  kubectl apply --server-side --field-manager kubectl --force-conflicts -f apps/flux-system/flux-operator/app/fluxinstance.yaml
