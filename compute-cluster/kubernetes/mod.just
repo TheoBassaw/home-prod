@@ -2,7 +2,7 @@ set quiet := true
 set shell := ['bash', '-euo', 'pipefail', '-c']
 
 [private]
-default: wait crds namespaces secrets cni flux #reconciliation
+default: wait crds namespaces secrets cni flux reconciliation
 
 # Wait until api server is available
 [private]
