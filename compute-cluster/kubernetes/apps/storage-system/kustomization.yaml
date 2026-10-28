@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: storage-system
 components:
   - ../../components/helmrelease
+  - ../../components/s3
 resources:
   - ./cloudnative-pg/ks.yaml
   - ./kopiur/ks.yaml

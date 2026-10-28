@@ -5,8 +5,10 @@ kind: Kustomization
 namespace: security-system
 components:
   - ../../components/helmrelease
+  - ../../components/s3
 resources:
   - ./authentik/ks.yaml
+  - ./external-secrets/ks.yaml
   - ./postgres/ks.yaml
   - ./tuppr/ks.yaml
   - ./namespace.yaml

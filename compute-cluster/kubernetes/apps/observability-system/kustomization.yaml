@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: observability-system
 components:
   - ../../components/helmrelease
+  - ../../components/s3
 resources:
   - ./grafana-operator/ks.yaml
   - ./postgres/ks.yaml
