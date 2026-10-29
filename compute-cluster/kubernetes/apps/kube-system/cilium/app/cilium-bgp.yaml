@@ -8,12 +8,12 @@ metadata:
 spec:
   advertisements:
     - advertisementType: Service
-      service:
-        addresses:
-          - LoadBalancerIP
       selector:
         matchExpressions:
           - { key: somekey, operator: NotIn, values: ["never-used-value"] }
+      service:
+        addresses:
+          - LoadBalancerIP
     - advertisementType: PodCIDR
 ---
 apiVersion: cilium.io/v2
@@ -21,11 +21,6 @@ kind: CiliumBGPPeerConfig
 metadata:
   name: talos-workload
 spec:
-  gracefulRestart:
-    enabled: true
-  transport:
-    peerPort: 179
-    sourceInterface: veth-workload
   families:
     - afi: ipv6
       safi: unicast
@@ -37,15 +32,17 @@ spec:
       advertisements:
         matchLabels:
           bgp.example.com/advertisement: workload-routes
+  gracefulRestart:
+    enabled: true
+  transport:
+    peerPort: 179
+    sourceInterface: veth-workload
 ---
 apiVersion: cilium.io/v2
 kind: CiliumBGPClusterConfig
 metadata:
   name: talos-workload
 spec:
-  nodeSelector:
-    matchLabels:
-      zone: home
   bgpInstances:
     - name: talos-workload
       localASN: 4200000003
@@ -55,3 +52,6 @@ spec:
           peerAddress: "fda1:b2c3:d4e5:1::1"
           peerConfigRef:
             name: talos-workload
+  nodeSelector:
+    matchLabels:
+      zone: home

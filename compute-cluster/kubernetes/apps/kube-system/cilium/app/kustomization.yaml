@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: kube-system
 resources:
   - ./cilium-bgp.yaml
+  - ./grafanadashboard.yaml
   - ./helmrelease.yaml
   - ./lb-pool.yaml
   - ./ocirepository.yaml

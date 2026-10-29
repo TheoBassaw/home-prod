@@ -11,59 +11,78 @@ spec:
     name: cilium
   interval: 1h
   values:
-    ipv6:
-      enabled: true
-    rollOutCiliumPods: true
-    routingMode: native
-    ipv4NativeRoutingCIDR: 10.30.0.0/16
-    ipv6NativeRoutingCIDR: fd00:10:30::/56
-    enableIPv6BIGTCP: true
-    kubeProxyReplacement: true
-    k8sServiceHost: localhost
-    k8sServicePort: 7445
-    enableIPv4BIGTCP: true
-    bpfClockProbe: true
-    bgpControlPlane:
-      enabled: true
     bandwidthManager:
       enabled: true
       bbr: true
-    socketLB:
+    bgpControlPlane:
       enabled: true
+    bpf:
+      datapathMode: netkit
+      distributedLRU:
+        enabled: true
+      mapDynamicSizeRatio: 0.08
+      masquerade: true
+      preallocateMaps: true
+    bpfClockProbe: true
+    cgroup:
+      autoMount:
+        enabled: false
+      hostRoot: /sys/fs/cgroup
+    dashboards:
+      enabled: true
+    enableIPv4BIGTCP: true
+    enableIPv4Masquerade: false
+    enableIPv6BIGTCP: true
+    enableIPv6Masquerade: false
     endpointRoutes:
       enabled: true
     envoy:
       enabled: false
-    pmtuDiscovery:
-      enabled: true
-    ipam:
-      mode: kubernetes
-    bpf:
-      datapathMode: netkit
-      masquerade: true
-      preallocateMaps: true
-      distributedLRU:
-        enabled: true
-      mapDynamicSizeRatio: 0.08
-    loadBalancer:
-      acceleration: best-effort
-      algorithm: maglev
-      mode: dsr
-    l7Proxy: false
-    gatewayAPI:
-      enabled: false
     hubble:
       relay:
         enabled: true
+        prometheus:
+          serviceMonitor:
+            enabled: true
         replicas: 2
         rollOutPods: true
       ui:
         enabled: true
         replicas: 2
         rollOutPods: true
+    gatewayAPI:
+      enabled: false
+    ipam:
+      mode: kubernetes
+    ipv6:
+      enabled: true
+    k8sServiceHost: localhost
+    k8sServicePort: 7445
+    kubeProxyReplacement: true
+    l7Proxy: false
+    loadBalancer:
+      acceleration: best-effort
+      algorithm: maglev
+      mode: dsr
+    localRedirectPolicies:
+      enabled: true
     operator:
       replicas: 2
+      dashboards:
+        enabled: true
+      prometheus:
+        serviceMonitor:
+          enabled: true
       rollOutPods: true
+    pmtuDiscovery:
+      enabled: true
+    prometheus:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        trustCRDsExist: true
+    rollOutCiliumPods: true
+    routingMode: native
     securityContext:
       capabilities:
         ciliumAgent:
@@ -81,9 +100,3 @@ spec:
             SETUID,
           ]
         cleanCiliumState: [NET_ADMIN, SYS_ADMIN, SYS_RESOURCE]
-    cgroup:
-      autoMount:
-        enabled: false
-      hostRoot: /sys/fs/cgroup
-    dashboards:
-      enabled: true

@@ -6,9 +6,9 @@ metadata:
   namespace: kube-system
 spec:
   interval: 1h
-  retryInterval: 1m
   path: ./compute-cluster/kubernetes/apps/kube-system/cilium/app
   prune: false
+  retryInterval: 1m
   sourceRef:
     kind: OCIRepository
     name: flux-system
