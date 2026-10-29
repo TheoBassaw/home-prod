@@ -11,8 +11,9 @@ spec:
     name: tofu-controller
   interval: 1h
   values:
-    replicaCount: 2
+    allowCrossNamespaceRefs: true
     metrics:
       enabled: true
       serviceMonitor:
         enabled: true
+    replicaCount: 2

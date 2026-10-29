@@ -6,11 +6,11 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1h
-  retryInterval: 1m
   path: ./compute-cluster/kubernetes/apps/flux-system/tofu-controller/app
-  prune: false
-  wait: true
+  retryInterval: 1m
+  prune: true
   sourceRef:
     kind: OCIRepository
     name: flux-system
     namespace: flux-system
+  wait: true
