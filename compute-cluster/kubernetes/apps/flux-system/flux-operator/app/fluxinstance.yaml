@@ -21,6 +21,15 @@ spec:
   distribution:
     registry: ghcr.io/fluxcd
     version: 2.x
+  kustomize:
+    patches:
+      - target:
+          kind: Service
+          namespace: flux-system
+        patch: |
+          - op: add
+            path: /spec/ipFamilyPolicy
+            value: RequireDualStack
   sync:
     kind: OCIRepository
     url: oci://ghcr.io/theobassaw/home-prod
