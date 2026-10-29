@@ -5,5 +5,7 @@ kind: Kustomization
 namespace: observability-system
 resources:
   - ./grafana.yaml
+  - ./grafanadashboard.yaml
+  - ./grafanadatasource.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
