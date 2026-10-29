@@ -12,8 +12,18 @@ spec:
   interval: 1h
   values:
     installCRDs: true
+    service:
+      ipFamilyPolicy: RequireDualStack
+    serviceMonitor:
+      create: true
     web:
-      serverReplicas: 2
+      config:
+        authentication:
+          anonymous:
+            groups:
+              - flux-admin
+            username: flux
+          type: Anonymous
       httpRoute:
         enabled: true
         parentRefs:
@@ -21,5 +31,4 @@ spec:
             namespace: network-system
         hostnames:
           - flux.paradisenetworkz.com
-      serviceMonitor:
-        create: true
+        serverReplicas: 2

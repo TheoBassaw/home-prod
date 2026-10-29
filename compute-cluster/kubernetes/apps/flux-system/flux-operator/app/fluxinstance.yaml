@@ -5,19 +5,31 @@ metadata:
   name: flux
   namespace: flux-system
 spec:
-  distribution:
-    version: 2.x
-    registry: ghcr.io/fluxcd
   components:
-    - source-controller
-    - kustomize-controller
     - helm-controller
+    - kustomize-controller
     - notification-controller
+    - source-controller
   cluster:
-    type: kubernetes
+    domain: cluster.local
     multitenant: false
     networkPolicy: true
-    domain: cluster.local
+    type: kubernetes
+  distribution:
+    registry: ghcr.io/fluxcd
+    version: 2.8.x
+  kustomize:
+    patches:
+      - patch: |
+          - op: add
+            path: /spec/template/spec/containers/0/args/-
+            value: --concurrent=10
+          - op: add
+            path: /spec/template/spec/containers/0/args/-
+            value: --requeue-dependency=5s
+        target:
+          kind: Deployment
+          name: "(kustomize-controller|helm-controller|source-controller)"
   sync:
     kind: OCIRepository
     url: oci://ghcr.io/theobassaw/home-prod
