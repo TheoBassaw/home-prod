@@ -69,10 +69,10 @@ spec:
                 - RemovePodsViolatingInterPodAntiAffinity
                 - RemovePodsViolatingNodeAffinity
                 - RemovePodsViolatingNodeTaints
-    service:
-      enabled: true
-    #serviceMonitor:
-    #enabled: true
     leaderElection:
       enabled: true
     replicas: 2
+    service:
+      enabled: true
+    serviceMonitor:
+      enabled: true
