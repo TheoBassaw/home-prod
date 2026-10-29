@@ -10,17 +10,6 @@ spec:
     kind: OCIRepository
     name: tofu-controller
   interval: 1h
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Service
-              name: tofu-controller-metrics-service
-              namespace: flux-system
-            patch: |
-              - op: add
-                path: /spec/ipFamilyPolicy
-                value: RequireDualStack
   values:
     allowCrossNamespaceRefs: true
     metrics:

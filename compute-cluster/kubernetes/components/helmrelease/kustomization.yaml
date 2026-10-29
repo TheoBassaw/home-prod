@@ -23,3 +23,12 @@ patches:
           remediation:
             remediateLastFailure: true
             retries: 2
+        postRenderers:
+          - kustomize:
+              patches:
+                - target:
+                    kind: Service
+                  patch: |
+                    - op: add
+                      path: /spec/ipFamilyPolicy
+                      value: RequireDualStack

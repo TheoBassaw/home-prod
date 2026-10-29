@@ -77,5 +77,6 @@ importRoutes:
   - bgpInstance: workload
     prefixes:
       - fd00:10:30::/56
-      - fd00:10:22::/64
       - 10.30.0.0/16
+      - fd00:10:22::/64
+      - 10.22.0.0/24

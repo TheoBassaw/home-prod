@@ -7,3 +7,4 @@ spec:
   allowFirstLastIPs: No
   blocks:
     - cidr: fd00:10:22::/64
+    - cidr: 10.22.0.0/24

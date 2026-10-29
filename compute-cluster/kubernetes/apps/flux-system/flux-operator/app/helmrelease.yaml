@@ -12,8 +12,6 @@ spec:
   interval: 1h
   values:
     installCRDs: true
-    service:
-      ipFamilyPolicy: RequireDualStack
     serviceMonitor:
       create: true
     web:
