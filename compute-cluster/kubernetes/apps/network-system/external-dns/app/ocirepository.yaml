@@ -3,7 +3,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: k8s-gateway
+  name: external-dns
   namespace: network-system
 spec:
   interval: 15m
@@ -11,5 +11,5 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 3.7.3
-  url: oci://codeberg.org/k8s-gateway/charts/k8s-gateway
+    tag: 1.21.1
+  url: oci://ghcr.io/home-operations/charts-mirror/external-dns

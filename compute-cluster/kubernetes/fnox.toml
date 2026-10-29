@@ -8,6 +8,8 @@ AUTHENTIK_BOOTSTRAP_PASSWORD_HASH = { provider = "pass", value = "security-syste
 AUTHENTIK_BOOTSTRAP_TOKEN         = { provider = "pass", value = "security-system/AUTHENTIK_BOOTSTRAP_TOKEN" }
 AUTHENTIK_SECRET_KEY              = { provider = "pass", value = "security-system/AUTHENTIK_SECRET_KEY" }
 CLOUDFLARE_TOKEN                  = { provider = "pass", value = "network-system/CLOUDFLARE_TOKEN" }
+MIKROTIK_USERNAME                 = { provider = "pass", value = "network-system/MIKROTIK_USERNAME" }
+MIKROTIK_PASSWORD                 = { provider = "pass", value = "network-system/MIKROTIK_PASSWORD" }
 GF_SECURITY_ADMIN_USER            = { provider = "pass", value = "observability-system/GF_SECURITY_ADMIN_USER" }
 GF_SECURITY_ADMIN_PASSWORD        = { provider = "pass", value = "observability-system/GF_SECURITY_ADMIN_PASSWORD" }
 KOPIA_PASSWORD                    = { provider = "pass", value = "storage-system/KOPIA_PASSWORD" }
