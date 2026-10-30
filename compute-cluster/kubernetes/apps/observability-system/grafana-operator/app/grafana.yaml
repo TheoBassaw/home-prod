@@ -79,9 +79,9 @@ spec:
       ca_cert_path: "/var/run/secrets/postgresql-ca/ca.crt"
     unified_alerting:
       enabled: "true"
-      ha_listen_address: "[${POD_IP}]:9094"
+      ha_listen_address: "${POD_IP}:9094"
       ha_peers: "grafana-alerting:9094"
-      ha_advertise_address: "[${POD_IP}]:9094"
+      ha_advertise_address: "${POD_IP}:9094"
       ha_peer_timeout: 15s
       ha_reconnect_timeout: 2m
     metrics:
