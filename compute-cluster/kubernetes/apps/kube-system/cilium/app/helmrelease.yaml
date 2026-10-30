@@ -66,8 +66,6 @@ spec:
       mode: dsr
     localRedirectPolicies:
       enabled: true
-    multicast:
-      enabled: true
     operator:
       replicas: 2
       dashboards:
