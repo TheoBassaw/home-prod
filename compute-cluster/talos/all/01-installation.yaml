@@ -118,6 +118,7 @@ configuration:
   exemptions:
     namespaces:
       - piraeus-system
+      - smart-home
     runtimeClasses: []
     usernames: []
   kind: PodSecurityConfiguration
