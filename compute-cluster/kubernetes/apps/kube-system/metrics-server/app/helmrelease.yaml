@@ -17,5 +17,3 @@ spec:
     replicas: 2
     serviceMonitor:
       enabled: true
-    tls:
-      type: cert-manager
