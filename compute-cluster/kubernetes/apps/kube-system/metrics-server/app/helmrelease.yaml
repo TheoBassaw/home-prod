@@ -10,8 +10,6 @@ spec:
     name: metrics-server
   interval: 1h
   values:
-    apiService:
-      insecureSkipTLSVerify: false
     metrics:
       enabled: true
     replicas: 2
