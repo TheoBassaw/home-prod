@@ -10,6 +10,8 @@ spec:
     name: metrics-server
   interval: 1h
   values:
+    args:
+      - --kubelet-insecure-tls
     metrics:
       enabled: true
     replicas: 2
