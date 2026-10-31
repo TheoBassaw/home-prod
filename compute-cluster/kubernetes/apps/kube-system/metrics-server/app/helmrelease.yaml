@@ -10,7 +10,12 @@ spec:
     name: metrics-server
   interval: 1h
   values:
-    args:
-      - --kubelet-insecure-tls
-      - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+    apiService:
+      insecureSkipTLSVerify: false
+    metrics:
+      enabled: true
     replicas: 2
+    serviceMonitor:
+      enabled: true
+    tls:
+      type: cert-manager

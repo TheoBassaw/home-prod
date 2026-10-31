@@ -7,3 +7,5 @@ resources:
   - ./helmrelease-defaults-binding.yaml
   - ./service-dualstack-policy.yaml
   - ./service-dualstack-binding.yaml
+  - ./pod-antiaffinity-policy.yaml
+  - ./pod-antiaffinity-binding.yaml
